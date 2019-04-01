@@ -1,0 +1,75 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+
+      <div class="col-md-6">
+
+        <div class="row">
+
+          <div class="input-group col-lg-6 col-sm-12">
+            <mat-form-field>
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Colaborador">
+            </mat-form-field>
+            <button mat-raised-button type="submit" class="btn btn-white btn-round btn-just-icon">
+              <i class="material-icons">search</i>
+            </button>
+          </div>
+
+          <div class="input-group col-lg-6 col-sm-12">
+            <mat-form-field>
+              <input matInput [matDatepicker]="picker" (dateChange)="fnGetDate($event.value)" placeholder="Data"
+                [formControl]="startDate">
+              <mat-datepicker-toggle matSuffix [for]="picker">
+                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+              </mat-datepicker-toggle>
+              <mat-datepicker #picker [startAt]="startDate"></mat-datepicker>
+            </mat-form-field>
+
+          </div>
+        </div>
+
+        <table class="table" mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+          <ng-container matColumnDef="apeEmp">
+            <th class="text-danger" mat-header-cell *matHeaderCellDef> Empresa </th>
+            <td mat-cell *matCellDef="let element"> {{element.numEmp}}-{{element.apeEmp}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="numCpf">
+            <th class="text-danger" mat-header-cell *matHeaderCellDef> Cpf </th>
+            <td mat-cell *matCellDef="let element"> {{element.numCpf}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nomFun">
+            <th class="text-danger" mat-header-cell *matHeaderCellDef> Colaborador </th>
+            <td mat-cell *matCellDef="let element"> {{element.nomFun}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="tipCol">
+            <th class="text-danger" mat-header-cell *matHeaderCellDef> Monitoramento </th>
+            <td mat-cell *matCellDef="let element">
+              <button class="btn btn-danger btn-sm" (click)="fnMonitorar(element)"><i
+                  class="material-icons">track_changes</i></button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator showFirstLastButtons></mat-paginator>
+
+        <!-- [pageSizeOptions]="[5, 10, 20]" -->
+
+        <!-- <div class="col-md-8" *ngFor="let employee of employees">
+          {{employee.datAdm}} {{employee.numCpf}} {{employee.apeEmp}} {{employee.nomFun}} <button
+            class="btn btn-primary" (click)="fnMonitorar(employee)">Monitorar</button>
+        </div> -->
+
+      </div>
+      <div class="col-md-6">
+        <div id="mapId"></div>
+      </div>
+    </div>
+  </div>
+</div>
