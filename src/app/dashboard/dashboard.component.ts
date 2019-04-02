@@ -136,9 +136,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
-
-
-
     this.fbServices.canLoad()
 
     this.fnCountEmployees()

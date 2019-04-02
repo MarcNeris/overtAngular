@@ -72,6 +72,8 @@ export class TrackpointComponent implements OnInit {
 
     this.map.fitBounds(this.groupReps.getBounds())
 
+    this.map.scrollWheelZoom.disable()
+
   }
 
 
@@ -170,7 +172,7 @@ export class TrackpointComponent implements OnInit {
       }).addTo(this.map)
 
       document.querySelector('.leaflet-bottom.leaflet-right').innerHTML = ''
-      document.querySelector('.leaflet-top.leaflet-left').innerHTML = ''
+      //document.querySelector('.leaflet-top.leaflet-left').innerHTML = ''
     }
 
 

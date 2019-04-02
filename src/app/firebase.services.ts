@@ -1,3 +1,4 @@
+
 //import { database, app, auth, firestore } from 'firebase';
 import { firebase } from '@firebase/app'
 import '@firebase/auth'
@@ -60,7 +61,7 @@ export class FBServices {
 
                 this.DB.LS.user = JSON.stringify(_user).encrypt()
                 this.DB.LS._uid = user.uid
-                this.DB.FS.collection('users/' + user.uid + '/_token').doc('_token').set({ _token: user.email.encrypt() })
+                //this.DB.FS.collection('users/' + user.uid + '/_token').doc('_token').set({ _token: user.email.encrypt() })
 
             } else {
                 this.DB.LS.clear()
@@ -82,6 +83,41 @@ export class FBServices {
         firebase.auth().onAuthStateChanged(user => {
 
             if (user) {
+
+
+                String.prototype.encrypt = function () { return AES.encrypt(this, user.uid).toString().replace(/\//g, '*') }
+
+                String.prototype.decrypt = function () { return AES.decrypt(this.replace(/\*/g, '/'), user.uid).toString(CryptoJS.enc.Utf8) }
+
+                let _user = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    emailVerified: user.emailVerified,
+                    _token: user.refreshToken
+                }
+
+                this.DB.LS.user = JSON.stringify(_user).encrypt()
+                this.DB.LS._uid = user.uid
+
+                //https://overt-hcm.firebaseio.com/system/app/modules/pages/dashboard/customers/10804639000183/users/z9povQBJ5TXYZJCVBhhpLmjJZj53
+
+                console.log(this.router.url)
+
+                this.DB.FB.ref('system').child('app').child('modules').child('pages').child(this.router.url).child('customers').child('10804639000183').child('users').child(user.uid).once('value', auth=>{
+                    if(auth.exists()){
+                        console.log(auth.val())
+
+                        if(auth.val().access!=true){
+
+                            this.router.navigate(['login'])
+                        }
+
+                    }else{
+
+                        this.router.navigate(['login'])
+                    }
+                })
 
             } else {
 

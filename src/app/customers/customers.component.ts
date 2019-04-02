@@ -78,6 +78,7 @@ export class CustomersComponent implements OnInit {
     this.fbServices.canLoad()
     
     this.fnTableCustomers()
+    
   }
 
 }

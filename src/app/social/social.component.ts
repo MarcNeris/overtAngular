@@ -1,4 +1,6 @@
+import { FBServices } from './../firebase.services';
 import { Component, OnInit } from '@angular/core';
+
 
 @Component({
   selector: 'app-social',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SocialComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    public fbServices:FBServices
+  ) { }
 
   ngOnInit() {
+    this.fbServices.canLoad()
   }
 
 }

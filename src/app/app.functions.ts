@@ -30,14 +30,21 @@ export class APPFunctions {
     }
 
     public encrypt(string: string) {
-        return AES.encrypt(string, this.fbServices.DB.LS._uid).toString().replace(/\//g, '*')
+        try {
+            if (this.fbServices.DB.LS._uid != undefined)
+                return AES.encrypt(string, this.fbServices.DB.LS._uid).toString().replace(/\//g, '*')
+        } catch (error) {
+
+        }
     }
 
     public decrypt(string: string) {
+        try {
+            if (this.fbServices.DB.LS._uid != undefined)
+                return AES.decrypt(string.replace(/\*/g, '/'), this.fbServices.DB.LS._uid).toString(CryptoJS.enc.Utf8)
+        } catch (error) {
 
-        if (this.fbServices.DB.LS._uid != undefined)
-            return AES.decrypt(string.replace(/\*/g, '/'), this.fbServices.DB.LS._uid).toString(CryptoJS.enc.Utf8)
-
+        }
     }
 
     public toCnpjId(string: string) {
@@ -53,13 +60,16 @@ export class APPFunctions {
     }
 
     public getEmpresaAtiva() {
-        if (this.fbServices.DB.LS.empresaAtiva != undefined) {
+        try {
+            if (this.fbServices.DB.LS.empresaAtiva != undefined) {
+                let empresaAtiva = JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva))
+                empresaAtiva.cnpjContrato = this.toCnpjId(JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva)).cnpj)
+                return empresaAtiva
+            } else {
+                return null
+            }
+        } catch (error) {
 
-            let empresaAtiva = JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva))
-            empresaAtiva.cnpjContrato = this.toCnpjId(JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva)).cnpj)
-            return empresaAtiva
-        } else {
-            return null
         }
     }
 }
