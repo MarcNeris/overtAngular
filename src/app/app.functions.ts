@@ -1,6 +1,8 @@
 
 import { Injectable } from '@angular/core'
-import { FBServices } from './firebase.services';
+import { FBServices } from './firebase.services'
+import { HttpClient } from '@angular/common/http'
+import { resolve } from 'url';
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
 const AES = CryptoJS.AES
@@ -10,9 +12,21 @@ const AES = CryptoJS.AES
 export class APPFunctions {
 
     constructor(
-        private fbServices: FBServices
+        private fbServices: FBServices,
+        private httpClient: HttpClient,
     ) {
 
+    }
+
+    public async soap(args) {
+        var params = this.encrypt(JSON.stringify(args))
+        var wsdl = `https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`
+        return await new Promise(resolve => {
+            console.log(wsdl)
+            this.httpClient.get(wsdl).subscribe((res) => {
+                resolve(res)
+            })
+        })
     }
 
     public encrypt(string: string) {
@@ -42,7 +56,7 @@ export class APPFunctions {
         if (this.fbServices.DB.LS.empresaAtiva != undefined) {
 
             let empresaAtiva = JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva))
-            empresaAtiva.cnpjContrato = this.toCnpjId(JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva)).cnpj) 
+            empresaAtiva.cnpjContrato = this.toCnpjId(JSON.parse(this.decrypt(this.fbServices.DB.LS.empresaAtiva)).cnpj)
             return empresaAtiva
         } else {
             return null

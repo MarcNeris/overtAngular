@@ -1,11 +1,15 @@
 import { DataSource } from '@angular/cdk/table';
 import { APPFunctions } from './app.functions';
 import { FBServices } from './firebase.services';
-import { Injectable, Component, ViewChild } from '@angular/core';
+import { Injectable, Component, ViewChild, Inject } from '@angular/core';
 //import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Routes, Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
+import {
+  MatTableDataSource,
+  MatPaginator,
+  MatSort
+} from '@angular/material';
 
 
 
@@ -62,7 +66,7 @@ export class Services {
     private route: ActivatedRoute,
     private router: Router,
     private fbServices: FBServices,
-    private func: APPFunctions,
+    private func: APPFunctions
   ) {
     //this.router.navigate(['/login'])
 
@@ -211,7 +215,7 @@ export class Services {
   }
 
   async soapCall() {
-    this.loadingIsHide=false
+    this.loadingIsHide = false
     var param = this.apiServices.retornacolaborador
 
     var args = {
@@ -225,20 +229,64 @@ export class Services {
         intNet: 'junior.ferreira@seniorbh.com.br',
       }
     }
-    var params = this.func.encrypt(JSON.stringify(args))
-    await this.httpClient.get(`https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`).subscribe((res) => {
-      this.loadingIsHide=true
-      var dataSource: any = res
+
+    this.func.soap(args).then(result => {
+      this.loadingIsHide = true
+      console.log(result)
+      var dataSource: any = result
       dataSource = dataSource.result.griCol
-      console.log(dataSource)
+      //console.log(dataSource)
 
       this.dataSource = new MatTableDataSource(dataSource)
       this.dataSource.paginator = this.paginator
-
     })
+
+    // var params = this.func.encrypt(JSON.stringify(args))
+    // await this.httpClient.get(`https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`).subscribe((res) => {
+    //   this.loadingIsHide = true
+    //   var dataSource: any = res
+    //   dataSource = dataSource.result.griCol
+    //   //console.log(dataSource)
+
+    //   this.dataSource = new MatTableDataSource(dataSource)
+    //   this.dataSource.paginator = this.paginator
+
+    // })
   }
 
+
+
+
+
+
+
+
+
   ngAfterViewInit() {
+
+
+
+    // var argsChefia = {
+    //   wsdl: 'http://www.consistema.com.br:8081/g5-senior-services/rubi_Synccom_senior_g5_rh_consistema_portal?wsdl',
+    //   porta: 'folha',
+    //   user: 'mobile.portal',
+    //   password: 'mobile6916',
+    //   encryption: '0',
+    //   parameters: {
+    //     codOpe: 'retornachefia',
+    //     intNet: 'marceloneris@hotmail.com',
+    //     datChe: '01/04/2019',
+    //     numCad: '300',
+    //     numEmp: '1',
+    //     retAfa: 'N',
+    //     tipCol: '1'
+    //   }
+    // }
+
+    // this.func.soap(argsChefia).then(result => {
+    //   console.log(result)
+    // })
+
     this.fnServices()
   }
 
@@ -246,4 +294,5 @@ export class Services {
     this.dataSource.sort = this.sort
     this.fnGetParams()
   }
+
 }

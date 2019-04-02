@@ -118,7 +118,7 @@ export class TrackpointComponent implements OnInit {
 
             this.hasError = 'Colaborador sem marcações nesta data.'
           }
-          console.warn(this.hasError)
+          //console.warn(this.hasError)
         })
         resolve({ result: 'OK' })
         return this.fnStartMap(this.repMarker)
