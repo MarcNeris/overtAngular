@@ -6,6 +6,7 @@ import '@firebase/firestore'
 import '@firebase/database'
 import { Router } from '@angular/router'
 import { Injectable } from '@angular/core'
+
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
 const AES = CryptoJS.AES
@@ -48,7 +49,6 @@ export class FBServices {
             if (user) {
 
                 String.prototype.encrypt = function () { return AES.encrypt(this, user.uid).toString().replace(/\//g, '*') }
-
                 String.prototype.decrypt = function () { return AES.decrypt(this.replace(/\*/g, '/'), user.uid).toString(CryptoJS.enc.Utf8) }
 
                 let _user = {
@@ -77,8 +77,61 @@ export class FBServices {
         })
     }
 
+    public getCurrentUser(): any {
+        return new Promise(resolve => {
+            this.auth().onAuthStateChanged(user => {
+                return resolve(user)
+            })
+        })
+    }
 
-    canLoad(): void {
+    public sendEmailVerification() {
+
+        return new Promise(resolve => {
+
+            this.getCurrentUser().then(user => {
+
+                if (user) {
+
+                    if (user.emailVerified) {
+                        return resolve({
+                            code: 0,
+                            hasError: `O email ${user.email} já está validado!`
+                        })
+                    }
+                    user.sendEmailVerification().then(() => {
+
+                        let result = {
+                            code: 1,
+                            hasSuccess: 'Enviamos istruções para verificação de seu email. Nosso email pode ter sido considerado um spam.',
+                            emailVerifyHasSent: true
+                        }
+                        return resolve(result)
+
+                    }).catch(error => {
+
+                        if (error.code == 'auth/too-many-requests') {
+                            var hasError = 'Bloqueamos o envio de email, muitas requisições por minuto, tente novamente mais tarde.'
+                        }
+
+                        let result = {
+                            code: 2,
+                            hasError: hasError
+                        }
+                        return resolve(result)
+                    })
+                } else {
+                    return resolve({
+                        code: 3,
+                        hasError: 'Nenhum usuário está Logado'
+                    })
+                }
+            })
+        })
+    }
+
+
+    public canLoad(): void {
 
         firebase.auth().onAuthStateChanged(user => {
 
@@ -104,16 +157,16 @@ export class FBServices {
 
                 console.log(this.router.url)
 
-                this.DB.FB.ref('system').child('app').child('modules').child('pages').child(this.router.url).child('customers').child('10804639000183').child('users').child(user.uid).once('value', auth=>{
-                    if(auth.exists()){
+                this.DB.FB.ref('system').child('app').child('modules').child('pages').child(this.router.url).child('customers').child('10804639000183').child('users').child(user.uid).once('value', auth => {
+                    if (auth.exists()) {
                         console.log(auth.val())
 
-                        if(auth.val().access!=true){
+                        if (auth.val().access != true) {
 
                             this.router.navigate(['login'])
                         }
 
-                    }else{
+                    } else {
 
                         this.router.navigate(['login'])
                     }
@@ -128,11 +181,11 @@ export class FBServices {
     }
 
 
-    auth() {
+    public auth() {
         return firebase.auth()
     }
 
-    async  login(email: string, password: string) {
+    public async  login(email: string, password: string) {
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
                 this.router.navigate(['dashboard'])
@@ -142,18 +195,51 @@ export class FBServices {
         }
     }
 
-    async  logout() {
-        try {
-            await firebase.auth().signOut().then(() => {
-                localStorage.clear()
-                this.router.navigate(['dashboard'])
-            }, (error) => {
-                console.warn(error)
-            })
 
-        } catch (error) {
+    public sendPasswordResetEmail = () => {
+
+        return new Promise(resolve => {
+            this.getCurrentUser().then(user => {
+
+                if (user) {
+                    this.auth().sendPasswordResetEmail(user.email).then(() => {
+
+                        let result: any = {
+                            code: 1,
+                            hasSuccess: `Enviamos instruções de como recuperar a sua senha para '${user.email}' verifique sua caixa de entrada, ou spam.`
+                        }
+                        return resolve(result)
+                    }).catch(error => {
+
+                        let result: any = {
+                            code: 2,
+                            hasError: 'Ocorreu um erro ao enviar o email, tente novamente.'
+                        }
+
+                        return resolve(result)
+                    })
+                } else {
+
+                    let result: any = {
+                        code: 3,
+                        hasError: 'Nenhum usuário está logado.'
+                    }
+
+                    resolve(result)
+                }
+            })
+        })
+
+    }
+
+    public logout() {
+        return firebase.auth().signOut().then(() => {
+            localStorage.clear()
+            window.location.reload()
+        }, (error) => {
             console.warn(error)
-        }
+        })
+
     }
 
     public isOnline() {
@@ -184,24 +270,23 @@ export class FBServices {
     }
 
     public fnGetCustomers() {
-        
+
         return new Promise(resolve => {
 
-            if(this.currentUser().uid!=undefined){
+            if (this.currentUser().uid != undefined) {
 
                 this.DB.FB.ref('system').child('keyUser').child(this.currentUser().uid).child('customers').once('value', customers => {
                     if (customers.exists()) {
-    
+
                         return resolve(customers.val())
                     }
                     else {
                         return resolve()
                     }
                 })
-            }else{
+            } else {
                 resolve(null)
             }
-            
         })
     }
 

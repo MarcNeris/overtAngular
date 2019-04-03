@@ -72,13 +72,13 @@ export class Services {
 
   }
 
-  fnCurrentUser() {
-    return new Promise(resolve => {
-      this.fbServices.auth().onAuthStateChanged(user => {
-        return resolve(user)
-      })
-    })
-  }
+  // fnCurrentUser() {
+  //   return new Promise(resolve => {
+  //     this.fbServices.auth().onAuthStateChanged(user => {
+  //       return resolve(user)
+  //     })
+  //   })
+  // }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -161,22 +161,29 @@ export class Services {
     })
   }
 
-  fnVerificarEmail(user) {
-    user.sendEmailVerification().then(() => {
-      this.hasError = 'Enviamos istruções para verificação de seu email. Nosso email pode ter sido considerado um spam.'
-      this.emailVerifyHasSent = false
-    }).catch(error => {
-      console.warn(error)
-      if (error.code == 'auth/too-many-requests') {
+  fnVerificarEmail() {
 
-        this.hasError = 'Bloqueamos o envio de email, muitas requisições por minuto, tente novamente mais tarde.'
-      }
+    this.fbServices.sendEmailVerification().then(result => {
+      console.log(result)
     })
+
+    // user.sendEmailVerification().then(() => {
+    //   this.hasError = 'Enviamos istruções para verificação de seu email. Nosso email pode ter sido considerado um spam.'
+    //   this.emailVerifyHasSent = false
+    // }).catch(error => {
+    //   console.warn(error)
+    //   if (error.code == 'auth/too-many-requests') {
+
+    //     this.hasError = 'Bloqueamos o envio de email, muitas requisições por minuto, tente novamente mais tarde.'
+    //   }
+    // })
   }
+
+
 
   async fnServices() {
 
-    this.fnCurrentUser().then(user => {
+    this.fbServices.getCurrentUser().then(user => {
 
       if (user) {
 
@@ -226,7 +233,7 @@ export class Services {
       encryption: '0',
       parameters: {
         codOpe: 'retornacolaborador',
-        intNet: 'junior.ferreira@seniorbh.com.br',
+        intNet: 'marcelo.neris@seniorbh.com.br',
       }
     }
 
@@ -264,7 +271,13 @@ export class Services {
 
   ngAfterViewInit() {
 
-
+    // this.fbServices.sendPasswordResetEmail().then(result => {
+    //   let res: any = result
+    //   console.log(result)
+    //   if (res.hasError) {
+    //     console.log(res.hasError)
+    //   }
+    // })
 
     // var argsChefia = {
     //   wsdl: 'http://www.consistema.com.br:8081/g5-senior-services/rubi_Synccom_senior_g5_rh_consistema_portal?wsdl',

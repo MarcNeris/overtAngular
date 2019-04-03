@@ -1,7 +1,7 @@
 <div class="main-content">
   <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3"></div>
+      <div class="col-md-3"></div>
       <!-- <div class="col-md-8">
         <div class="card">
           <div class="card-header card-header-danger">
@@ -69,33 +69,35 @@
       </div> -->
       <div class="col-md-6">
         <div class="card card-profile">
-          <div class="card-avatar">
+          <div [hidden]='!hasPicture' class="card-avatar">
             <a>
               <img class="img" src="{{faceId}}" />
             </a>
           </div>
           <div class="card-body">
 
-            <h4 class="card-title">{{user.displayName}}</h4>
+            <h3 [hidden]='isLoggedIn' class="card-title">Login</h3>
 
-            <div class="col-md-12">
+            <h4 [hidden]='!isLoggedIn' class="card-title">{{user.displayName}}</h4>
+
+            <div class="col-md-12" [hidden]='isLoggedIn'>
               <mat-form-field class="example-full-width">
                 <input matInput placeholder="email" [(ngModel)]="email" type="email" required>
               </mat-form-field>
             </div>
 
-            <div class="col-md-12">
+            <div class="col-md-12" [hidden]='isLoggedIn'>
               <mat-form-field class="example-full-width">
                 <input matInput placeholder="senha" [(ngModel)]="password" type="password" required>
               </mat-form-field>
             </div>
 
-            <h6 class="card-category text-gray">{{empresa_logada.apeEmp}}</h6>
+            <h6 [hidden]='!isLoggedIn' class="card-category text-gray">{{empresa_logada.apeEmp}}</h6>
 
-            <p class="card-description">{{user.email}}</p>
+            <p [hidden]='!isLoggedIn' class="card-description" [className]="hasVerifiedEmail ? 'text-success' : 'btn btn-danger'" (click)="sendEmailVerification()"> {{user.email}}</p>
 
-            <button class="btn btn-danger btn-round" (click)="fnLogin()">Login</button>
-            <button class="btn btn-primary btn-round" (click)="fnLogout()">Logout</button>
+            <button [hidden]='isLoggedIn' class="btn btn-danger btn-round" (click)="fnLogin()">Login</button>
+            <button [hidden]='!isLoggedIn' class="btn btn-primary btn-round" (click)="fnLogout()">Logout</button>
           </div>
         </div>
       </div>

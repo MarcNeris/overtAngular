@@ -18,9 +18,11 @@ import { FormControl } from '@angular/forms';
 
 export class TrackpointComponent implements OnInit {
 
-  displayedColumns: string[] = ['apeEmp', 'nomFun', 'numCpf', 'tipCol']
+  public displayedColumns: string[] = ['apeEmp', 'nomFun', 'numCpf', 'tipCol']
 
-  dataSource: any;
+  public dataSource: any;
+
+  public unsubscribe: any = null
 
   //leaflet
   public map: any = null
@@ -74,6 +76,10 @@ export class TrackpointComponent implements OnInit {
 
     this.map.scrollWheelZoom.disable()
 
+    // this.map.on('click', function(e) {
+    //   console.log(e)
+    // })
+
   }
 
 
@@ -91,9 +97,15 @@ export class TrackpointComponent implements OnInit {
   async fnMonitorar(employee: any) {
 
     this.employee = employee
-    let numCpf: any = this.func.toCpfId(employee.numCpf)
-    this.fbServices.DB.FS.collection(`users/${employee.uid}/rep/${employee.cnpjContratoTrabalho}/${numCpf}/${employee.id}/${this.YYYYMMDD}`).onSnapshot(reps => {
+    console.log(this.employee)
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
 
+
+    let numCpf: any = this.func.toCpfId(employee.numCpf)
+    var unsubscribe = this.fbServices.DB.FS.collection(`users/${employee.uid}/rep/${employee.cnpjContratoTrabalho}/${numCpf}/${employee.id}/${this.YYYYMMDD}`).onSnapshot(reps => {
+      this.unsubscribe = unsubscribe
       this.repMarker = []
 
       return new Promise(resolve => {
@@ -110,9 +122,33 @@ export class TrackpointComponent implements OnInit {
             }
 
             if (this.position) {
+
+              var posTraLatLng = Map.latLng(-19.926158, -43.9879306)
+
+              var pointer = Map.latLng(this.position.latitude, this.position.longitude)
+
+              let distance = this.map.distance(pointer, posTraLatLng)
+
+              var hasSucces = 'text-success'
+
+              if (distance > 80) {
+                hasSucces = 'text-danger'
+              }
+
+
+              var myIcon = Map.icon({
+                iconUrl: 'assets/my-icon.png',
+                iconSize: [38, 95],
+                iconAnchor: [22, 94],
+                popupAnchor: [-3, -76],
+                shadowUrl: 'assets/my-icon-shadow.png',
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94]
+              })
+
               this.pointer = [this.position.latitude, this.position.longitude]
-              this.message = `Hora: ${rep.data().time}\n<span class="text-success"> (${serverHora})</span> `
-              this.repMarker.push(Map.marker(this.pointer).bindPopup(this.message))
+              this.message = `Hora: ${rep.data().time}\n<span class="${hasSucces}"> (${serverHora})\n ${parseInt(distance)}m</span> `
+              this.repMarker.push(Map.marker(this.pointer, /*{ icon: myIcon }*/).bindPopup(this.message))
             } else {
               this.hasError = 'Marcações sem informação do Posicionamento.'
             }
@@ -122,6 +158,7 @@ export class TrackpointComponent implements OnInit {
           }
           //console.warn(this.hasError)
         })
+
         resolve({ result: 'OK' })
         return this.fnStartMap(this.repMarker)
 
