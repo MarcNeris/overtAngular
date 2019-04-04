@@ -2,23 +2,21 @@ import { NgModule } from '@angular/core'
 import { CommonModule, } from '@angular/common'
 import { BrowserModule } from '@angular/platform-browser'
 import { Routes, RouterModule } from '@angular/router'
-
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component'
-import { Services } from './services.service';
-
+import { Services } from './services.service'
 
 const routes: Routes = [
   { path: 'services/:apiKey/:apiService/:apiArgs', component: Services },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
-  {
-    path: 'dashboard',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
+  // {
+  //   path: '',
+  //   redirectTo: 'dashboard',
+  //   pathMatch: 'full',
+  // },
+  // {
+  //   path: 'dashboard',
+  //   redirectTo: 'dashboard',
+  //   pathMatch: 'full',
+  // },
   {
     path: '',
     component: AdminLayoutComponent,

@@ -6,6 +6,7 @@ import '@firebase/firestore'
 import '@firebase/database'
 import { Router } from '@angular/router'
 import { Injectable } from '@angular/core'
+import { CanActivate } from '@angular/router';
 
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
@@ -19,6 +20,8 @@ declare global {
     }
 }
 
+
+
 firebase.initializeApp({
     apiKey: "AIzaSyDG9WAEdoJwZuYaRurTIDokgVO_O9P7nyQ",
     authDomain: "overt-hcm.firebaseapp.com",
@@ -30,8 +33,12 @@ firebase.initializeApp({
 
 //firebase.firestore().enablePersistence()
 //firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class FBServices {
+
+
 
     public online: boolean
 
@@ -58,15 +65,10 @@ export class FBServices {
                     emailVerified: user.emailVerified,
                     _token: user.refreshToken
                 }
-
                 this.DB.LS.user = JSON.stringify(_user).encrypt()
                 this.DB.LS._uid = user.uid
-                //this.DB.FS.collection('users/' + user.uid + '/_token').doc('_token').set({ _token: user.email.encrypt() })
-
             } else {
                 this.DB.LS.clear()
-                //this.DB.LS.user = null
-                //return this.router.navigate(['/login'])
             }
 
             this.fnGetCustomers().then(customers => {
@@ -133,51 +135,59 @@ export class FBServices {
 
     public canLoad(): void {
 
-        firebase.auth().onAuthStateChanged(user => {
+        // firebase.auth().onAuthStateChanged(user => {
 
-            if (user) {
+        //     if (user) {
+
+        //         String.prototype.encrypt = function () { return AES.encrypt(this, user.uid).toString().replace(/\//g, '*') }
+        //         String.prototype.decrypt = function () { return AES.decrypt(this.replace(/\*/g, '/'), user.uid).toString(CryptoJS.enc.Utf8) }
+
+        //         let _user = {
+        //             uid: user.uid,
+        //             email: user.email,
+        //             displayName: user.displayName,
+        //             emailVerified: user.emailVerified,
+        //             _token: user.refreshToken
+        //         }
+
+        //         this.DB.LS.user = JSON.stringify(_user).encrypt()
+        //         this.DB.LS._uid = user.uid
+
+        //         this.fnGetCustomers().then(customers => {
+        //             console.log(this.router.url)
+        //             console.log(customers)
+        //             if (customers) {
+
+        //             } else {
+        //                 this.router.navigate(['login'])
+        //             }
+        //         })
+        //         //xxx
 
 
-                String.prototype.encrypt = function () { return AES.encrypt(this, user.uid).toString().replace(/\//g, '*') }
+        //         this.DB.FB.ref('system').child('app').child('modules').child('pages').child(this.router.url).child('customers').child('10804639000183').child('users').child(user.uid).once('value', auth => {
 
-                String.prototype.decrypt = function () { return AES.decrypt(this.replace(/\*/g, '/'), user.uid).toString(CryptoJS.enc.Utf8) }
+        //             if (auth.exists()) {
 
-                let _user = {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                    emailVerified: user.emailVerified,
-                    _token: user.refreshToken
-                }
+        //                 console.log(auth.val())
 
-                this.DB.LS.user = JSON.stringify(_user).encrypt()
-                this.DB.LS._uid = user.uid
+        //                 if (auth.val().access != true) {
 
-                //https://overt-hcm.firebaseio.com/system/app/modules/pages/dashboard/customers/10804639000183/users/z9povQBJ5TXYZJCVBhhpLmjJZj53
+        //                     //this.router.navigate(['login'])
+        //                 }
 
-                console.log(this.router.url)
+        //             } else {
 
-                this.DB.FB.ref('system').child('app').child('modules').child('pages').child(this.router.url).child('customers').child('10804639000183').child('users').child(user.uid).once('value', auth => {
-                    if (auth.exists()) {
-                        console.log(auth.val())
+        //                 //this.router.navigate(['login'])
+        //             }
+        //         })
 
-                        if (auth.val().access != true) {
+        //     } else {
 
-                            this.router.navigate(['login'])
-                        }
+        //         //this.router.navigate(['login'])
 
-                    } else {
-
-                        this.router.navigate(['login'])
-                    }
-                })
-
-            } else {
-
-                this.router.navigate(['login'])
-
-            }
-        })
+        //     }
+        // })
     }
 
 
@@ -188,7 +198,7 @@ export class FBServices {
     public async  login(email: string, password: string) {
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
-                this.router.navigate(['dashboard'])
+                this.router.navigate([''])
             })
         } catch (error) {
             alert("Error!" + error.message)
@@ -197,40 +207,33 @@ export class FBServices {
 
 
     public sendPasswordResetEmail = () => {
-
         return new Promise(resolve => {
             this.getCurrentUser().then(user => {
-
                 if (user) {
                     this.auth().sendPasswordResetEmail(user.email).then(() => {
-
                         let result: any = {
                             code: 1,
                             hasSuccess: `Enviamos instruções de como recuperar a sua senha para '${user.email}' verifique sua caixa de entrada, ou spam.`
                         }
                         return resolve(result)
                     }).catch(error => {
-
                         let result: any = {
                             code: 2,
                             hasError: 'Ocorreu um erro ao enviar o email, tente novamente.'
                         }
-
                         return resolve(result)
                     })
                 } else {
-
                     let result: any = {
                         code: 3,
                         hasError: 'Nenhum usuário está logado.'
                     }
-
                     resolve(result)
                 }
             })
         })
-
     }
+
 
     public logout() {
         return firebase.auth().signOut().then(() => {
@@ -242,6 +245,7 @@ export class FBServices {
 
     }
 
+
     public isOnline() {
         this.DB.FB.ref('.info/connected').on('value', isOnline => {
             if (isOnline.val() == true) {
@@ -252,9 +256,9 @@ export class FBServices {
                 this.online = false
             }
         })
-
         return this.online
     }
+
 
     public currentUser() {
 
@@ -269,24 +273,46 @@ export class FBServices {
         return this.DB
     }
 
+
     public fnGetCustomers() {
 
         return new Promise(resolve => {
 
-            if (this.currentUser().uid != undefined) {
+            this.getCurrentUser().then(user => {
 
-                this.DB.FB.ref('system').child('keyUser').child(this.currentUser().uid).child('customers').once('value', customers => {
-                    if (customers.exists()) {
+                if (user) {
 
-                        return resolve(customers.val())
-                    }
-                    else {
-                        return resolve()
-                    }
-                })
-            } else {
-                resolve(null)
-            }
+                    this.DB.FB.ref('system').child('keyUser').child(user.uid).child('customers').once('value', cnpj => {
+
+                        if (cnpj.exists()) {
+
+                            let fnGetCustomers = async (customers: object) => {
+                                var data = []
+                                for (let customer in customers) {
+                                    if (customers[customer].sitUsu == true) {
+                                        await this.DB.FB.ref('customers').child(customers[customer].cnpj).once('value', customer => {
+                                            if (customer.exists()) {
+                                                data.push(customer.val())
+                                            }
+                                        })
+                                    }
+                                }
+                                return data
+                            }
+
+                            let customers: object = cnpj.val()
+
+                            return resolve(fnGetCustomers(customers))
+                        }
+                        else {
+                            return resolve(null)
+                        }
+                    })
+
+                } else {
+                    resolve(null)
+                }
+            })
         })
     }
 

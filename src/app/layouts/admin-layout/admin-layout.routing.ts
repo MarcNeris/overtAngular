@@ -1,3 +1,5 @@
+import { AuthGuardService } from './../../auth-guard.service';
+//import { FBServices } from './../../firebase.services';
 import { Routes } from '@angular/router';
 import { LoginComponent } from './../../login/login.component';
 import { HomeComponent } from '../../home/home.component';
@@ -15,7 +17,7 @@ import { CustomersComponent } from 'app/customers/customers.component';
 import { LayoffComponent } from 'app/layoff/layoff.component';
 import { MoodsComponent } from 'app/moods/moods.component';
 import { SocialComponent } from 'app/social/social.component';
-import { ServicesComponent } from './../../services/services.component';
+//import { ServicesComponent } from './../../services/services.component';
 
 export const AdminLayoutRoutes: Routes = [
     // {
@@ -60,9 +62,9 @@ export const AdminLayoutRoutes: Routes = [
     //         component: UpgradeComponent
     //     }]
     // }
-    { path: 'home',           component: HomeComponent },
+    { path: '',               component: HomeComponent},
     { path: 'login',          component: LoginComponent },
-    { path: 'dashboard',      component: DashboardComponent },
+    { path: 'dashboard',      component: DashboardComponent, canActivate: [AuthGuardService]},
     { path: 'user-profile',   component: UserProfileComponent },
     { path: 'table-list',     component: TableListComponent },
     { path: 'typography',     component: TypographyComponent },
@@ -71,10 +73,10 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'notifications',  component: NotificationsComponent },
     { path: 'upgrade',        component: UpgradeComponent },
     { path: 'licence',        component: LicenseComponent },
-    { path: 'trackpoint',     component: TrackpointComponent },
-    { path: 'customers',      component: CustomersComponent },
-    { path: 'layoff',         component: LayoffComponent },
-    { path: 'moods',          component: MoodsComponent },
-    { path: 'social',         component: SocialComponent },
+    { path: 'trackpoint',     component: TrackpointComponent, canActivate: [AuthGuardService]},
+    { path: 'customers',      component: CustomersComponent, canActivate: [AuthGuardService]},
+    { path: 'layoff',         component: LayoffComponent, canActivate: [AuthGuardService]},
+    { path: 'moods',          component: MoodsComponent, canActivate: [AuthGuardService]},
+    { path: 'social',         component: SocialComponent, canActivate: [AuthGuardService]},
     //{ path: 'services',       component: ServicesComponent }
 ];

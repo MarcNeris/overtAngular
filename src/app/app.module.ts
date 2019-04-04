@@ -1,4 +1,5 @@
 
+
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
@@ -19,7 +20,8 @@ import { AppComponent } from './app.component'
 
 import { FBServices } from './firebase.services'
 import { APPFunctions } from './app.functions'
-import { Services } from './services.service';
+import { AuthGuardService } from './auth-guard.service'
+import { Services } from './services.service'
 
 import { AgmCoreModule } from '@agm/core'
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component'
@@ -87,9 +89,8 @@ import {MatDividerModule} from '@angular/material/divider'
     // LicenseComponent,
     // TrackpointComponent,
     FBServices,
-    APPFunctions
-
-    
+    APPFunctions,
+    AuthGuardService
   ],
   bootstrap: [AppComponent]
 })

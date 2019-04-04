@@ -170,6 +170,7 @@ export class TrackpointComponent implements OnInit {
   fnGetEmployees() {
     if (this.fbServices.DB.LS.empresaAtiva != undefined) {
       var empresaAtiva = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresaAtiva))
+      console.log(empresaAtiva)
       return new Promise((resolve, reject) => {
         this.fbServices.DB.FB.ref('employees').child(this.func.toCnpjId(empresaAtiva.cnpj)).on('value', employees => {
           if (employees.exists()) {
@@ -188,7 +189,6 @@ export class TrackpointComponent implements OnInit {
         })
       })
     }
-
   }
 
   applyFilter(filterValue: string) {
