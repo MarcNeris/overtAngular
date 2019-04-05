@@ -45,6 +45,7 @@ import { CustomersComponent } from 'app/customers/customers.component';
 import { LayoffComponent } from 'app/layoff/layoff.component';
 import { MoodsComponent } from 'app/moods/moods.component';
 import { SocialComponent } from 'app/social/social.component';
+import { TrackpointMeComponent } from 'app/trackpoint-me/trackpoint-me.component';
 //import { ServicesComponent } from 'app/services/services.component';
 
 @NgModule({
@@ -88,7 +89,8 @@ import { SocialComponent } from 'app/social/social.component';
     CustomersComponent,
     LayoffComponent,
     MoodsComponent,
-    SocialComponent
+    SocialComponent,
+    TrackpointMeComponent
   ]
 })
 

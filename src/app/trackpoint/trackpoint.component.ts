@@ -1,3 +1,4 @@
+import { AuthGuardService } from './../auth-guard.service';
 import { APPFunctions } from './../app.functions';
 import { FBServices } from './../firebase.services';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -49,15 +50,14 @@ export class TrackpointComponent implements OnInit {
   //employee
   public employee: any = null
 
-
-
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   constructor(
     public fbServices: FBServices,
     public func: APPFunctions,
-    private dateAdapter: DateAdapter<Date>
+    private dateAdapter: DateAdapter<Date>,
+    private auth: AuthGuardService
   ) {
     this.dateAdapter.setLocale('pt-Br');
   }
@@ -102,16 +102,13 @@ export class TrackpointComponent implements OnInit {
       this.unsubscribe()
     }
 
-
     let numCpf: any = this.func.toCpfId(employee.numCpf)
     var unsubscribe = this.fbServices.DB.FS.collection(`users/${employee.uid}/rep/${employee.cnpjContratoTrabalho}/${numCpf}/${employee.id}/${this.YYYYMMDD}`).onSnapshot(reps => {
       this.unsubscribe = unsubscribe
       this.repMarker = []
 
       return new Promise(resolve => {
-
         reps.forEach(rep => {
-
           let serverHora = moment.unix(rep.data().serverTimestamp.seconds).format('HH:mm:ss')
 
           if (rep.exists) {
@@ -148,7 +145,7 @@ export class TrackpointComponent implements OnInit {
 
               this.pointer = [this.position.latitude, this.position.longitude]
               this.message = `Hora: ${rep.data().time}\n<span class="${hasSucces}"> (${serverHora})\n ${parseInt(distance)}m</span> `
-              this.repMarker.push(Map.marker(this.pointer, /*{ icon: myIcon }*/).bindPopup(this.message))
+              this.repMarker.push(Map.marker(this.pointer).bindPopup(this.message))
             } else {
               this.hasError = 'Marcações sem informação do Posicionamento.'
             }
@@ -168,6 +165,7 @@ export class TrackpointComponent implements OnInit {
   }
 
   fnGetEmployees() {
+   
     if (this.fbServices.DB.LS.empresaAtiva != undefined) {
       var empresaAtiva = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresaAtiva))
       console.log(empresaAtiva)
@@ -196,8 +194,14 @@ export class TrackpointComponent implements OnInit {
   }
 
   ngOnInit() {
+    
+    let empresa_logada = this.auth.getEmpresaLogada()
+    console.log(empresa_logada)
 
-    this.fbServices.canLoad()
+    let keyUser = this.auth.getKeyUser()
+    console.log(keyUser)
+
+    //this.fbServices.canLoad()
 
     if (this.map == null) {
       this.map = Map.map('mapId', {

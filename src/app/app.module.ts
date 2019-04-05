@@ -1,5 +1,3 @@
-
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
@@ -47,7 +45,7 @@ import {
 } from '@angular/material';
 
 import { NgxSoapModule } from 'ngx-soap';
-import {MatDividerModule} from '@angular/material/divider'
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   imports: [
@@ -82,7 +80,6 @@ import {MatDividerModule} from '@angular/material/divider'
     AppComponent,
     AdminLayoutComponent,
     Services,
-    
   ],
   providers: [
     // LoginComponent,

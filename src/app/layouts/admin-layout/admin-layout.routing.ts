@@ -13,11 +13,13 @@ import { NotificationsComponent } from '../../notifications/notifications.compon
 import { UpgradeComponent } from '../../upgrade/upgrade.component';
 import { LicenseComponent } from 'app/license/license.component';
 import { TrackpointComponent } from 'app/trackpoint/trackpoint.component';
+import { TrackpointMeComponent } from 'app/trackpoint-me/trackpoint-me.component';
 import { CustomersComponent } from 'app/customers/customers.component';
 import { LayoffComponent } from 'app/layoff/layoff.component';
 import { MoodsComponent } from 'app/moods/moods.component';
 import { SocialComponent } from 'app/social/social.component';
 //import { ServicesComponent } from './../../services/services.component';
+
 
 export const AdminLayoutRoutes: Routes = [
     // {
@@ -74,6 +76,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'upgrade',        component: UpgradeComponent },
     { path: 'licence',        component: LicenseComponent },
     { path: 'trackpoint',     component: TrackpointComponent, canActivate: [AuthGuardService]},
+    { path: 'trackpoint/me',  component: TrackpointMeComponent, canActivate: [AuthGuardService]},
     { path: 'customers',      component: CustomersComponent, canActivate: [AuthGuardService]},
     { path: 'layoff',         component: LayoffComponent, canActivate: [AuthGuardService]},
     { path: 'moods',          component: MoodsComponent, canActivate: [AuthGuardService]},
