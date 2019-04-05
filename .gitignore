@@ -4,6 +4,8 @@
 /dist
 /tmp
 /out-tsc
+/material-dashboard-angular2-master
+/documentation
 
 # dependencies
 /node_modules
