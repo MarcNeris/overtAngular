@@ -6,7 +6,7 @@
 /out-tsc
 /material-dashboard-angular2-master
 /documentation
-
+/.firebase
 # dependencies
 /node_modules
 
