@@ -24,7 +24,6 @@
               </mat-datepicker-toggle>
               <mat-datepicker #picker [startAt]="startDate"></mat-datepicker>
             </mat-form-field>
-
           </div>
         </div>
 
@@ -68,6 +67,28 @@
 
       </div>
       <div class="col-md-6">
+        <!-- <div class="row">
+
+          </div> -->
+        <div id="marcacao" class="row">
+          <div class="container-fluid">
+            <div class="cards">
+              <div *ngFor="let point of pointDataSource;">
+                <button mat-raised-button class="btn btn-sm {{point.btnClass}}" (click)="fnMonitorarPonto(point)"
+                  matTooltip="{{point.dataHora}}" [matTooltipPosition]="'above'">{{point.hora}} {{point.webService}}</button>
+
+                <button [hidden]="point.btnDisabled" class="btn btn-sm btn-primary" (click)="fnIntegrarPonto(point)"
+                  [disabled]="point.btnDisabled">Integrar</button>
+                 <span class="text-info"><small></small></span> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="container-fluid">
         <div id="mapId"></div>
       </div>
     </div>

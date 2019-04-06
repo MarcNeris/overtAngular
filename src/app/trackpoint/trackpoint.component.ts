@@ -21,7 +21,9 @@ export class TrackpointComponent implements OnInit {
 
   public displayedColumns: string[] = ['apeEmp', 'nomFun', 'numCpf', 'tipCol']
 
-  public dataSource: any;
+  public dataSource: any
+
+  public pointDataSource: any
 
   public unsubscribe: any = null
 
@@ -95,9 +97,7 @@ export class TrackpointComponent implements OnInit {
   }
 
   async fnMonitorar(employee: any) {
-
     this.employee = employee
-    console.log(this.employee)
     if (this.unsubscribe) {
       this.unsubscribe()
     }
@@ -108,30 +108,30 @@ export class TrackpointComponent implements OnInit {
       this.repMarker = []
 
       return new Promise(resolve => {
+        this.pointDataSource = []
         reps.forEach(rep => {
-          let serverHora = moment.unix(rep.data().serverTimestamp.seconds).format('HH:mm:ss')
+
+          var hasError:any =[]
 
           if (rep.exists) {
+
             if (rep.data().position) {
               this.position = rep.data().position
             } else if (rep.data().webPosition) {
               this.position = rep.data().webPosition
             }
 
+            var serverHora = moment.unix(rep.data().serverTimestamp.seconds).format('HH:mm:ss')
+
             if (this.position) {
 
               var posTraLatLng = Map.latLng(-19.926158, -43.9879306)
-
               var pointer = Map.latLng(this.position.latitude, this.position.longitude)
-
               let distance = this.map.distance(pointer, posTraLatLng)
-
               var hasSucces = 'text-success'
-
               if (distance > 80) {
                 hasSucces = 'text-danger'
               }
-
 
               var myIcon = Map.icon({
                 iconUrl: 'assets/my-icon.png',
@@ -143,88 +143,98 @@ export class TrackpointComponent implements OnInit {
                 shadowAnchor: [22, 94]
               })
 
+              console.log(rep.data())
+
               this.pointer = [this.position.latitude, this.position.longitude]
-              this.message = `Hora: ${rep.data().time}\n<span class="${hasSucces}"> (${serverHora})\n ${parseInt(distance)}m</span> `
+              this.message = `Hora: ${rep.data().time}\n<span class="${hasSucces}"> (${serverHora})\n ${parseInt(distance)}m</span>`
               this.repMarker.push(Map.marker(this.pointer).bindPopup(this.message))
+
             } else {
               this.hasError = 'Marcações sem informação do Posicionamento.'
+              console.log(this.hasError)
             }
           } else {
-
             this.hasError = 'Colaborador sem marcações nesta data.'
           }
+
+          let pointDataSource: any = rep.data()
+
+          if (rep.data().webService == true) {
+            pointDataSource.webService = '-i'
+            pointDataSource.btnDisabled = true
+            pointDataSource.btnClass = 'btn-success'
+            pointDataSource.hasError = this.hasError
+          } else {
+            pointDataSource.webService = '-p'
+            pointDataSource.btnDisabled = false
+            pointDataSource.btnClass = 'btn-warning'
+            pointDataSource.hasError = rep.data().webService //rep.data().webService
+          }
+
+
+
+          this.pointDataSource.push(pointDataSource)
           //console.warn(this.hasError)
         })
+
+        console.log(this.pointDataSource)
 
         resolve({ result: 'OK' })
         return this.fnStartMap(this.repMarker)
 
       })
     })
-
   }
 
-  fnGetEmployees() {
-   
-    if (this.fbServices.DB.LS.empresaAtiva != undefined) {
-      var empresaAtiva = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresaAtiva))
-      console.log(empresaAtiva)
-      return new Promise((resolve, reject) => {
-        this.fbServices.DB.FB.ref('employees').child(this.func.toCnpjId(empresaAtiva.cnpj)).on('value', employees => {
-          if (employees.exists()) {
-            var data = []
-            for (let cpf in employees.val()) {
-              let employee = employees.val()[cpf]
-              for (let key in employee) {
-                let value = employee[key]
-                data.push(value)
-              }
-            }
-            resolve(data)
-          } else {
-            reject({ result: 'Sem Registros.' })
-          }
-        })
-      })
+
+  fnMonitorarPonto(point: any) {
+    var position: any = null
+    if (point.position) {
+      position = point.position
+    } else if (point.webPosition) {
+      position = point.webPosition
     }
+    var serverHora = moment.unix(point.serverTimestamp.seconds).format('HH:mm:ss')
+    if (position) {
+      var pointer = Map.latLng(position.latitude, position.longitude)
+      var repMarker: any = []
+      var message = `Hora: ${point.time} (${serverHora})`
+      repMarker.push(Map.marker(pointer).bindPopup(message))
+      return this.fnStartMap(repMarker)
+    } else {
+      this.reps.clearLayers()
+    }
+  }
+
+
+  fnIntegrarPonto(point) {
+    console.log(point)
   }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+
+
   ngOnInit() {
-    
-    let empresa_logada = this.auth.getEmpresaLogada()
-    console.log(empresa_logada)
-
-    let keyUser = this.auth.getKeyUser()
-    console.log(keyUser)
-
-    //this.fbServices.canLoad()
-
-    if (this.map == null) {
-      this.map = Map.map('mapId', {
-
-      }).fitWorld().setZoom(2)
-
-      Map.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a>overt | Intelligence</a>'
-      }).addTo(this.map)
-
-      document.querySelector('.leaflet-bottom.leaflet-right').innerHTML = ''
-      //document.querySelector('.leaflet-top.leaflet-left').innerHTML = ''
-    }
-
-
-    if (this.fbServices.DB.LS.empresaAtiva != undefined) {
-      this.empresaAtiva = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresaAtiva))
-      this.fnGetEmployees().then(employees => {
+    this.fbServices.fnGetEmployees(this.auth.getUser()).then(employees => {
+      if (employees) {
         var data: any = employees
         this.dataSource = new MatTableDataSource(data)
         this.dataSource.paginator = this.paginator
         this.dataSource.sort = this.sort
-      })
+      }
+    })
+
+    if (this.map == null) {
+      this.map = Map.map('mapId', {}).fitWorld().setZoom(2)
+      Map.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a>overt | Intelligence</a>'
+      }).addTo(this.map)
+      document.querySelector('.leaflet-bottom.leaflet-right').innerHTML = ''
+      //document.querySelector('.leaflet-top.leaflet-left').innerHTML = ''
+      this.map.scrollWheelZoom.disable()
     }
 
 
@@ -235,13 +245,6 @@ export class TrackpointComponent implements OnInit {
     //   paginationConfig.previousText='YOUR TEXT';
 
     // })
-
-
-
-
-
-
-
   }
 
 

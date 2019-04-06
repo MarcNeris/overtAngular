@@ -1,4 +1,3 @@
-
 //import { database, app, auth, firestore } from 'firebase';
 import { firebase } from '@firebase/app'
 import '@firebase/auth'
@@ -6,7 +5,7 @@ import '@firebase/firestore'
 import '@firebase/database'
 import { Router } from '@angular/router'
 import { Injectable } from '@angular/core'
-import { CanActivate } from '@angular/router';
+import { async } from '@firebase/util';
 
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
@@ -18,9 +17,11 @@ declare global {
     interface String {
         decrypt(): string
     }
+
+    interface Object {
+        values(obj: object): any
+    }
 }
-
-
 
 firebase.initializeApp({
     apiKey: "AIzaSyDG9WAEdoJwZuYaRurTIDokgVO_O9P7nyQ",
@@ -33,12 +34,12 @@ firebase.initializeApp({
 
 //firebase.firestore().enablePersistence()
 //firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
 @Injectable({
     providedIn: 'root'
 })
+
 export class FBServices {
-
-
 
     public online: boolean
 
@@ -49,7 +50,7 @@ export class FBServices {
     }
 
     constructor(
-        public router: Router,
+        public route: Router
     ) {
         firebase.auth().onAuthStateChanged(user => {
 
@@ -71,12 +72,24 @@ export class FBServices {
                 this.DB.LS.clear()
             }
 
-            this.fnGetCustomers().then(customers => {
-                if (customers) {
-                    this.DB.LS.customers = JSON.stringify(customers).encrypt()
-                }
-            })
+            // this.fnGetCustomers('ss').then(customers => {
+            //     if (customers) {
+            //         this.DB.LS.customers = JSON.stringify(customers).encrypt()
+            //     }
+            // })
         })
+    }
+
+    public toCnpjId(string: string) {
+        return ("00000000000000" + string.toLowerCase().replace(/[^0-9]+/g, "")).slice(-14)
+    }
+
+    public toEmailId(string: string) {
+        return string.toLowerCase().replace(/\./g, "-").replace(/[^a-zA-Z0-9@]+/g, "-")
+    }
+
+    public toCpfId(string: string) {
+        return ("00000000000" + string.toLowerCase().replace(/[^0-9]+/g, "")).slice(-11)
     }
 
     public getCurrentUser(): any {
@@ -133,61 +146,12 @@ export class FBServices {
     }
 
 
+
+
+
     public canLoad(): void {
 
-        // firebase.auth().onAuthStateChanged(user => {
 
-        //     if (user) {
-
-        //         String.prototype.encrypt = function () { return AES.encrypt(this, user.uid).toString().replace(/\//g, '*') }
-        //         String.prototype.decrypt = function () { return AES.decrypt(this.replace(/\*/g, '/'), user.uid).toString(CryptoJS.enc.Utf8) }
-
-        //         let _user = {
-        //             uid: user.uid,
-        //             email: user.email,
-        //             displayName: user.displayName,
-        //             emailVerified: user.emailVerified,
-        //             _token: user.refreshToken
-        //         }
-
-        //         this.DB.LS.user = JSON.stringify(_user).encrypt()
-        //         this.DB.LS._uid = user.uid
-
-        //         this.fnGetCustomers().then(customers => {
-        //             console.log(this.router.url)
-        //             console.log(customers)
-        //             if (customers) {
-
-        //             } else {
-        //                 this.router.navigate(['login'])
-        //             }
-        //         })
-        //         //xxx
-
-
-        //         this.DB.FB.ref('system').child('app').child('modules').child('pages').child(this.router.url).child('customers').child('10804639000183').child('users').child(user.uid).once('value', auth => {
-
-        //             if (auth.exists()) {
-
-        //                 console.log(auth.val())
-
-        //                 if (auth.val().access != true) {
-
-        //                     //this.router.navigate(['login'])
-        //                 }
-
-        //             } else {
-
-        //                 //this.router.navigate(['login'])
-        //             }
-        //         })
-
-        //     } else {
-
-        //         //this.router.navigate(['login'])
-
-        //     }
-        // })
     }
 
 
@@ -195,10 +159,10 @@ export class FBServices {
         return firebase.auth()
     }
 
-    public async  login(email: string, password: string) {
+    public async  login(email: string, password: string, to:string) {
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
-                this.router.navigate([''])
+                this.route.navigate([to])
             })
         } catch (error) {
             alert("Error!" + error.message)
@@ -274,46 +238,38 @@ export class FBServices {
     }
 
 
-    public fnGetCustomers() {
-
+    public fnGetCustomers(user: any) {
         return new Promise(resolve => {
-
-            this.getCurrentUser().then(user => {
-
-                if (user) {
-
-                    this.DB.FB.ref('system').child('keyUser').child(user.uid).child('customers').once('value', cnpj => {
-
-                        if (cnpj.exists()) {
-
-                            let fnGetCustomers = async (customers: object) => {
-                                var data = []
-                                for (let customer in customers) {
-                                    if (customers[customer].sitUsu == true) {
-                                        await this.DB.FB.ref('customers').child(customers[customer].cnpj).once('value', customer => {
-                                            if (customer.exists()) {
-                                                data.push(customer.val())
-                                            }
-                                        })
-                                    }
+            if (user) {
+                this.DB.FB.ref('system').child('keyUser').child(user.uid).once('value', keyUser => {
+                    if (keyUser.exists()) {
+                        let fnGetCusstomers = async (customers: object) => {
+                            var data: any = []
+                            for (let customer in customers) {
+                                if (customers[customer].sitUsu == true) {
+                                    await this.DB.FB.ref('customers').child(customers[customer].cnpj).once('value', customer => {
+                                        if (customer.exists()) {
+                                            data.push(customer.val())
+                                        }
+                                    })
                                 }
-                                return data
                             }
-
-                            let customers: object = cnpj.val()
-
-                            return resolve(fnGetCustomers(customers))
+                            return data
                         }
-                        else {
-                            return resolve(null)
-                        }
-                    })
 
-                } else {
-                    resolve(null)
-                }
-            })
+                        let customers: object = keyUser.val()
+                        return resolve(fnGetCusstomers(customers))
+                    }
+                    else {
+                        return resolve(null)
+                    }
+                })
+
+            } else {//não é Key User
+                resolve(null)
+            }
         })
+
     }
 
     // public async fnCountEmployees() {
@@ -334,6 +290,66 @@ export class FBServices {
 
 
     // }
+
+    public fnGetEmployees(user: any) {
+        return new Promise(resolve => {
+            if (user.isKeyUser) {
+                if (user.empresa_ativa) {
+                    if (user.empresa_ativa.cnpj) {
+                        this.DB.FB.ref('employees').child(this.toCnpjId(user.empresa_ativa.cnpj)).on('value', employees => {
+                            if (employees.exists()) {
+                                var data = []
+                                for (let cpf in employees.val()) {
+                                    let employee = employees.val()[cpf]
+                                    for (let key in employee) {
+                                        let value = employee[key]
+                                        data.push(value)
+                                    }
+                                }
+                                return resolve(data)
+                            } else {
+                                resolve(null)
+                            }
+                        })
+                    } else {
+                        resolve(null)
+                    }
+                } else if (user.empresa_logada) {
+                    if (user.empresa_logada.cnpjContratoTrabalho) {
+
+                        this.DB.FB.ref('employees').child(this.toCnpjId(user.empresa_logada.cnpjContratoTrabalho)).on('value', employees => {
+                            if (employees.exists()) {
+                                var data = []
+                                for (let cpf in employees.val()) {
+                                    let employee = employees.val()[cpf]
+                                    for (let key in employee) {
+                                        let value = employee[key]
+                                        data.push(value)
+                                    }
+                                }
+                                return resolve(data)
+                            } else {
+                                resolve(null)
+                            }
+                        })
+                    } else {
+                        return resolve(null)
+                    }
+                } else {
+                    this.route.navigate(['customers'])
+                    return resolve(null)
+                }
+
+            } else {
+
+                if (user.empresa_logada) {
+                    return resolve([user.empresa_logada])
+                } else {
+                    return resolve(null)
+                }
+            }
+        })//return
+    }
 
 
 

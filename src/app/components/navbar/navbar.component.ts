@@ -6,6 +6,7 @@ import { ROUTES } from '../sidebar/sidebar.component';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
 import { resolve } from 'url';
+import { AuthGuardService } from 'app/auth-guard.service';
 
 @Component({
     selector: 'app-navbar',
@@ -19,52 +20,36 @@ export class NavbarComponent implements OnInit {
     private listTitles: any[];
     location: Location;
     mobile_menu_visible: any = 0;
+
     empresaAtiva: any = {
         cnpj: '',
         nome: ''
     }
+
     private toggleButton: any;
     private sidebarVisible: boolean;
 
 
     constructor(
         location: Location,
-        private func: APPFunctions,
-        private fbServices: FBServices,
+        private auth: AuthGuardService,
         private element: ElementRef,
         private router: Router) {
         this.location = location;
         this.sidebarVisible = false;
     }
 
-    fnGetEmpresaAtiva():void{
-        this.fbServices.auth().onAuthStateChanged(user => {
-            if (user) {
-                if (this.fbServices.currentUser().uid != undefined) {
-                    this.fbServices.DB.FB.ref('users').child(this.fbServices.currentUser().uid).child('customers/empresaAtiva').on('value', empresaAtiva => {
-                        if (empresaAtiva.exists()) {
-                            this.empresaAtiva = empresaAtiva.val()
-                            this.fbServices.DB.LS.empresaAtiva = this.func.encrypt(JSON.stringify(empresaAtiva.val()))
-                        } 
-                    })
-                }
+    fnGetEmpresaAtiva(): void {
+        this.auth.onEmpresaAtiva(empresa_ativa => {
+            if(empresa_ativa.exists()){
+                this.empresaAtiva = empresa_ativa.val()
             }
         })
     }
 
-
-
-
-
     ngOnInit() {
 
-        this.fbServices.canLoad()
-
         this.fnGetEmpresaAtiva()
-
-        if (this.fbServices.DB.LS.empresaAtiva != undefined) {
-            this.empresaAtiva = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresaAtiva))
-        }
 
         this.listTitles = ROUTES.filter(listTitle => listTitle);
         const navbar: HTMLElement = this.element.nativeElement;

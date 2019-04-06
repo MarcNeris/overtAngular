@@ -34,15 +34,12 @@ export class CustomersComponent implements OnInit {
   }
 
   fnAtivarEmpresa(empresa: object): void {
-    this.fbServices.DB.FB.ref('users').child(this.fbServices.currentUser().uid).child('customers/empresaAtiva').set(empresa)
-    this.empresaAtiva = empresa
-    let empresaAtiva = this.func.encrypt(JSON.stringify(empresa))
-    this.fbServices.DB.LS.empresaAtiva = empresaAtiva
+    this.fbServices.DB.FB.ref('users').child(this.auth.getUid()).child('http/empresa_ativa').set(empresa)
   }
 
-  async fnTableCustomers() {
-    this.fbServices.fnGetCustomers().then(customers => {
-      if(customers){
+  fnTableCustomers() {
+    this.fbServices.fnGetCustomers(this.auth.getUser()).then(customers => {
+      if (customers) {
         var dataSource: any = customers
         this.dataSource = new MatTableDataSource(dataSource)
         this.dataSource.paginator = this.paginator
@@ -56,7 +53,7 @@ export class CustomersComponent implements OnInit {
 
   }
 
-  ngOnInit() {   
+  ngOnInit() {
 
     this.fbServices.canLoad()
     this.fnTableCustomers()

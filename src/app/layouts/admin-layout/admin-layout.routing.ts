@@ -64,7 +64,7 @@ export const AdminLayoutRoutes: Routes = [
     //         component: UpgradeComponent
     //     }]
     // }
-    { path: '',               component: HomeComponent},
+    { path: '',               component: HomeComponent, canActivate: [AuthGuardService]},
     { path: 'login',          component: LoginComponent },
     { path: 'dashboard',      component: DashboardComponent, canActivate: [AuthGuardService]},
     { path: 'user-profile',   component: UserProfileComponent },
