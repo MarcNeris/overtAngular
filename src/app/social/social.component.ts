@@ -14,7 +14,7 @@ export class SocialComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.fbServices.canLoad()
+    
   }
 
 }

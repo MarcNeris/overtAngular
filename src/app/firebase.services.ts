@@ -43,6 +43,8 @@ export class FBServices {
 
     public online: boolean
 
+    public navigateTo: string
+
     public DB = {
         LS: localStorage,
         FB: firebase.database(),
@@ -105,95 +107,116 @@ export class FBServices {
         return new Promise(resolve => {
 
             this.getCurrentUser().then(user => {
-
                 if (user) {
-
                     if (user.emailVerified) {
                         return resolve({
-                            code: 0,
-                            hasError: `O email ${user.email} já está validado!`
+                            code: 8,
+                            hasError: true,
+                            message: `O email ${user.email} já está validado!`
                         })
                     }
                     user.sendEmailVerification().then(() => {
 
-                        let result = {
-                            code: 1,
-                            hasSuccess: 'Enviamos istruções para verificação de seu email. Nosso email pode ter sido considerado um spam.',
-                            emailVerifyHasSent: true
-                        }
-                        return resolve(result)
+                        return resolve({
+                            code: 9,
+                            message: 'Enviamos istruções para verificação de seu email. Este email pode ter sido considerado um spam.',
+                            hasError: null
+                        })
 
                     }).catch(error => {
 
                         if (error.code == 'auth/too-many-requests') {
-                            var hasError = 'Bloqueamos o envio de email, muitas requisições por minuto, tente novamente mais tarde.'
+                            return resolve({
+                                code: 10,
+                                hasError: true,
+                                message: 'Bloqueamos o envio de email, muitas requisições por minuto, tente novamente mais tarde.'
+                            })
                         }
-
-                        let result = {
-                            code: 2,
-                            hasError: hasError
-                        }
-                        return resolve(result)
                     })
                 } else {
                     return resolve({
-                        code: 3,
-                        hasError: 'Nenhum usuário está Logado'
+                        code: null,
+                        hasError: true,
+                        message: 'Nenhum usuário está Logado'
                     })
                 }
             })
         })
     }
-
-
-
-
-
-    public canLoad(): void {
-
-
-    }
-
+    
 
     public auth() {
         return firebase.auth()
     }
 
-    public async  login(email: string, password: string, to:string) {
-        try {
-            await firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
-                this.route.navigate([to])
+
+    public login(email: string, password: string, navigateTo: string = null) {
+        return new Promise(resolve => {
+            firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
+                let user = result.user
+                if (user.emailVerified) {
+                    this.navigateTo = navigateTo
+                    resolve({
+                        code: 1,
+                        hasError: null,
+                        user: user,
+                        message: ''
+                    })
+                    return this.route.navigate([this.navigateTo])
+                } else {
+                    resolve({
+                        code: 2,
+                        hasError: true,
+                        user: user,
+                        message: 'Você logou, mas seu email ainda não foi verificado.'
+                    })
+                }
+            }).catch(error => {
+                let result: any
+                if (error.code == 'auth/user-not-found') {
+                    result = {
+                        code: 3,
+                        hasError: true,
+                        message: 'Seu email não foi encontrato em nossos registros, verifique ou crie uma nova conta.'
+                    }
+                }
+                else if (error.code == 'auth/wrong-password') {
+                    result = {
+                        code: 4,
+                        hasError: true,
+                        message: 'Seu login e senha não combinam.'
+                    }
+                }
+                else if (error.code == 'auth/invalid-email') {
+
+                    result = {
+                        code: 5,
+                        hasError: true,
+                        message: 'Seu email parece estar errado.'
+                    }
+                }
+                resolve(result)
             })
-        } catch (error) {
-            alert("Error!" + error.message)
-        }
+        })
     }
 
 
-    public sendPasswordResetEmail = () => {
+    public sendPasswordResetEmail = (email) => {
         return new Promise(resolve => {
-            this.getCurrentUser().then(user => {
-                if (user) {
-                    this.auth().sendPasswordResetEmail(user.email).then(() => {
-                        let result: any = {
-                            code: 1,
-                            hasSuccess: `Enviamos instruções de como recuperar a sua senha para '${user.email}' verifique sua caixa de entrada, ou spam.`
-                        }
-                        return resolve(result)
-                    }).catch(error => {
-                        let result: any = {
-                            code: 2,
-                            hasError: 'Ocorreu um erro ao enviar o email, tente novamente.'
-                        }
-                        return resolve(result)
-                    })
-                } else {
-                    let result: any = {
-                        code: 3,
-                        hasError: 'Nenhum usuário está logado.'
-                    }
-                    resolve(result)
+            this.auth().sendPasswordResetEmail(email).then(() => {
+                let result: any = {
+                    code: 6,
+                    hasError: null,
+                    message: `Enviamos instruções de como recuperar a sua senha para '${email}' verifique sua caixa de entrada, ou spam.`
                 }
+                return resolve(result)
+            }).catch(() => {
+                let result: any = {
+                    code: 7,
+                    hasError: true,
+                    message: 'Ocorreu um erro ao enviar o email, tente novamente.'
+                }
+                return resolve(result)
             })
         })
     }
@@ -206,7 +229,6 @@ export class FBServices {
         }, (error) => {
             console.warn(error)
         })
-
     }
 
 
@@ -225,7 +247,6 @@ export class FBServices {
 
 
     public currentUser() {
-
         if (this.DB.LS.user != undefined) {
             return JSON.parse(AES.decrypt(this.DB.LS.user.replace(/\*/g, '/'), this.DB.LS._uid).toString(CryptoJS.enc.Utf8))
         } else {
@@ -272,24 +293,6 @@ export class FBServices {
 
     }
 
-    // public async fnCountEmployees() {
-
-    //     var numEmployees = 0
-    //     this.DB.FB.ref('rep').child('employees/10804639000183').once('value', employes => {
-
-    //         for(let key in employes.val() ){
-    //             numEmployees++
-    //             console.log(key)
-    //         }
-
-
-    //     })
-
-
-    //     return numEmployees
-
-
-    // }
 
     public fnGetEmployees(user: any) {
         return new Promise(resolve => {

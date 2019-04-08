@@ -4,9 +4,10 @@ import { BrowserModule } from '@angular/platform-browser'
 import { Routes, RouterModule } from '@angular/router'
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component'
 import { Services } from './services.service'
+import { AuthGuardService } from './auth-guard.service';
 
 const routes: Routes = [
-  { path: 'services/:apiKey/:apiService/:apiArgs', component: Services },
+  { path: 'services/:apiKey/:service', component: Services, canActivate: [AuthGuardService]},
   // {
   //   path: '',
   //   redirectTo: 'dashboard',

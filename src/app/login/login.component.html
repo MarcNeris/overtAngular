@@ -2,102 +2,89 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3"></div>
-      <!-- <div class="col-md-8">
-        <div class="card">
-          <div class="card-header card-header-danger">
-            <h4 class="card-title">overt | Login</h4>
-            <p class="card-category">Complete seu perfil</p>
-          </div>
-          <div class="card-body">
-            <form>
-              <div class="row">
-                <div class="col-md-7">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="{{empresa_logada.nomEmp}}" disabled>
-                  </mat-form-field>
-                </div>
-                <div class="col-md-5">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="{{user.email}}" type="email" disabled>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="{{user.displayName}}" type="text">
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Endereço" type="text">
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Cidade" type="text">
-                  </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="País" type="text">
-                  </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="CEP" type="text">
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <label>Sobre mim</label>
-                  <mat-form-field class="example-full-width">
-                    <textarea matInput placeholder="..."></textarea>
-                  </mat-form-field>
-                </div>
-              </div>
-              <button mat-raised-button type="submit" class="btn btn-danger pull-right">Atualizar o Perfil</button>
-              <div class="clearfix"></div>
-            </form>
-          </div>
-        </div>
-      </div> -->
+
       <div class="col-md-6">
-        <div class="card card-profile">
-          <div [hidden]='!hasPicture' class="card-avatar">
-            <a>
-              <img class="img" src="{{faceId}}" />
-            </a>
-          </div>
-          <div class="card-body">
+        <div class="col-md-12">
+          <div class="card card-profile">
 
-            <h3 [hidden]='isLoggedIn' class="card-title">Login</h3>
-
-            <h4 [hidden]='!isLoggedIn' class="card-title">{{user.displayName}}</h4>
-
-            <div class="col-md-12" [hidden]='isLoggedIn'>
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="email" [(ngModel)]="email" type="email" required>
-              </mat-form-field>
+            <div [hidden]='!hasPicture' class="card-avatar">
+              <a>
+                <img class="img" src="{{faceId}}" />
+              </a>
             </div>
 
-            <div class="col-md-12" [hidden]='isLoggedIn'>
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="senha" [(ngModel)]="password" type="password" required>
-              </mat-form-field>
+            <div class="card-body text-center">
+
+              <div class="row">
+                <div class="col-md-12">
+                  <h3 [hidden]='user.email?true:false' class="card-title">Login</h3>
+                  <h4 [hidden]='user.email?false:true' class="card-title">{{user.email}}</h4>
+                </div>
+              </div>
+
+              <!-- email ok -->
+              <div class="row" [hidden]='user.email?true:false'>
+                <div class="col-md-12">
+                    <mat-form-field class="example-full-width">
+                      <input matInput placeholder="email" [(ngModel)]="email" type="email" required>
+                    </mat-form-field>
+                </div>
+              </div>
+
+
+              <!-- senha ok -->
+              <div class="row" [hidden]='user.email?true:false'>
+                <div class="col-md-12">
+                    <mat-form-field class="example-full-width">
+                      <input matInput placeholder="senha" [(ngModel)]="password" type="password" required>
+                    </mat-form-field>
+                </div>
+              </div>
+
+              <div class="row" [ngClass]="hasError.hasError?'text-danger':'text-success'">
+                <div class="col-md-12">
+                  <span>
+                    <small>{{hasError.message}}</small>
+                  </span>
+                </div>
+              </div>
+
+              <div class="row" [hidden]='hasError.code==4?false:true'>
+                <div class="col-md-12">
+                  <button mat-raised-button (click)="fnRecuperarSenha()" class="btn btn-primary btn-link mat-raised-button">
+                    Recuperar a Senha?
+                  </button>
+                </div>
+              </div>
+
+
+              <div class="row" [hidden]='hasError.code==2?false:true'>
+                <div class="col-md-12">
+                  <button mat-raised-button class="btn btn-success btn-link" (click)="fnVerificarEmail()">Verificar
+                    Email?</button>
+                </div>
+              </div>
+
+
+              <div class="row" [hidden]='user.email?true:false'>
+                <div class="col-md-12">
+                  <button mat-raised-button class="btn btn-success btn-round" (click)="fnLogin()">Login</button>
+                </div>
+              </div>
+
+              <div class="row" [hidden]='hasError.code==9?false:true'>
+                <div class="col-md-12">
+                  <button mat-raised-button class="btn btn-success btn-round" (click)="fnEntrar()">Entrar</button>
+                </div>
+              </div>
+
+              <div class="row" [hidden]='user.email?false:true'>
+                <div class="col-md-12">
+                  <button mat-raised-button class="btn btn-danger btn-round" (click)="fnLogout()">Logout</button>
+                </div>
+              </div>
+
             </div>
-
-            <h6 [hidden]='!isLoggedIn' class="card-category text-gray">{{empresa_logada.apeEmp}}</h6>
-
-            <p [hidden]='!isLoggedIn' class="card-description" [className]="hasVerifiedEmail ? 'text-success' : 'btn btn-danger'" (click)="sendEmailVerification()"> {{user.email}}</p>
-
-            <button [hidden]='isLoggedIn' class="btn btn-danger btn-round" (click)="fnLogin()">Login</button>
-            <button [hidden]='!isLoggedIn' class="btn btn-primary btn-round" (click)="fnLogout()">Logout</button>
           </div>
         </div>
       </div>

@@ -12,17 +12,16 @@ import {
 } from '@angular/material';
 
 
-
 export interface dataElements {
   apeEmp: string;
   nomFun: number;
   numCpf: number;
 }
 
+
 const ELEMENT_DATA: dataElements[] = [
   { apeEmp: null, nomFun: null, numCpf: null }
 ]
-
 
 
 @Component({
@@ -31,6 +30,7 @@ const ELEMENT_DATA: dataElements[] = [
   styleUrls: ['./services.service.css']
 })
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,7 +38,7 @@ const ELEMENT_DATA: dataElements[] = [
 
 export class Services {
 
-  //apiKey: 'V4tCSEkEx3Pfq8Sd5EblWQfC5IQ2'
+  //apiKey: '2Fz9povQBJ5TXYZJCVBhhpLmjJZj53'
 
   //dataSource: any
   dataSource = new MatTableDataSource(ELEMENT_DATA);
@@ -46,7 +46,8 @@ export class Services {
 
   @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort
-  //
+
+
   apiParams: any
   apiServices: any
   hasSuccess: string = null
@@ -60,6 +61,7 @@ export class Services {
   email: string
   password: string
   loadingIsHide: any = true
+
 
   constructor(
     protected httpClient: HttpClient,
@@ -85,81 +87,87 @@ export class Services {
   }
 
   async fnLogout() {
-    await this.fbServices.auth().signOut().then(() => {
-      this.fbServices.DB.LS.clear()
-      this.hideLogin = false
-      this.hideLogout = true
-      this.hasError = ''
-      this.hasSuccess = ''
-      this.emailVerified = true
-    })
+    this.fbServices.logout()
+    // var url = this.router.url
+    // this.loadingIsHide = false
+    // await this.fbServices.auth().signOut().then(() => {
+    //   this.fbServices.DB.LS.clear()
+    //   this.hideLogin = false
+    //   this.hideLogout = true
+    //   this.hasError = ''
+    //   this.hasSuccess = ''
+    //   this.emailVerified = true
+    //   this.router.navigate(['/login'], {
+    //     queryParams: {
+    //       return: url
+    //     }
+    //   })
+    // })
   }
 
   async fnReload() {
     window.location.reload()
   }
 
-  async fnLogin() {
-    await this.fbServices.auth().signInWithEmailAndPassword(this.email, this.password).then(user => {
-      if (user) {
-        this.hideLogin = true
-        this.hideLogout = false
-        this.fnServices()
-      }
-    }).catch(error => {
-      console.log(error.code)
-      if (error.code == 'auth/user-not-found') {
-        this.hasError = 'Seu email não foi encontrato em nossos registros, verifique ou crie uma nova conta.'
-      } else if (error.code == 'auth/wrong-password') {
-        this.hideRecuperarSenha = false
-        this.hasError = 'Senha inválida.'
-      }
-      console.log(this.hasError)
-    })
-  }
+  // async fnLogin() {
+  //   await this.fbServices.auth().signInWithEmailAndPassword(this.email, this.password).then(user => {
+  //     if (user) {
+  //       this.hideLogin = true
+  //       this.hideLogout = false
+  //       this.fnServices()
+  //     }
+  //   }).catch(error => {
+  //     if (error.code == 'auth/user-not-found') {
+  //       this.hasError = 'Seu email não foi encontrato em nossos registros, verifique ou crie uma nova conta.'
+  //     } else if (error.code == 'auth/wrong-password') {
+  //       this.hideRecuperarSenha = false
+  //       this.hasError = 'Email ou senha inválida.'
+  //     }
+  //   })
+  // }
 
-  async fnCriarConta() {
+  // async fnCriarConta() {
 
-    await this.fbServices.auth().createUserWithEmailAndPassword(this.email, this.password).then(user => {
+  //   await this.fbServices.auth().createUserWithEmailAndPassword(this.email, this.password).then(user => {
 
-      if (user) {
-        if (user.operationType == 'signIn') {
-          this.hasSuccess = 'Bem-vindo!'
-        }
-        this.hideLogin = true
-        this.hideLogout = false
-        this.fnServices()
-      }
-    }).catch(error => {
+  //     if (user) {
+  //       if (user.operationType == 'signIn') {
+  //         this.hasSuccess = 'Bem-vindo!'
+  //       }
+  //       this.hideLogin = true
+  //       this.hideLogout = false
+  //       this.fnServices()
+  //     }
+  //   }).catch(error => {
 
-      if (error.code == 'auth/email-already-in-use') {
-        this.hasError = 'Este email já está em uso.'
+  //     if (error.code == 'auth/email-already-in-use') {
+  //       this.hasError = 'Este email já está em uso.'
 
-        this.hideRecuperarSenha = false
-      }
+  //       this.hideRecuperarSenha = false
+  //     }
 
-      if (error.code == 'auth/weak-password') {
-        this.hideRecuperarSenha = true
-        this.hasError = 'Sua senha precisa ter no mínimo 6 caracteres.'
-      }
-      console.warn(error)
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ...
-    });
+  //     if (error.code == 'auth/weak-password') {
+  //       this.hideRecuperarSenha = true
+  //       this.hasError = 'Sua senha precisa ter no mínimo 6 caracteres.'
+  //     }
+  //     console.warn(error)
+  //     // Handle Errors here.
+  //     var errorCode = error.code;
+  //     var errorMessage = error.message;
+  //     // ...
+  //   });
 
-  }
+  // }
 
-  fnRecuperarSenha() {
-    this.fbServices.auth().sendPasswordResetEmail(this.email).then(() => {
-      this.hasError = ''
-      this.hasSuccess = `Enviamos instruções de como recuperar a sua senha para '${this.email}' verifique sua caixa de entrada, ou spam.`
-    }).catch(error => {
-      console.warn(error)
-      this.hasError = 'Ocorreu um erro ao enviar o email, tente novamente.'
-    })
-  }
+  // fnRecuperarSenha() {
+  //   this.fbServices.auth().sendPasswordResetEmail(this.email).then(() => {
+  //     this.hasError = ''
+  //     this.hasSuccess = `Enviamos instruções de como recuperar a sua senha para '${this.email}' verifique sua caixa de entrada, ou spam.`
+  //   }).catch(error => {
+  //     console.warn(error)
+  //     this.hasError = 'Ocorreu um erro ao enviar o email, tente novamente.'
+  //   })
+  // }
 
   fnVerificarEmail() {
 
@@ -199,10 +207,21 @@ export class Services {
           this.hasError = 'Seu email ainda não foi verificado, clique no botão "Verificar email", que enviaremos instruções para ativar sua conta.'
           return this.emailVerified = false
         }
-        this.fbServices.DB.FB.ref('customers').child(this.apiParams.apiKey).child('services').once('value', services => {
+
+        console.log(this.apiParams)
+        //http://localhost:4200/services/V4tCSEkEx3Pfq8Sd5EblWQfC5IQ2/billing
+
+
+
+
+        this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child(this.apiParams.service).once('value', services => {
 
           this.apiServices = services.val()
+
+          console.log(this.apiServices)
+
         })
+
       } else {
 
         this.hideLogin = false
@@ -212,12 +231,8 @@ export class Services {
     })
   }
 
-  fnSetParams(apiParams: any) {
-    return this.apiParams = apiParams
-  }
-
   async fnGetParams() {
-    var apiParam = await this.route.params.forEach(apiParams => this.fnSetParams(apiParams))
+    var apiParam = await this.route.params.forEach(apiParams => this.apiParams = apiParams)
     return apiParam
   }
 
@@ -225,28 +240,35 @@ export class Services {
     this.loadingIsHide = false
     var param = this.apiServices.retornacolaborador
 
-    var args = {
-      wsdl: param.wsdl,
-      porta: param.porta,
-      user: param.user,
-      password: param.password,
-      encryption: '0',
-      parameters: {
-        codOpe: 'retornacolaborador',
-        intNet: 'marcelo.neris@seniorbh.com.br',
+    var args: any = null
+    if (param) {
+      args = {
+        wsdl: param.wsdl,
+        porta: param.porta,
+        user: param.user,
+        password: param.password,
+        encryption: '0',
+        parameters: {
+          codOpe: 'retornacolaborador',
+          intNet: 'marcelo.neris@seniorbh.com.br',
+        }
       }
     }
 
-    this.func.soap(args).then(result => {
+    if (args) {
+      this.func.soap(args).then(result => {
+        this.loadingIsHide = true
+        console.log(result)
+        var dataSource: any = result
+        dataSource = dataSource.result.griCol
+        //console.log(dataSource)
+        this.dataSource = new MatTableDataSource(dataSource)
+        this.dataSource.paginator = this.paginator
+      })
+    } else {
       this.loadingIsHide = true
-      console.log(result)
-      var dataSource: any = result
-      dataSource = dataSource.result.griCol
-      //console.log(dataSource)
+    }
 
-      this.dataSource = new MatTableDataSource(dataSource)
-      this.dataSource.paginator = this.paginator
-    })
 
     // var params = this.func.encrypt(JSON.stringify(args))
     // await this.httpClient.get(`https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`).subscribe((res) => {
@@ -304,6 +326,7 @@ export class Services {
   }
 
   ngOnInit() {
+    console.log(this.router.url)
     this.dataSource.sort = this.sort
     this.fnGetParams()
   }

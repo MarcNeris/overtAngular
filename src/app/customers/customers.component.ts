@@ -55,7 +55,6 @@ export class CustomersComponent implements OnInit {
 
   ngOnInit() {
 
-    this.fbServices.canLoad()
     this.fnTableCustomers()
 
   }

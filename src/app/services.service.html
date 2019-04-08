@@ -1,9 +1,18 @@
 <div class="main-content">
     <div class="container-fluid">
-
+        <div class="row">
+            <div class="col-lg-12">
+                <button mat-raised-button (click)="fnLogout()"
+                    class="btn btn-primary btn-link mat-raised-button pull-right">
+                    <i class="fa fa-power-off"></i>
+                </button>
+            </div>
+        </div>
         <div class="row">
 
-            <div class="col-lg-12"><br></div>
+
+
+
 
             <div class="col-lg-12">
 
@@ -30,7 +39,7 @@
                         <p><small class="text-danger">{{hasError}}</small></p>
                         <p>
                             <small class="text-success">{{hasSuccess}}
-                                <button mat-raised-button [hidden]="hideRecuperarSenha" 
+                                <button mat-raised-button [hidden]="hideRecuperarSenha"
                                     class="btn btn-sm btn-danger btn-link" (click)="fnRecuperarSenha()"> Recuperar
                                     Senha?
                                 </button>
@@ -59,7 +68,9 @@
                     <div class="col-md-4">
                         <p [hidden]="emailVerified"><small>{{hasError}}</small></p>
                         <p [hidden]="emailVerified"><small class="text-success">{{hasSuccess}}</small></p>
-                        <button [hidden]="hideLogout" class="btn btn-danger btn-sm" (click)="fnLogout()">Logout</button>
+
+
+
                         <button [hidden]="emailVerified" class="btn btn-primary btn-sm"
                             (click)="fnVerificarEmail(user)">Verificar email</button>
                         <button [hidden]="emailVerifyHasSent" class="btn btn-success btn-sm"
@@ -86,10 +97,7 @@
                     <!-- Tabela Boleto -->
 
                     <div class="row">
-
-
                         <div class="col-md-6">
-
                             <div class="input-group no-border">
                                 <mat-form-field>
                                     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Empresas">

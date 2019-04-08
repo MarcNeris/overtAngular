@@ -58,7 +58,10 @@ export class AuthGuardService implements CanActivate {
 
                 if (user) {
 
-                    //console.warn(user)
+                    if (!user.emailVerified) {
+                        return resolve(false)
+                    }
+
                     String.prototype.encrypt = function () { return AES.encrypt(this, user.uid).toString().replace(/\//g, '*') }
                     String.prototype.decrypt = function () { return AES.decrypt(this.replace(/\*/g, '/'), user.uid).toString(CryptoJS.enc.Utf8) }
 
@@ -132,7 +135,13 @@ export class AuthGuardService implements CanActivate {
                                         }
                                     })
                                 } else {
-                                    return resolve(false)
+                                    this.fbServices.DB.FB.ref(route).child('sitSrv').once('value', sitSrv => {
+                                        if (sitSrv.exists()) {
+                                            return resolve(true)
+                                        } else {
+                                            return resolve(false)
+                                        }
+                                    })
                                 }
                             }
                         })

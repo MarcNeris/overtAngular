@@ -1,6 +1,47 @@
 <div class="main-content">
   <div class="container-fluid">
     <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">question_answer</i>
+            </div>
+            <h3 class="card-category">
+              <h3>Moods</h3>
+            </h3>
+            <legend></legend>
+            <div class="row">
+              <div class="col-lg-3">
+                <mat-form-field class="example-full-width text-primary">
+                  <input matInput placeholder="Mood" [(ngModel)]="in_NomeMood" type="text" required>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="content text-left">
+
+              <!-- [hidden]='isLoggedIn' -->
+
+
+
+
+
+              <input type="text">
+
+            </div>
+            <!-- <p class="card-category">Moods</p> -->
+            <!-- <h3 class="card-title">49/50
+                            <small>GB</small>
+                        </h3> -->
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-primary">question_answer</i>
+              <a routerLink="/moods">Moods</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
