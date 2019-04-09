@@ -34,6 +34,7 @@ export class NavbarComponent implements OnInit {
         location: Location,
         private auth: AuthGuardService,
         private element: ElementRef,
+        private fbServices: FBServices,
         private router: Router) {
         this.location = location;
         this.sidebarVisible = false;
@@ -41,7 +42,7 @@ export class NavbarComponent implements OnInit {
 
     fnGetEmpresaAtiva(): void {
         this.auth.onEmpresaAtiva(empresa_ativa => {
-            if(empresa_ativa.exists()){
+            if (empresa_ativa.exists()) {
                 this.empresaAtiva = empresa_ativa.val()
             }
         })
@@ -49,11 +50,20 @@ export class NavbarComponent implements OnInit {
 
     ngOnInit() {
 
-        this.fnGetEmpresaAtiva()
+        if (this.router.url.includes("login")) {
+            document.getElementsByClassName('sidebar')[0].remove()
+        }
 
-        this.listTitles = ROUTES.filter(listTitle => listTitle);
-        const navbar: HTMLElement = this.element.nativeElement;
-        this.toggleButton = navbar.getElementsByClassName('navbar-toggler')[0];
+
+        // this.fbServices.getCurrentUser().then(user => {
+        //     if (user) {
+        //         console.log(user)
+        //     }
+        // })
+        // this.listTitles = ROUTES.filter(listTitle => listTitle);
+        
+        
+        this.fnGetEmpresaAtiva()
         this.router.events.subscribe((event) => {
             this.sidebarClose();
             var $layer: any = document.getElementsByClassName('close-layer')[0];
@@ -141,6 +151,8 @@ export class NavbarComponent implements OnInit {
 
     getTitle() {
         var titlee = this.location.prepareExternalUrl(this.location.path())
+
+
 
         return titlee
         //   if(titlee.charAt(0) === '#'){

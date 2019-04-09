@@ -1,14 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
     <div class="container-fluid">
-
-
+    
         <div ng-show="empresaAtiva" class="navbar-wrapper">
             <!-- <a class="navbar-brand" routerLink="{{getTitle()}}">{{getTitle()}}</a> -->
             <h6 class="text-primary">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
         </div>
 
         <br>
-        <button mat-raised-button class="navbar-toggler pull-right" type="button" (click)="sidebarToggle()">
+        <button id="navbar-toggler" mat-raised-button class="navbar-toggler pull-right" type="button" (click)="sidebarToggle()">
             <span class="sr-only">Toggle navigation</span>
             <span class="navbar-toggler-icon icon-bar"></span>
             <span class="navbar-toggler-icon icon-bar"></span>
@@ -32,8 +31,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/customers">
-                        <i class="material-icons">trip_origin</i>
-                        Empresas
+                        <i class="material-icons">trip_origin</i>Empresas
                         <p>
                             <span class="d-lg-none d-md-block">Empresas</span>
                         </p>
