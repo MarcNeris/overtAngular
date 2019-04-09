@@ -13,6 +13,9 @@ export class LoginComponent implements OnInit {
   private email: string
   private password: string
   private navigateTo: string
+  private header: string = "Login"
+  private placeholderEmail: string = "Email"
+  private placeholderSenha: string = "Senha"
 
 
   // pdfEncode: string = 'data:application/octet-stream;base64,'
@@ -39,7 +42,7 @@ export class LoginComponent implements OnInit {
     private fbServices: FBServices,
     private router: Router,
     private route: ActivatedRoute,
-    private element : ElementRef
+    private element: ElementRef
   ) {
 
   }
@@ -56,16 +59,37 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  fnEntrar() {
+  private fnEntrar() {
     window.location.reload()
   }
 
+  private fnCriarConta() {
+    this.route.queryParams.subscribe(params => this.navigateTo = params['return'])// || '')
+    this.header = "Nova Conta"
+    this.placeholderEmail = "Informe seu email"
+    this.placeholderSenha = "Crie uma senha"
+
+    this.fbServices.fnCriarConta(this.email, this.password, this.navigateTo).then(result => {
+      var hasError: any = result
+      this.hasError = hasError
+      if (hasError.user) {
+        this.user = hasError.user
+      }
+      console.log(result)
+    })
+  }
+
   private fnLogin() {
+    this.header = "Login"
+    this.placeholderEmail = "Email"
+    this.placeholderSenha = "Senha"
     this.route.queryParams.subscribe(params => this.navigateTo = params['return'] || '')
     this.fbServices.login(this.email, this.password, this.navigateTo).then(result => {
       var hasError: any = result
       this.hasError = hasError
-      this.user = hasError.user
+      if (hasError.user) {
+        this.user = hasError.user
+      }
     })
   }
 
@@ -104,20 +128,20 @@ export class LoginComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    
+
     // var navbar : HTMLElement = this.element.nativeElement
 
     // console.log(navbar)
-    
+
     // var sidebar = navbar.getElementsByClassName('sidebar')[0]
     // sidebar.classList.remove('sidebar')
 
 
-        // var toggleButton = navbar.getElementsByClassName('navbar-toggle')[0]
+    // var toggleButton = navbar.getElementsByClassName('navbar-toggle')[0]
     // toggleButton.classList.remove('toggled')
     // const body = document.getElementsByTagName('body')[0]
     // body.classList.remove('nav-open')
-        
+
 
     // const elemSidebar = <HTMLElement>document.querySelector('.sidebar .sidebar-wrapper')
     // elemSidebar.remove()

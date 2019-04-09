@@ -143,7 +143,7 @@ export class FBServices {
             })
         })
     }
-    
+
 
     public auth() {
         return firebase.auth()
@@ -159,16 +159,17 @@ export class FBServices {
                     resolve({
                         code: 1,
                         hasError: null,
-                        user: user,
-                        message: ''
+                        message: '',
+                        user: user
                     })
-                    return this.route.navigate([this.navigateTo])
+                    this.route.navigate([this.navigateTo])
+                    //return window.location.reload()
                 } else {
                     resolve({
                         code: 2,
                         hasError: true,
-                        user: user,
-                        message: 'Você logou, mas seu email ainda não foi verificado.'
+                        message: 'Você logou, mas seu email ainda não foi verificado.',
+                        user: user
                     })
                 }
             }).catch(error => {
@@ -177,14 +178,16 @@ export class FBServices {
                     result = {
                         code: 3,
                         hasError: true,
-                        message: 'Seu email não foi encontrato em nossos registros, verifique ou crie uma nova conta.'
+                        message: 'Seu email não foi encontrato em nossos registros, verifique ou crie uma nova conta.',
+                        user: null
                     }
                 }
                 else if (error.code == 'auth/wrong-password') {
                     result = {
                         code: 4,
                         hasError: true,
-                        message: 'Seu login e senha não combinam.'
+                        message: 'Seu login e senha não combinam.',
+                        user: null
                     }
                 }
                 else if (error.code == 'auth/invalid-email') {
@@ -192,9 +195,74 @@ export class FBServices {
                     result = {
                         code: 5,
                         hasError: true,
-                        message: 'Seu email parece estar errado.'
+                        message: 'Seu email parece estar errado.',
+                        user: null
                     }
                 }
+                resolve(result)
+            })
+        })
+    }
+
+
+    public fnCriarConta(email: string, password: string, navigateTo: string = null) {
+
+        return new Promise(resolve => {
+
+            this.auth().createUserWithEmailAndPassword(email, password).then(result => {
+
+                var user: any = result
+
+                console.log(user)
+
+                if (user) {
+                    if (user.emailVerified) {
+                        this.navigateTo = navigateTo
+                        resolve({
+                            code: 1,
+                            hasError: null,
+                            message: '',
+                            user: user.user
+                        })
+                        this.route.navigate([this.navigateTo])
+                    } else {
+                        resolve({
+                            code: 2,
+                            hasError: true,
+                            message: 'Você logou, mas seu email ainda não foi verificado.',
+                            user: user.user
+                        })
+                    }
+                }
+
+                // if (user.operationType == 'signIn') {
+                //     this.hasSuccess = 'Bem-vindo!'
+                // }
+                // this.hideLogin = true
+                // this.hideLogout = false
+                // this.fnServices()
+                //}
+            }).catch(error => {
+
+                let result: any
+                if (error.code == 'auth/email-already-in-use') {
+                    result = {
+                        code: 11,
+                        hasError: true,
+                        message: 'Este email já está em uso.',
+                        user: null
+                    }
+                }
+
+                else if (error.code == 'auth/weak-password') {
+                    result = {
+                        code: 12,
+                        hasError: true,
+                        message: 'Sua senha precisa ter no mínimo 6 caracteres.',
+                        user: null
+                    }
+                }
+
                 resolve(result)
             })
         })

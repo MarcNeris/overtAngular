@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-3"></div>
 
-      <div class="col-md-5">
+      <div class="col-lg-5 col-md-7">
         <div class="col-md-12">
           <div class="card card-profile">
 
@@ -17,7 +17,7 @@
 
               <div class="row">
                 <div class="col-md-12">
-                  <h3 [hidden]='user.email?true:false' class="card-title">Login</h3>
+                  <h3 [hidden]='user.email?true:false' class="card-title">{{header}}</h3>
                   <h4 [hidden]='user.email?false:true' class="card-title">{{user.email}}</h4>
                 </div>
               </div>
@@ -25,9 +25,9 @@
               <!-- email ok -->
               <div class="row" [hidden]='user.email?true:false'>
                 <div class="col-md-12">
-                    <mat-form-field class="example-full-width">
-                      <input matInput placeholder="email" [(ngModel)]="email" type="email" required>
-                    </mat-form-field>
+                  <mat-form-field class="example-full-width">
+                    <input matInput placeholder="{{placeholderEmail}}" [(ngModel)]="email" type="email" required>
+                  </mat-form-field>
                 </div>
               </div>
 
@@ -35,9 +35,9 @@
               <!-- senha ok -->
               <div class="row" [hidden]='user.email?true:false'>
                 <div class="col-md-12">
-                    <mat-form-field class="example-full-width">
-                      <input matInput placeholder="senha" [(ngModel)]="password" type="password" required>
-                    </mat-form-field>
+                  <mat-form-field class="example-full-width">
+                    <input matInput placeholder="{{placeholderSenha}}" [(ngModel)]="password" type="password" required>
+                  </mat-form-field>
                 </div>
               </div>
 
@@ -51,12 +51,12 @@
 
               <div class="row" [hidden]='hasError.code==4?false:true'>
                 <div class="col-md-12">
-                  <button mat-raised-button (click)="fnRecuperarSenha()" class="btn btn-primary btn-link mat-raised-button">
+                  <button mat-raised-button (click)="fnRecuperarSenha()"
+                    class="btn btn-primary btn-link mat-raised-button">
                     Recuperar a Senha?
                   </button>
                 </div>
               </div>
-
 
               <div class="row" [hidden]='hasError.code==2?false:true'>
                 <div class="col-md-12">
@@ -65,10 +65,18 @@
                 </div>
               </div>
 
+              <div class="row" [hidden]='user.email?true:false' [hidden]='user.email?true:false'>
+                <div class="col-md-12">
+                  <button mat-raised-button class="btn btn-success btn-round" (click)="fnLogin()">Login</button>
+                </div>
+              </div>
 
               <div class="row" [hidden]='user.email?true:false'>
                 <div class="col-md-12">
-                  <button mat-raised-button class="btn btn-success btn-round" (click)="fnLogin()">Login</button>
+                  <button mat-raised-button (click)="fnCriarConta()"
+                    class="btn btn-rose btn-link mat-raised-button">
+                    Criar uma Conta?
+                  </button>
                 </div>
               </div>
 
