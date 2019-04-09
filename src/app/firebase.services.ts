@@ -102,6 +102,10 @@ export class FBServices {
         })
     }
 
+    public current_user(): any {
+        return this.auth().currentUser;
+    }
+
     public sendEmailVerification() {
 
         return new Promise(resolve => {
@@ -212,8 +216,6 @@ export class FBServices {
             this.auth().createUserWithEmailAndPassword(email, password).then(result => {
 
                 var user: any = result
-
-                console.log(user)
 
                 if (user) {
                     if (user.emailVerified) {

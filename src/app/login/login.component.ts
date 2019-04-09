@@ -60,22 +60,44 @@ export class LoginComponent implements OnInit {
   }
 
   private fnEntrar() {
+
+ 
+
+    // this.fbServices.getCurrentUser().then(user => {
+    //   if (user) {
+    //     console.log(user.emailVerified)
+    //     this.user = user
+    //     if (user.emailVerified) {
+    //       this.route.queryParams.subscribe(params => this.navigateTo = params['return'] || '')
+    //       this.router.navigate([this.navigateTo])
+    //       this.hasError = {
+    //         code: 1,
+    //         hasError: null,
+    //         message: ''
+    //       }
+    //     } else {
+    //       this.hasError = {
+    //         code: 2,
+    //         hasError: true,
+    //         message: 'Você logou, mas seu email ainda não foi verificado.'
+    //       }
+    //     }
+    //   }
+    // })
     window.location.reload()
   }
 
   private fnCriarConta() {
-    this.route.queryParams.subscribe(params => this.navigateTo = params['return'])// || '')
+    this.route.queryParams.subscribe(params => this.navigateTo = params['return'] || '')
     this.header = "Nova Conta"
     this.placeholderEmail = "Informe seu email"
     this.placeholderSenha = "Crie uma senha"
-
     this.fbServices.fnCriarConta(this.email, this.password, this.navigateTo).then(result => {
       var hasError: any = result
       this.hasError = hasError
       if (hasError.user) {
         this.user = hasError.user
       }
-      console.log(result)
     })
   }
 
@@ -97,25 +119,18 @@ export class LoginComponent implements OnInit {
     return this.fbServices.logout()
   }
 
-  ngOnInit() {
+  ngOnInit() {    
     this.fbServices.getCurrentUser().then(user => {
       if (user) {
         this.user = user
         if (user.emailVerified) {
+          this.route.queryParams.subscribe(params => this.navigateTo = params['return'] || '')
+          this.router.navigate([this.navigateTo])
           this.hasError = {
             code: 1,
             hasError: null,
             message: ''
           }
-
-          console.log(user.emailVerified)
-
-          //let reoload = window.location.reload()
-
-          //console.log(reload)
-
-          //this.router.navigate([this.navigateTo])
-
         } else {
           this.hasError = {
             code: 2,

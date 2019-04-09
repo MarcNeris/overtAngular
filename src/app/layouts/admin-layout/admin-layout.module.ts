@@ -71,7 +71,6 @@ import { TrackpointMeComponent } from 'app/trackpoint-me/trackpoint-me.component
     MatNativeDateModule,
     MatMomentDateModule,
     ReactiveFormsModule,
-    
   ],
   declarations: [
     HomeComponent,
