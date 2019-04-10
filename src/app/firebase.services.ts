@@ -148,7 +148,6 @@ export class FBServices {
         })
     }
 
-
     public auth() {
         return firebase.auth()
     }
@@ -167,7 +166,6 @@ export class FBServices {
                         user: user
                     })
                     this.route.navigate([this.navigateTo])
-                    //return window.location.reload()
                 } else {
                     resolve({
                         code: 2,

@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
 
   private fnEntrar() {
 
- 
+
 
     // this.fbServices.getCurrentUser().then(user => {
     //   if (user) {
@@ -119,7 +119,7 @@ export class LoginComponent implements OnInit {
     return this.fbServices.logout()
   }
 
-  ngOnInit() {    
+  ngOnInit() {
     this.fbServices.getCurrentUser().then(user => {
       if (user) {
         this.user = user
@@ -143,6 +143,22 @@ export class LoginComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+
+    if (this.router.url.includes("login")) {
+      // document.getElementsByClassName('sidebar')[0].remove()
+      // document.getElementsByClassName('navbar-toggler')[0].remove()
+      // document.getElementsByClassName('navbar')[0].remove()
+    }else{
+      // const toggleButton = this.toggleButton;
+        // const body = document.getElementsByTagName('body')[0];
+        // setTimeout(function () {
+        //     toggleButton.classList.add('toggled');
+        // }, 500);
+
+        // body.classList.add('nav-open');
+
+        // this.sidebarVisible = true;
+    }
 
     // var navbar : HTMLElement = this.element.nativeElement
 

@@ -48,13 +48,16 @@ export class NavbarComponent implements OnInit {
             }
         })
     }
+    fnLogout(){
+        this.fbServices.logout()
+    }
 
 
     ngOnInit() {
 
-        if (this.router.url.includes("login")) {
-            document.getElementsByClassName('sidebar')[0].remove()
-        }
+        // if (this.router.url.includes("login")) {
+        //     document.getElementsByClassName('sidebar')[0].remove()
+        // }
 
 
         // this.fbServices.getCurrentUser().then(user => {

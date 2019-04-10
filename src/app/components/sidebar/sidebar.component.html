@@ -7,7 +7,7 @@
     <a routerLink="/" class="simple-text logo-normal"> overt </a>
 </div>
 
-<div class="sidebar-wrapper">
+<div [hidden]="!sidebarVisible" class="sidebar-wrapper">
     <div *ngIf="isMobileMenu()">
         <!-- <form class="navbar-form">
             <span class="bmd-form-group">
@@ -59,11 +59,11 @@
 
 
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/login">
-                    <i class="material-icons">person</i>
+            <li class="nav-item" (click)="fnLogout()">
+                <a routerLink="/login" class="nav-link">
+                    <i class="fa fa-power-off"></i>
                     <p>
-                        <span class="d-lg-none d-md-block">Conta</span>
+                        <span class="d-lg-none d-md-block">Sair</span>
                     </p>
                 </a>
             </li>

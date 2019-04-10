@@ -1,13 +1,14 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
     <div class="container-fluid">
-    
+
         <div ng-show="empresaAtiva" class="navbar-wrapper">
             <!-- <a class="navbar-brand" routerLink="{{getTitle()}}">{{getTitle()}}</a> -->
             <h6 class="text-primary">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
         </div>
 
         <br>
-        <button id="navbar-toggler" mat-raised-button class="navbar-toggler pull-right" type="button" (click)="sidebarToggle()">
+        <button id="navbar-toggler" mat-raised-button class="navbar-toggler pull-right" type="button"
+            (click)="sidebarToggle()">
             <span class="sr-only">Toggle navigation</span>
             <span class="navbar-toggler-icon icon-bar"></span>
             <span class="navbar-toggler-icon icon-bar"></span>
@@ -56,11 +57,16 @@
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/login">
-                        <i class="material-icons">person</i>
-                        <p>
-                            <span class="d-lg-none d-md-block">Conta</span>
-                        </p>
+                        <!-- <button mat-raised-button (click)="fnLogout()"
+                        class="btn btn-primary btn-link mat-raised-button pull-right">
+                    </button> -->
+                    <!-- <a mat-raised-button class="nav-link" routerLink="/login"> -->
+                    <a class="nav-link btn-link" (click)="fnLogout()">
+                        <i class="fa fa-power-off"></i>
+                        <!-- <i class="material-icons">person</i> -->
+                        <!-- <p (click)="fnLogout()">
+                            <span class="d-lg-none d-md-block"><i class="fa fa-power-off"></i> Sair</span>
+                        </p> -->
                     </a>
                 </li>
 

@@ -1,3 +1,4 @@
+import { FBServices } from './../../firebase.services';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -30,21 +31,58 @@ export const ROUTES: RouteInfo[] = [
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
+
   menuItems: any[];
 
+  sidebarVisible: boolean
+
   constructor(
-    private router: Router
-  ) { }
+    private router: Router,
+    private fbServices:FBServices
+  ) {
+    this.sidebarVisible = true
+  }
+
+  // ngAfterViewInit(){
+
+  //   if (this.router.url.includes("login")) {
+  //     this.sidebarVisible = false
+  //   } else {
+  //     this.sidebarVisible = true
+  //   }
+
+  // }
+
+  fnLogout(){
+    this.fbServices.logout()
+  }
+
+  ngDoCheck(){
+    if (this.router.url.includes("login")) {
+      this.sidebarVisible = false
+    } else {
+      this.sidebarVisible = true
+    }
+  }
+
+  // ngOnChanges(){
+  //   console.log('ngAfterContentChecked')
+  // }
+
+
+  // ngAfterViewChecked(){
+  //   console.log('ngAfterViewChecked')
+  // }
 
   ngOnInit() {
 
-    if (this.router.url.includes("login")) {
-      document.getElementsByClassName('navbar-toggler')[0].remove()
-      document.getElementsByClassName('navbar')[0].remove()
-    }
+  
 
+    // console.log(this.router.url)
 
+    // var sidebar = document.getElementsByClassName('sidebar')[0].getAttributeNames
 
+    // console.log(sidebar)
 
     this.menuItems = ROUTES.filter(menuItem => menuItem);
   }
