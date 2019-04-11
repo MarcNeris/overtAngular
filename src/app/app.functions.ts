@@ -22,7 +22,6 @@ export class APPFunctions {
         var params = this.encrypt(JSON.stringify(args))
         var wsdl = `https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`
         return await new Promise(resolve => {
-            console.log(wsdl)
             this.httpClient.get(wsdl).subscribe((res) => {
                 resolve(res)
             })

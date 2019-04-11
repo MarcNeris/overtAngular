@@ -3,7 +3,6 @@ import { APPFunctions } from './app.functions';
 import { FBServices } from './firebase.services';
 import { Injectable, Component, ViewChild, Inject } from '@angular/core';
 
-//import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Routes, Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {
@@ -41,12 +40,13 @@ const ELEMENT_DATA: dataElements[] = [
 
 
 export class Services {
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
-  displayedColumns: string[] = ['apeEmp', 'nomFun', 'numCpf']
+
+  dataSource = new MatTableDataSource(ELEMENT_DATA)
+
+  displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
 
   @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort
-
 
   apiParams: any
   apiServices: any
@@ -69,14 +69,40 @@ export class Services {
     private router: Router,
     private fbServices: FBServices,
     private func: APPFunctions,
-   
+
     // Import the AlertController from ionic package 
     // Consume it in the constructor as 'alertCtrl' 
-   
+
   ) {
     //this.router.navigate(['/login'])
 
-    
+  }
+
+  fnReceberBoleto(titulo) {
+    var param: any = this.apiServices
+    var args = {
+      wsdl: param.wsdl,
+      porta: param.porta,
+      user: param.user,
+      password: param.password,
+      encryption: '0',
+      parameters: {
+        tipPro: '2',
+        emaCli: this.user.email,
+        titulosGerarBoletos: [{
+          codCrt: titulo.codCrt,
+          codEmp: titulo.codEmp,
+          codFil: titulo.codFil,
+          codPor: titulo.codPor,
+          codTpt: titulo.codTpt,
+          numTit: titulo.numTit
+        }]
+      }
+    }
+
+    this.func.soap(args).then(result => {
+      console.log(result)
+    })
 
 
 
@@ -90,42 +116,27 @@ export class Services {
     window.location.reload()
   }
 
-  async fnServices() {
+  fnBilling() {
 
     this.fbServices.getCurrentUser().then(user => {
-
       if (user) {
-        //this.router.navigate([ `/services/${this.apiParams.apiKey}/${this.apiParams.apiService}/${this.apiParams.apiArgs}`])
         this.hideLogin = true
         this.emailVerified = true
         this.hideLogout = false
         this.user = user
-
-        console.log(this.user)
-
-     
-
-        console.log(this.apiParams)
-        //http://localhost:4200/services/V4tCSEkEx3Pfq8Sd5EblWQfC5IQ2/billing
-
         this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child(this.apiParams.service).once('value', services => {
-
           this.apiServices = services.val()
-
-          console.log(this.apiServices)
-
+          return this.fnGetTitulos()
         })
 
       } else {
-
         this.hideLogin = false
         this.hideLogout = true
-
       }
     })
   }
 
-  fnLogout(){
+  fnLogout() {
     this.fbServices.logout()
   }
 
@@ -134,13 +145,11 @@ export class Services {
     return apiParam
   }
 
-  async soapCall() {
-    
+  fnGetTitulos() {
     this.loadingIsHide = false
-
-    var param = this.apiServices.retornacolaborador
-
+    var param = this.apiServices
     var args: any = null
+
     if (param) {
       args = {
         wsdl: param.wsdl,
@@ -149,8 +158,8 @@ export class Services {
         password: param.password,
         encryption: '0',
         parameters: {
-          codOpe: 'retornacolaborador',
-          intNet: 'marcelo.neris@seniorbh.com.br',
+          tipPro: '1',
+          emaCli: this.user.email,
         }
       }
     }
@@ -158,41 +167,34 @@ export class Services {
     if (args) {
       this.func.soap(args).then(result => {
         this.loadingIsHide = true
-        console.log(result)
-        var dataSource: any = result
-        dataSource = dataSource.result.griCol
-        //console.log(dataSource)
-        this.dataSource = new MatTableDataSource(dataSource)
-        this.dataSource.paginator = this.paginator
+        var dataSource: any = []
+        if (result) {
+          dataSource = result
+          if (dataSource.result) {
+            if (dataSource.result.titulosAbertos) {
+              var titulos: any = dataSource.result.titulosAbertos
+              titulos.forEach(titulo => {
+                var vlr: number = titulo.vlrTit
+                titulo.emaCli = args.parameters.emaCli
+                titulo.vlrTit = vlr
+              })
+              this.dataSource = new MatTableDataSource(titulos)
+              this.dataSource.paginator = this.paginator
+              this.dataSource.sort = this.sort
+            }
+          }
+        } else {
+
+        }
       })
     } else {
       this.loadingIsHide = true
     }
-
-
-    // var params = this.func.encrypt(JSON.stringify(args))
-    // await this.httpClient.get(`https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`).subscribe((res) => {
-    //   this.loadingIsHide = true
-    //   var dataSource: any = res
-    //   dataSource = dataSource.result.griCol
-    //   //console.log(dataSource)
-
-    //   this.dataSource = new MatTableDataSource(dataSource)
-    //   this.dataSource.paginator = this.paginator
-
-    // })
   }
 
 
 
-
-
-
-
-
-
-  ngAfterViewInit() { 
-
+  ngAfterViewInit() {
     // var argsChefia = {
     //   wsdl: 'http://www.consistema.com.br:8081/g5-senior-services/rubi_Synccom_senior_g5_rh_consistema_portal?wsdl',
     //   porta: 'folha',
@@ -209,17 +211,16 @@ export class Services {
     //     tipCol: '1'
     //   }
     // }
-
     // this.func.soap(argsChefia).then(result => {
     //   console.log(result)
     // })
 
-    this.fnServices()
+    this.fnBilling()
   }
 
   ngOnInit() {
     // console.log(this.router.url)
-    this.dataSource.sort = this.sort
+
     this.fnGetParams()
   }
 
