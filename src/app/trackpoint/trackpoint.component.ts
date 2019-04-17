@@ -20,14 +20,10 @@ import { FormControl } from '@angular/forms';
 export class TrackpointComponent implements OnInit {
 
   public displayedColumns: string[] = ['apeEmp', 'nomFun', 'numCpf', 'tipCol']
-
   public dataSource: any
-
   public pointDataSource: any
-
   public unsubscribe: any = null
-
-  //leaflet
+  public webService_log: any = null
   public map: any = null
   public pointer: Map.PointTuple
   public message: string
@@ -36,6 +32,7 @@ export class TrackpointComponent implements OnInit {
   public groupReps: any
   public reps: any = null
   public hasError: string = ''
+  public apiServices: any
   //public marker = leaflet.marker()
   //public circle = leaflet.circle()
   //public cities = leaflet.layerGroup()
@@ -111,7 +108,7 @@ export class TrackpointComponent implements OnInit {
         this.pointDataSource = []
         reps.forEach(rep => {
 
-          var hasError:any =[]
+          var hasError: any = []
 
           if (rep.exists) {
 
@@ -143,15 +140,12 @@ export class TrackpointComponent implements OnInit {
                 shadowAnchor: [22, 94]
               })
 
-              console.log(rep.data())
-
               this.pointer = [this.position.latitude, this.position.longitude]
               this.message = `Hora: ${rep.data().time}\n<span class="${hasSucces}"> (${serverHora})\n ${parseInt(distance)}m</span>`
               this.repMarker.push(Map.marker(this.pointer).bindPopup(this.message))
 
             } else {
               this.hasError = 'Marcações sem informação do Posicionamento.'
-              console.log(this.hasError)
             }
           } else {
             this.hasError = 'Colaborador sem marcações nesta data.'
@@ -159,25 +153,24 @@ export class TrackpointComponent implements OnInit {
 
           let pointDataSource: any = rep.data()
 
+          if (rep.data().webService_log) {
+            this.webService_log = rep.data().webService_log.result.erroExecucao
+          }
           if (rep.data().webService == true) {
-            pointDataSource.webService = '-i'
+            // pointDataSource.webService = '-i'
             pointDataSource.btnDisabled = true
             pointDataSource.btnClass = 'btn-success'
             pointDataSource.hasError = this.hasError
           } else {
-            pointDataSource.webService = '-p'
+            // pointDataSource.webService = '-p'
             pointDataSource.btnDisabled = false
             pointDataSource.btnClass = 'btn-warning'
             pointDataSource.hasError = rep.data().webService //rep.data().webService
           }
 
-
-
           this.pointDataSource.push(pointDataSource)
-          //console.warn(this.hasError)
-        })
 
-        console.log(this.pointDataSource)
+        })
 
         resolve({ result: 'OK' })
         return this.fnStartMap(this.repMarker)
@@ -207,23 +200,47 @@ export class TrackpointComponent implements OnInit {
   }
 
 
-  fnIntegrarPonto(point) {
-    console.log(point)
+  fnIntegrarPonto(rep_data) {
+    var user = this.auth.getUser()
+    var param = user.empresa_ativa.settings.webservices.ponto
+    var args = {
+      wsdl: param.wsdl,
+      porta: 'ponto',
+      user: param.user,
+      data_key: rep_data.data_key,
+      uid: rep_data.uid,
+      refPonto: rep_data.refPonto,
+      password: param.password,
+      encryption: '0',
+      parameters: {
+        codOpe: 'gravarmarcacao',
+        codRlg: rep_data.codRlg,
+        numCad: rep_data.numCad,
+        numEmp: rep_data.numEmp,
+        tipCol: rep_data.tipCol,
+        datAcc: rep_data.data,
+        horAcc: rep_data.hora,
+        usuMar: rep_data.usuMar.id
+      }
+    }
+    this.func.soapGravarMarcacao(args)
   }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-
-
   ngOnInit() {
+
+    // this.fnIntegrarPonto('ponto')
+
     this.fbServices.fnGetEmployees(this.auth.getUser()).then(employees => {
       if (employees) {
         var data: any = employees
         this.dataSource = new MatTableDataSource(data)
         this.dataSource.paginator = this.paginator
         this.dataSource.sort = this.sort
+        this.paginator._intl.itemsPerPageLabel = '';
       }
     })
 
@@ -237,16 +254,6 @@ export class TrackpointComponent implements OnInit {
       this.map.scrollWheelZoom.disable()
     }
 
-
-    // var app= angular.module('myapp', ['ui.bootstrap']);
-
-    // app.run(function(paginationConfig){
-    //   paginationConfig.firstText='MY FIRST';
-    //   paginationConfig.previousText='YOUR TEXT';
-
-    // })
   }
-
-
 
 }

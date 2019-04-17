@@ -28,6 +28,16 @@ export class APPFunctions {
         })
     }
 
+    public async soapGravarMarcacao(args) {
+        var params = this.encrypt(JSON.stringify(args))
+        var wsdl = `https://overt-hcm.appspot.com/services/gravamarcacao/params=${params},uid=${this.fbServices.DB.LS._uid}`
+        return await new Promise(resolve => {
+            this.httpClient.get(wsdl).subscribe((res) => {
+                resolve(res)
+            })
+        })
+    }
+
     public encrypt(string: string) {
         try {
             if (this.fbServices.DB.LS._uid != undefined)

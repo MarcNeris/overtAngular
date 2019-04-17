@@ -152,7 +152,9 @@ export class AuthGuardService implements CanActivate {
             })//auth
         })
     }//canLoad
-
+    /**
+     * Retorna Usuário Logado
+     */
     public getUser() {
         if (this.fbServices.DB.LS.user != undefined) {
             let user: any = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.user))
@@ -165,7 +167,7 @@ export class AuthGuardService implements CanActivate {
         } else {
             return null
         }
-    }//getUser
+    }
 
     public getHttpUser() {
         return null

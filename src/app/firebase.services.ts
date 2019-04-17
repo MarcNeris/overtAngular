@@ -326,7 +326,6 @@ export class FBServices {
         return this.DB
     }
 
-
     public fnGetCustomers(user: any) {
         return new Promise(resolve => {
             if (user) {
@@ -358,7 +357,6 @@ export class FBServices {
                 resolve(null)
             }
         })
-
     }
 
 

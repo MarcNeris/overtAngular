@@ -15,6 +15,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/layoff', title: 'Férias', icon: 'flight_takeoff', class: '' },
   { path: '/moods', title: 'Moods', icon: 'question_answer', class: '' },
   { path: '/social', title: 'Social', icon: 'people_outline', class: '' },
+  { path: '/ged', title: 'GED', icon: 'data_usage', class: '' },
   //{ path: '/user-profile', title: 'Perfil', icon: 'person', class: '' },
   //{ path: '/table-list', title: 'Table List', icon: 'content_paste', class: '' },
   //{ path: '/typography', title: 'Typography', icon: 'library_books', class: '' },

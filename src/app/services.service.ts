@@ -104,8 +104,6 @@ export class Services {
       console.log(result)
     })
 
-
-
   }
 
   applyFilter(filterValue: string) {
@@ -117,7 +115,6 @@ export class Services {
   }
 
   fnBilling() {
-
     this.fbServices.getCurrentUser().then(user => {
       if (user) {
         this.hideLogin = true
@@ -191,7 +188,6 @@ export class Services {
       this.loadingIsHide = true
     }
   }
-
 
 
   ngAfterViewInit() {
