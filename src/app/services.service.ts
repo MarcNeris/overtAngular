@@ -1,52 +1,88 @@
-import { DataSource } from '@angular/cdk/table';
+import { Observable, BehaviorSubject } from 'rxjs';
+// import { AlertDialog } from './mat-alert/mat-alert.componet';
+// import { DataSource } from '@angular/cdk/table';
 import { APPFunctions } from './app.functions';
 import { FBServices } from './firebase.services';
 import { Injectable, Component, ViewChild, Inject } from '@angular/core';
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Routes, Router, ActivatedRoute, ParamMap } from '@angular/router';
+import {CollectionViewer, DataSource} from "@angular/cdk/collections";
+
+import numeral from 'numeral'
+
+// numeral.register('locale', 'br', {
+//   delimiters: {
+//       thousands: '.',
+//       decimal: ','
+//   },
+//   abbreviations: {
+//       thousand: 'k',
+//       million: 'm',
+//       billion: 'b',
+//       trillion: 't'
+//   },
+//   ordinal : function (number) {
+//       return number === 1 ? '°' : '';
+//   },
+//   currency: {
+//       symbol: 'R$ '
+//   }
+// });
+// numeral.locale('br');
+
 import {
   MatTableDataSource,
+  MatDialog,
   MatPaginator,
   MatSort
 } from '@angular/material';
 
 
-export interface dataElements {
-  apeEmp: string;
-  nomFun: number;
-  numCpf: number;
-}
+// export interface dataElements {
+//   cgcCpf: string;
+//   nomCli: string;
+//   datEmi: string;
+//   datVct: string;
+//   numTit: string;
+//   vlrTit: string;
+//   codCrt: string;
+// }
 
-
-const ELEMENT_DATA: dataElements[] = [
-  { apeEmp: null, nomFun: null, numCpf: null }
-]
+// var ELEMENT_DATA: dataElements[] = [
+//   {
+//     cgcCpf: null,
+//     nomCli: null,
+//     datEmi: null,
+//     datVct: null,
+//     numTit: null,
+//     vlrTit: null,
+//     codCrt: null
+//   }
+// ]
 
 
 @Component({
   selector: 'app-root',
   templateUrl: './services.service.html',
-  styleUrls: ['./services.service.css'],
+  styleUrls: ['./services.service.scss'],
   // template: `
   //   <notifier-container></notifier-container>
   // `
 })
 
-
 @Injectable({
   providedIn: 'root'
 })
 
-
 export class Services {
 
-  dataSource = new MatTableDataSource(ELEMENT_DATA)
-
+  titulos: any
+  dataSource: any = new MatTableDataSource(this.titulos)
   displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
 
-  @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort
+  @ViewChild(MatPaginator) paginator: MatPaginator
 
   apiParams: any
   apiServices: any
@@ -61,7 +97,8 @@ export class Services {
   email: string
   password: string
   loadingIsHide: any = true
-
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  public loading$ = this.loadingSubject.asObservable();
 
   constructor(
     protected httpClient: HttpClient,
@@ -69,13 +106,25 @@ export class Services {
     private router: Router,
     private fbServices: FBServices,
     private func: APPFunctions,
+    private dialog: MatDialog,
+    private fb: FormBuilder,
+
+    // private alertDialog : AlertDialog
 
     // Import the AlertController from ionic package 
     // Consume it in the constructor as 'alertCtrl' 
-
-  ) {
     //this.router.navigate(['/login'])
 
+  ) {
+    // this.alertDialog = fb.group({
+    //   dialogTitle: ['Title', [Validators.required]],
+    //   dialogMsg: ['', [Validators.minLength(5), Validators.maxLength(1000)]],
+    //   dialogType: ['alert'],
+    //   okBtnColor: [''],
+    //   okBtnLabel: [''],
+    //   cancelBtnColor: [''],
+    //   cancelBtnLabel: ['']
+    // })
   }
 
   fnReceberBoleto(titulo) {
@@ -99,11 +148,9 @@ export class Services {
         }]
       }
     }
-
     this.func.soap(args).then(result => {
       console.log(result)
     })
-
   }
 
   applyFilter(filterValue: string) {
@@ -121,11 +168,10 @@ export class Services {
         this.emailVerified = true
         this.hideLogout = false
         this.user = user
-        this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child(this.apiParams.service).once('value', services => {
+        this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child('billing').once('value', services => {
           this.apiServices = services.val()
           return this.fnGetTitulos()
         })
-
       } else {
         this.hideLogin = false
         this.hideLogout = true
@@ -169,15 +215,20 @@ export class Services {
           dataSource = result
           if (dataSource.result) {
             if (dataSource.result.titulosAbertos) {
-              var titulos: any = dataSource.result.titulosAbertos
-              titulos.forEach(titulo => {
-                var vlr: number = titulo.vlrTit
+              this.titulos = dataSource.result.titulosAbertos
+              this.titulos.forEach(titulo => {
+                var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
                 titulo.emaCli = args.parameters.emaCli
                 titulo.vlrTit = vlr
               })
-              this.dataSource = new MatTableDataSource(titulos)
-              this.dataSource.paginator = this.paginator
-              this.dataSource.sort = this.sort
+              this.dataSource = new MatTableDataSource(this.titulos)
+              // console.log(this.dataSource)
+              setTimeout(() => {
+                this.dataSource.paginator = this.paginator
+                this.paginator._intl.itemsPerPageLabel = '';
+                this.dataSource.sort = this.sort
+                this.sort.sortChange.subscribe(()=>{console.log(this.dataSource)});
+              }, 20);
             }
           }
         } else {
@@ -189,8 +240,10 @@ export class Services {
     }
   }
 
-
+  
+  
   ngAfterViewInit() {
+    
     // var argsChefia = {
     //   wsdl: 'http://www.consistema.com.br:8081/g5-senior-services/rubi_Synccom_senior_g5_rh_consistema_portal?wsdl',
     //   porta: 'folha',

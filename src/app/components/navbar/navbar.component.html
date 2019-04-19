@@ -1,12 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
     <div class="container-fluid">
 
-        <div ng-show="empresaAtiva" class="navbar-wrapper">
-            <!-- <a class="navbar-brand" routerLink="{{getTitle()}}">{{getTitle()}}</a> -->
-            <h6 class="text-primary">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
+        <div  class="navbar-wrapper">
+            <h6 [hidden]="!user.isKeyUser" class="text-danger">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
+            <h5 [hidden]="user.isKeyUser" class="text-rose"><b>{{user.displayName}}</b><small class="text-muted"> {{user.email}}</small></h5>
         </div>
 
-        <br>
+       
         <button id="navbar-toggler" mat-raised-button class="navbar-toggler pull-right" type="button"
             (click)="sidebarToggle()">
             <span class="sr-only">Toggle navigation</span>
@@ -30,8 +30,8 @@
 
             <ul class="navbar-nav">
 
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/customers">
+                <li [hidden]="!user.isKeyUser" class="nav-item">
+                    <a class="nav-link btn-link" routerLink="/customers">
                         <i class="material-icons">trip_origin</i>Empresas
                         <p>
                             <span class="d-lg-none d-md-block">Empresas</span>
@@ -56,17 +56,9 @@
                     </div>
                 </li> -->
 
-                <li class="nav-item">
-                        <!-- <button mat-raised-button (click)="fnLogout()"
-                        class="btn btn-primary btn-link mat-raised-button pull-right">
-                    </button> -->
-                    <!-- <a mat-raised-button class="nav-link" routerLink="/login"> -->
+                <li id="btn-power-off" class="nav-item">
                     <a class="nav-link btn-link" (click)="fnLogout()">
                         <i class="fa fa-power-off"></i>
-                        <!-- <i class="material-icons">person</i> -->
-                        <!-- <p (click)="fnLogout()">
-                            <span class="d-lg-none d-md-block"><i class="fa fa-power-off"></i> Sair</span>
-                        </p> -->
                     </a>
                 </li>
 

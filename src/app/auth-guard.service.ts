@@ -1,8 +1,7 @@
 import { APPFunctions } from './app.functions';
 import { FBServices } from './firebase.services';
 import { Injectable } from '@angular/core';
-import { CanActivate, CanActivateChild, ActivatedRouteSnapshot, Router, RouterStateSnapshot, RouterLink, RouteConfigLoadStart } from '@angular/router';
-import { Observable } from 'rxjs';
+import { CanActivate, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
 const AES = CryptoJS.AES
@@ -40,7 +39,6 @@ export class AuthGuardService implements CanActivate {
         await this.canLoad(state.url).then(result => {
             isAuthenticated = (result == true)
         })
-
         if (isAuthenticated != true) {
             this.router.navigate(['/login'], {
                 queryParams: {
@@ -52,7 +50,7 @@ export class AuthGuardService implements CanActivate {
         return isAuthenticated
     }
 
-    canLoad(route) {
+    canLoad(route: string) {
         return new Promise(resolve => {
             this.fbServices.auth().onAuthStateChanged(user => {
 
@@ -78,17 +76,6 @@ export class AuthGuardService implements CanActivate {
                     this.fbServices.DB.LS.user = JSON.stringify(_user).encrypt()
                     this.fbServices.DB.LS.uid = JSON.stringify(user.uid).encrypt()
 
-
-                    // this.fbServices.DB.FB.ref('system').child('keyUser').child(user.uid).once('value', keyUser => {
-                    //     if (keyUser.exists()) {
-                    //         this.fbServices.DB.LS.isKeyUser = JSON.stringify(true).encrypt()
-                    //         this.fbServices.DB.LS.customers = JSON.stringify(keyUser.val()).encrypt()
-                    //         return resolve(true)
-                    //     } else {
-
-                    //     }
-                    // })
-
                     this.fbServices.DB.FB.ref('users').child(user.uid).child('http').child('empresa_ativa').once('value', empresa_ativa => {
                         if (empresa_ativa.exists()) {
                             this.fbServices.DB.LS.empresa_ativa = JSON.stringify(empresa_ativa.val()).encrypt()
@@ -97,6 +84,13 @@ export class AuthGuardService implements CanActivate {
                         }
                     })
 
+                    this.fbServices.DB.FB.ref('system').child('users').child('permissions').child(this.func.toEmailId(user.email)).once('value', permissions => {
+                        if (permissions.exists()) {
+                            this.fbServices.DB.LS.permissions = JSON.stringify(permissions.val()).encrypt()
+                        } else {//nenhuma permissao
+                            this.fbServices.DB.LS.permissions = JSON.stringify(null).encrypt()
+                        }
+                    })
 
                     this.fbServices.DB.FB.ref('users').child(user.uid).child('empresa_logada').once('value', empresa_logada => {
 
@@ -112,16 +106,15 @@ export class AuthGuardService implements CanActivate {
                                 this.fbServices.DB.LS.customers = JSON.stringify(keyUser.val()).encrypt()
                                 return resolve(true)
                             } else {
-
                                 this.fbServices.DB.LS.isKeyUser = JSON.stringify(null).encrypt()
                                 this.fbServices.DB.LS.customers = JSON.stringify(null).encrypt()
                                 if (empresa_logada.exists()) {
 
-                                    let fb_permission = this.fbServices.DB.FB.ref('system').child('route').child('http').child(route).child(empresa_logada.val().cnpjContratoTrabalho).child(user.uid)
+                                    let fb_route = this.fbServices.DB.FB.ref('system').child('route').child('http').child(route).child(empresa_logada.val().cnpjContratoTrabalho).child(user.uid)
 
-                                    fb_permission.once('value', auth => {
+                                    fb_route.once('value', auth => {
                                         if (!auth.exists()) {
-                                            fb_permission.update({
+                                            fb_route.update({
                                                 hasAccess: true
                                             })
                                             return resolve(false)
@@ -157,13 +150,19 @@ export class AuthGuardService implements CanActivate {
      */
     public getUser() {
         if (this.fbServices.DB.LS.user != undefined) {
-            let user: any = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.user))
-            user.isKeyUser = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.isKeyUser))
-            user.customers = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.customers))
-            user.empresa_logada = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresa_logada))
-            user.empresa_ativa = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresa_ativa))
-            this.fbServices.DB.FB.ref('users').child(user.uid).child('http').update(user)
-            return user
+            try {
+                let user: any = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.user))
+                user.isKeyUser = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.isKeyUser))
+                user.customers = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.customers))
+                user.empresa_logada = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresa_logada))
+                user.empresa_ativa = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresa_ativa))
+                user.permissions = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.permissions))
+                this.fbServices.DB.FB.ref('users').child(user.uid).child('http').update(user)
+                return user
+            } catch (error) {
+                return null
+            }
+
         } else {
             return null
         }
@@ -179,7 +178,7 @@ export class AuthGuardService implements CanActivate {
         } else {
             return null
         }
-    }//getUid
+    }
 
     public onEmpresaAtiva(obj: any) {
         return this.fbServices.auth().onAuthStateChanged(user => {

@@ -4,15 +4,26 @@
             <div class="col-lg-12">
                 <nav class="pull-right">
                     <ul>
+                        <li *ngIf="is_module">
+                            <a class="text-muted" routerLink="/{{module_settings}}">
+                               Configurações
+                            </a>
+                        </li>
+
+                        <li *ngIf="is_module">
+                            <a class="text-muted" routerLink="/clients">
+                               Clientes
+                            </a>
+                        </li>
+
                         <li>
                             <a class="text-muted" routerLink="/licence">
                                 Termos & Licenças
                             </a>
                         </li>
-                        <li>
 
-                        </li>
-                        <small class="text-muted" style="font-size:10px"> <a>&copy; {{date | date: 'yyyy'}}, overt</a></small>
+                        <small class="text-muted" style="font-size:10px"> <a>&copy; {{date | date: 'yyyy'}},
+                                overt</a></small>
                     </ul>
                 </nav>
             </div>

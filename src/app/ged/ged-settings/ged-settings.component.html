@@ -1,0 +1,35 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><b>Clientes</b></h4>
+          </div>
+          <div class="card-body">
+            <mat-form-field class="example-full-width">
+              <input [(ngModel)]="cnpj" matInput type="text" placeholder="Cnpj">
+            </mat-form-field>
+            <button (click)="importarCliente()" class="btn btn-default" (ng-disabled)="btnIsDisabled">Importar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><b>Convites</b></h4>
+          </div>
+          <div class="card-body">
+            <mat-form-field class="example-full-width">
+              <input matInput type="text" placeholder="email">
+            </mat-form-field>
+            <button class="btn btn-default">Enviar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,3 +1,4 @@
+import { AuthGuardService } from './../../auth-guard.service';
 import { Component, OnInit, Renderer, ViewChild, ElementRef } from '@angular/core';
 import { ROUTES } from '../../sidebar/sidebar.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -18,7 +19,13 @@ export class NavbarComponent implements OnInit {
 
     @ViewChild("navbar-cmp") button;
 
-    constructor(location: Location, private renderer: Renderer, private element: ElementRef, private router: Router) {
+    constructor(
+        location: Location, 
+        private renderer: Renderer, 
+        private element: ElementRef, 
+        private router: Router,
+        private auth: AuthGuardService
+        ) {
         this.location = location;
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;
@@ -32,6 +39,8 @@ export class NavbarComponent implements OnInit {
             this.sidebarClose();
         });
     }
+
+
     getTitle() {
         var titlee = window.location.pathname;
         titlee = titlee.substring(1);

@@ -1,0 +1,47 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="col-lg-12">
+      <div class="row">
+
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title"><b>Clientes</b></h4>
+            </div>
+            <div class="card-body">
+              <mat-form-field class="example-full-width">
+                <input [(ngModel)]="cnpj_cliente" matInput type="text" placeholder="Cnpj">
+              </mat-form-field>
+              <button (click)="importarCliente()" class="btn btn-default"
+                (ng-disabled)="btnIsDisabled">Importar</button>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title"><b>Usuários</b></h4>
+            </div>
+            <div class="card-body">
+              <mat-form-field class="example-full-width">
+                <input [(ngModel)]="email_usuario" matInput type="text" placeholder="Email">
+              </mat-form-field>
+              <button (click)="convidarUsuarios()" class="btn btn-default">Convidar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div><!-- row -->
+    <div class="info-overt">
+      <span *ngIf="hasSucces" class="text-success">{{hasSucces}}</span>
+      <span *ngIf="hasError" class="text-danger">{{hasError}}</span>
+    </div>
+  </div>
+</div>

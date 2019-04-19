@@ -38,6 +38,15 @@ export class APPFunctions {
         })
     }
 
+    public importarCliente(cnpj: string, apiKey: string) {
+        var wsdl = `https://overt-hcm.appspot.com/clients/${cnpj}/${apiKey}`
+        return new Promise(resolve => {
+            this.httpClient.get(wsdl).subscribe((res) => {
+                resolve(res)
+            })
+        })
+    }
+
     public encrypt(string: string) {
         try {
             if (this.fbServices.DB.LS._uid != undefined)
@@ -57,11 +66,25 @@ export class APPFunctions {
     }
 
     public toCnpjId(string: string) {
-        return ("00000000000000" + string.toLowerCase().replace(/[^0-9]+/g, "")).slice(-14)
+        if (string) {
+            return ("00000000000000" + string.toLowerCase().replace(/[^0-9]+/g, "")).slice(-14)
+        } else {
+            return null
+        }
+    }
+
+
+    public isEmail(email: string) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
 
     public toEmailId(string: string) {
-        return string.toLowerCase().replace(/\./g, "-").replace(/[^a-zA-Z0-9@]+/g, "-")
+        if (string) {
+            return string.toLowerCase().replace(/\./g, "-").replace(/[^a-zA-Z0-9@]+/g, "-")
+        } else {
+            return null
+        }
     }
 
     public toCpfId(string: string) {
@@ -82,5 +105,5 @@ export class APPFunctions {
         }
     }
 
-    
+
 }

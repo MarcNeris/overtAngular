@@ -2,7 +2,7 @@ import { FBServices } from './../../firebase.services';
 import { APPFunctions } from './../../app.functions';
 
 import { Component, OnInit, ElementRef } from '@angular/core';
-import { ROUTES } from '../sidebar/sidebar.component';
+// import { ROUTES } from '../sidebar/sidebar.component';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
 import { resolve } from 'url';
@@ -14,8 +14,6 @@ import { AuthGuardService } from 'app/auth-guard.service';
     styleUrls: ['./navbar.component.css']
 })
 
-
-
 export class NavbarComponent implements OnInit {
     private listTitles: any[];
     location: Location;
@@ -23,7 +21,13 @@ export class NavbarComponent implements OnInit {
 
     empresaAtiva: any = {
         cnpj: '',
-        nome: ''
+        nome: '',
+        isKeyUser: null
+    }
+
+    user: any = {
+        displyName: '',
+        email: ''
     }
 
     private toggleButton: any;
@@ -36,10 +40,11 @@ export class NavbarComponent implements OnInit {
         private element: ElementRef,
         private fbServices: FBServices,
         private router: Router) {
+
         this.location = location;
         this.sidebarVisible = false;
+
     }
-    
 
     fnGetEmpresaAtiva(): void {
         this.auth.onEmpresaAtiva(empresa_ativa => {
@@ -48,12 +53,34 @@ export class NavbarComponent implements OnInit {
             }
         })
     }
-    fnLogout(){
+
+    fnLogout() {
         this.fbServices.logout()
+    }
+
+    onUser() {
+        var user = this.auth.getUser()
+        if (user) {
+            this.user = this.auth.getUser()
+        }
+        this.router.events.subscribe(() => {
+            var user = this.auth.getUser()
+            if (user) {
+                this.user = this.auth.getUser()
+            }
+        })
     }
 
 
     ngOnInit() {
+        this.onUser()
+
+
+
+
+
+
+
 
         // if (this.router.url.includes("login")) {
         //     document.getElementsByClassName('sidebar')[0].remove()
@@ -66,8 +93,8 @@ export class NavbarComponent implements OnInit {
         //     }
         // })
         // this.listTitles = ROUTES.filter(listTitle => listTitle);
-        
-        
+
+
         this.fnGetEmpresaAtiva()
         this.router.events.subscribe((event) => {
             this.sidebarClose();

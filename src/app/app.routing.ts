@@ -3,40 +3,26 @@ import { CommonModule, } from '@angular/common'
 import { BrowserModule } from '@angular/platform-browser'
 import { Routes, RouterModule } from '@angular/router'
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component'
-import { Services } from './services.service'
 import { AuthGuardService } from './auth-guard.service';
+import { LoginComponent } from './login/login.component';
+import { Services } from './services.service'
+import { GedClientComponent } from './ged/ged-client/ged-client.component';
+import { BillingComponent } from './services/billing/billing.component';
 
 const routes: Routes = [
-  { path: 'services/:apiKey/:service', component: Services, canActivate: [AuthGuardService]},
-  // {
-  //   path: '',
-  //   redirectTo: 'dashboard',
-  //   pathMatch: 'full',
-  // },
-  // {
-  //   path: 'dashboard',
-  //   redirectTo: 'dashboard',
-  //   pathMatch: 'full',
-  // },
+  { path: 'services/:apiKey/services', component: Services, canActivate: [AuthGuardService] },
+  { path: 'services/:apiKey/billing', component: BillingComponent, canActivate: [AuthGuardService] },
+  { path: 'services/:apiKey/ged', component: GedClientComponent, canActivate: [AuthGuardService] },
   {
     path: '',
     component: AdminLayoutComponent,
-    children: [
-      {
-        path: '',
-        loadChildren: './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
-      }]
+    // children: [
+    //   {
+    //     path: '',
+    //     loadChildren: './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
+    //   }]
   },
-  //{ path: 'home',      component: HomeComponent },
-  //{ path: 'dashboard',      component: DashboardComponent },
-  // { path: 'user-profile',   component: UserProfileComponent },
-  // { path: 'table-list',     component: TableListComponent },
-  // { path: 'typography',     component: TypographyComponent },
-  // { path: 'icons',          component: IconsComponent },
-  // { path: 'maps',           component: MapsComponent },
-  // { path: 'notifications',  component: NotificationsComponent },
-  // { path: 'upgrade',        component: UpgradeComponent },
-  // { path: '',               redirectTo: 'dashboard', pathMatch: 'full' }
+  { path: 'login', component: LoginComponent },
 ]
 
 @NgModule({

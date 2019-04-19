@@ -35,6 +35,7 @@ export class CustomersComponent implements OnInit {
 
   fnAtivarEmpresa(empresa: object): void {
     this.fbServices.DB.FB.ref('users').child(this.auth.getUid()).child('http/empresa_ativa').set(empresa)
+    window.location.reload()
   }
 
   fnTableCustomers() {

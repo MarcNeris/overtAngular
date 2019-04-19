@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MytrackpointComponent } from './mytrackpoint.component';
+import { GedClientComponent } from './ged-client.component';
 
-describe('MytrackpointComponent', () => {
-  let component: MytrackpointComponent;
-  let fixture: ComponentFixture<MytrackpointComponent>;
+describe('GedClientComponent', () => {
+  let component: GedClientComponent;
+  let fixture: ComponentFixture<GedClientComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MytrackpointComponent ]
+      declarations: [ GedClientComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MytrackpointComponent);
+    fixture = TestBed.createComponent(GedClientComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

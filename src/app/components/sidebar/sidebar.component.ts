@@ -9,20 +9,26 @@ declare interface RouteInfo {
   icon: string;
   class: string;
 }
-export const ROUTES: RouteInfo[] = [
+export const MAIN_ROUTES: RouteInfo[] = [
   { path: '/dashboard', title: 'Dashboard', icon: 'dashboard', class: '' },
   { path: '/trackpoint', title: 'Track Point', icon: 'track_changes', class: '' },
   { path: '/layoff', title: 'Férias', icon: 'flight_takeoff', class: '' },
   { path: '/moods', title: 'Moods', icon: 'question_answer', class: '' },
   { path: '/social', title: 'Social', icon: 'people_outline', class: '' },
   { path: '/ged', title: 'GED', icon: 'data_usage', class: '' },
-  //{ path: '/user-profile', title: 'Perfil', icon: 'person', class: '' },
-  //{ path: '/table-list', title: 'Table List', icon: 'content_paste', class: '' },
-  //{ path: '/typography', title: 'Typography', icon: 'library_books', class: '' },
-  //{ path: '/icons', title: 'Icons', icon: 'bubble_chart', class: '' },
-  //{ path: '/maps', title: 'Maps', icon: 'location_on', class: '' },
-  //{ path: '/notifications', title: 'Notifications', icon: 'notifications', class: '' },
-  //{ path: '/upgrade', title: 'Upgrade', icon: 'unarchive', class: '' },
+  { path: '/login', title: 'Login', icon: 'person', class: '' },
+];
+
+export const TRACKPOINT_ROUTES: RouteInfo[] = [
+  { path: '/dashboard', title: 'Dashboard', icon: 'dashboard', class: '' },
+  { path: '/trackpoint', title: 'Track Point', icon: 'track_changes', class: '' },
+  { path: '/login', title: 'Login', icon: 'person', class: '' },
+];
+
+export const GED_ROUTES: RouteInfo[] = [
+  { path: '/dashboard', title: 'Dashboard', icon: 'dashboard', class: '' },
+  { path: '/ged', title: 'GED', icon: 'data_usage', class: '' },
+  { path: '/ged-settings', title: 'Configurações', icon: 'settings', class: '' },
   { path: '/login', title: 'Login', icon: 'person', class: '' },
 ];
 
@@ -39,56 +45,52 @@ export class SidebarComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private fbServices:FBServices
+    private fbServices: FBServices
   ) {
     this.sidebarVisible = true
   }
 
-  // ngAfterViewInit(){
-
-  //   if (this.router.url.includes("login")) {
-  //     this.sidebarVisible = false
-  //   } else {
-  //     this.sidebarVisible = true
-  //   }
-
-  // }
-
-  fnLogout(){
+  fnLogout() {
     this.fbServices.logout()
   }
 
-  ngDoCheck(){
+  ngDoCheck() {
+
+    // switch (key) {
+    //   case value:
+
+    //     break;
+
+    //   default:
+    //     break;
+    // }
+
     if (this.router.url.includes("login")) {
-      this.sidebarVisible = false
+      this.menuItems = []
+    } else if (this.router.url.includes("ged")) {
+      this.menuItems = GED_ROUTES.filter(menuItem => menuItem);
+    } else if (this.router.url.includes("trackpoint")) {
+      this.menuItems = TRACKPOINT_ROUTES.filter(menuItem => menuItem);
     } else {
-      this.sidebarVisible = true
+      this.menuItems = MAIN_ROUTES.filter(menuItem => menuItem);
     }
+
   }
 
-  // ngOnChanges(){
-  //   console.log('ngAfterContentChecked')
-  // }
 
 
-  // ngAfterViewChecked(){
-  //   console.log('ngAfterViewChecked')
+  // onModule() {
+  //   this.router.events.subscribe(() => {
+  //     console.log(this.router.url)
+
+  //   })
   // }
 
   ngOnInit() {
 
-  
-
-    // console.log(this.router.url)
-
-    // var sidebar = document.getElementsByClassName('sidebar')[0].getAttributeNames
-
-    // console.log(sidebar)
-
-    this.menuItems = ROUTES.filter(menuItem => menuItem);
   }
-  isMobileMenu() {
 
+  isMobileMenu() {
     if ($(window).width() > 991) {
       return false;
     }
