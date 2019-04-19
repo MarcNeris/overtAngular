@@ -46,14 +46,14 @@ import { GedClientComponent } from './ged/ged-client/ged-client.component';
 import { BillingComponent } from './services/billing/billing.component';
 
 
-export class MatPaginatorIntlCro extends MatPaginatorIntl {
-  itemsPerPageLabel = 'Stavki po stranici';
-  nextPageLabel     = 'Slijedeća stranica';
-  previousPageLabel = 'Prethodna stranica';
+export class MatPaginatorIntlBrl extends MatPaginatorIntl {
+  itemsPerPageLabel = '';
+  nextPageLabel     = 'Próxima';
+  previousPageLabel = 'Anterior';
 
   getRangeLabel = function (page, pageSize, length) {
     if (length === 0 || pageSize === 0) {
-      return '0 od ' + length;
+      return '0 de ' + length;
     }
     length = Math.max(length, 0);
     const startIndex = page * pageSize;
@@ -61,7 +61,7 @@ export class MatPaginatorIntlCro extends MatPaginatorIntl {
     const endIndex = startIndex < length ?
       Math.min(startIndex + pageSize, length) :
       startIndex + pageSize;
-    return startIndex + 1 + ' - ' + endIndex + ' od ' + length;
+    return startIndex + 1 + ' - ' + endIndex + ' de ' + length;
   };
 
 }
@@ -109,7 +109,7 @@ export class MatPaginatorIntlCro extends MatPaginatorIntl {
     FBServices,
     APPFunctions,
     AuthGuardService,
-    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlCro}
+    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlBrl}
   ],
   bootstrap: [AppComponent]
 })
