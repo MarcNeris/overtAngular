@@ -2,7 +2,7 @@ import { FBServices } from './../firebase.services';
 import { APPFunctions } from './../app.functions';
 import { AuthGuardService } from './../auth-guard.service';
 import { Component, OnInit } from '@angular/core';
-import * as moment  from 'moment';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-registers',
@@ -47,37 +47,40 @@ export class RegistersComponent implements OnInit {
    */
   convidarUsuarios() {
     if (this.email_usuario) {
-
-      console.log(this.func.isEmail(this.email_usuario))
-
       if (this.func.isEmail(this.email_usuario)) {
         var user = this.auth.getUser()
-        console.log(user)
-        this.fbServices.DB.FB.ref('system').child('users').child('permissions').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa.settings.apiKey).update({
-          email_enviado: false,
-          system: {
+        
+        if (user.empresa_ativa.settings.apiKey) {
+
+          this.fbServices.DB.FB.ref('system').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa.settings.apiKey).update({
+            email_enviado: false,
+
             permissions: {
-              modules: {
-                ged: {
-                  HAS_USER: false,
-                  LER_DOCUMENTOS: false,
-                  EDITAR_DOCUMENTOS: false,
-                  ENVIAR_DOCUMENTOS: false,
-                  REMOVER_DOCUMENTOS: false,
-                }
-              },
+              ged: {
+                HAS_USER: false,
+                LER_DOCUMENTOS: false,
+                EDITAR_DOCUMENTOS: false,
+                ENVIAR_DOCUMENTOS: false,
+                REMOVER_DOCUMENTOS: false,
+              }
             },
-          },
-          log: {
-            keyUser: {
-              uid: user.uid,
-              email: user.email,
-              datLog: moment().format('DD/MM/YYY HH:mm:ss')
-            }
-          }
-        })
-        this.hasError = null
-        this.hasSucces = `${this.email_usuario} foi convidado!`
+            log: {
+              [moment().format('YYYYMMDDHHmmss')]: {
+                KeyUser: user.uid,
+                name: user.displayName,
+                email: user.email,
+                datLog: moment().format('DD/MM/YYYY HH:mm:ss')
+              }
+            },
+            cnpj: this.func.toCnpjId(user.empresa_ativa.cnpj),
+            nome: user.empresa_ativa.nome
+          })
+          this.hasError = null
+          this.hasSucces = `${this.email_usuario} foi convidado!`
+        } else{
+          this.hasSucces = null
+          this.hasError = `Você não tem permissão para fazer convites nessa empresa.` 
+        }
       } else {
         this.hasError = `${this.email_usuario} não foi considerado um email válido.`
         this.hasSucces = null
@@ -94,6 +97,8 @@ export class RegistersComponent implements OnInit {
   }
 
   ngOnInit() {
+    var user = this.auth.getUser()
+    console.log(user)
   }
 
 }

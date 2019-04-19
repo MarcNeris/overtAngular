@@ -36,8 +36,8 @@ export class BillingComponent implements OnInit {
 
   apiParams: any
   apiServices: any
-  hasSuccess: string = null
-  hasError: string = null
+  hasSuccess: string = ''
+  hasError: string = ''
   dataSource: any
   isLoading: boolean = false
 
@@ -109,8 +109,10 @@ export class BillingComponent implements OnInit {
         this.func.soap(args).then(result => {
           var dataSource: any = []
           if (result) {
+            this.isLoading = false
             dataSource = result
             if (dataSource.result) {
+
               if (dataSource.result.resultado == "OK") {
                 this.titulos = dataSource.result.titulosAbertos
                 this.titulos.forEach(titulo => {
@@ -120,17 +122,22 @@ export class BillingComponent implements OnInit {
                 })
 
                 this.dataSource = new MatTableDataSource(this.titulos)
-                this.isLoading = false
-
                 dataSource.sort = this.sort
                 resolve(dataSource)
 
                 dataSource.paginator = this.paginator
+                this.showTable = true
+              } else{
+                this.showTable = false
+                resolve(false)
+                this.isLoading = false
+                this.hasSuccess = null
+                this.hasError = `Nenhum título vinculado ao seu email (${this.user.email}) foi encontrato. Entre em contato com nosso financeiro.`
               }
             }
+          } else{
+            this.isLoading = false
           }
-        }).then(() => {
-          this.showTable = true
         })
       })
     } else {
@@ -147,18 +154,19 @@ export class BillingComponent implements OnInit {
     this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child('billing').once('value', services => {
 
       if (services.exists()) {
+        
         this.apiServices = services.val()
         if (this.apiServices.sitSrv == true) {
           this.fnGetTitulos(this.apiServices)
         } else {
+          this.isLoading = false
           this.hasError = 'Erro ao processar este contrato.'
         }
       } else {
+        this.isLoading = false
         this.hasError = 'Cliente não está parametrizado.'
       }
     })
-
-
   }
 
   ngAfterViewInit() {
