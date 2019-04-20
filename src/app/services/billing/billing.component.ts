@@ -7,9 +7,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FBServices } from 'app/firebase.services';
 import {
   MatTableDataSource,
-  MatDialog,
   MatPaginator,
-  MatPaginatorIntl,
   MatSort
 } from '@angular/material';
 
@@ -87,7 +85,10 @@ export class BillingComponent implements OnInit {
     return apiParam
   }
 
-
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+  
   fnGetTitulos(param: any) {
 
     this.isLoading = true

@@ -1,6 +1,5 @@
 import { APPFunctions } from './../../app.functions';
 import { AuthGuardService } from './../../auth-guard.service';
-import { DashboardComponent } from './../../dashboard/dashboard.component';
 import { Component, OnInit } from '@angular/core';
 import { FBServices } from './../../firebase.services';
 
