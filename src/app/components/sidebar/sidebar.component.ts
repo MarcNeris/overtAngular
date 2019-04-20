@@ -28,6 +28,7 @@ export const TRACKPOINT_ROUTES: RouteInfo[] = [
 export const GED_ROUTES: RouteInfo[] = [
   { path: '/dashboard', title: 'Dashboard', icon: 'dashboard', class: '' },
   { path: '/ged', title: 'GED', icon: 'data_usage', class: '' },
+  { path: '/ged-share', title: 'Compartilhamento', icon: 'share', class: '' },
   { path: '/ged-settings', title: 'Configurações', icon: 'settings', class: '' },
   { path: '/login', title: 'Login', icon: 'person', class: '' },
 ];

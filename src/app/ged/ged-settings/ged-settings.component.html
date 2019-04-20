@@ -2,21 +2,78 @@
   <div class="container-fluid">
     <div class="row">
 
-      <div class="col-md-3">
+      <div class="col-md-6 col-sm-12">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title"><b>Clientes</b></h4>
+            <h4 class="card-title"><b>Categoria de documentos</b></h4>
           </div>
           <div class="card-body">
-            <mat-form-field class="example-full-width">
-              <input [(ngModel)]="cnpj" matInput type="text" placeholder="Cnpj">
+
+
+            <mat-form-field>
+              <mat-label>Categoria do Documento</mat-label>
+              <mat-select [formControl]="categoriaControl" [(ngModel)]="categoria_documento" required>
+                <mat-option *ngFor="let categoria_documento of categorias_documento" id="categoria_documento.descricao" [value]="categoria_documento.id">
+                  {{categoria_documento.nome}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="categoriaControl.hasError('required')">Selecione a categoria do documento</mat-error>
+              <mat-hint>{{categoriaControl}}</mat-hint>
             </mat-form-field>
-            <button (click)="importarCliente()" class="btn btn-default" (ng-disabled)="btnIsDisabled">Importar</button>
+
+            <mat-form-field>
+              <mat-label>Peridiocidade</mat-label>
+              <mat-select [formControl]="peridiocidadeControl" [(ngModel)]="peridiocidade_documento" required>
+                <mat-option *ngFor="let peridiocidade_documento of peridiocidades_documento"
+                  [value]="peridiocidade_documento.id">
+                  {{peridiocidade_documento.nome}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="peridiocidadeControl.hasError('required')">Selecione a peridiocidade do documento
+              </mat-error>
+              <mat-hint>{{peridiocidadeControl.descricao}}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Departamentos do Documento</mat-label>
+              <mat-select [(ngModel)]="departamentos_documento" [formControl]="departamentosControl" multiple required>
+                <mat-option *ngFor="let departamentos_documento of lista_departamentos_documento"
+                  [value]="departamentos_documento">{{departamentos_documento}}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="peridiocidadeControl.hasError('required')">Selecione os departamentos do documento
+              </mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field class="example-full-width">
+              <input [(ngModel)]="unidades_documento" matInput type="text" placeholder="Unidades">
+            </mat-form-field>
+
+
+            <div class="togglebutton">
+              <label>
+                <input type="checkbox" [(ngModel)]="situacao_categoria" checked="situacao_categoria">
+                <span class="toggle"></span>
+                Categoria está ativa?
+              </label>
+            </div>
+
+
+            <div class="row">
+              <div class="col-md-12">
+                <mat-form-field class="example-full-width">
+                  <textarea [(ngModel)]="descricao_documento" matInput placeholder="Descrição do Documento"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <button (click)="criarCategoria()" class="btn btn-default" (ng-disabled)="false">Criar</button>
+
           </div>
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-6 col-sm-12">
         <div class="card">
           <div class="card-header">
             <h4 class="card-title"><b>Convites</b></h4>

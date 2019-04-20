@@ -88,9 +88,9 @@ export class BillingComponent implements OnInit {
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-  
-  fnGetTitulos(param: any) {
 
+  fnGetTitulos(param: any) {
+    var user: any = this.auth.getUser()
     this.isLoading = true
     var args: any = {
       wsdl: param.wsdl,
@@ -100,50 +100,45 @@ export class BillingComponent implements OnInit {
       encryption: '0',
       parameters: {
         tipPro: '1',
-        emaCli: this.user.email,
+        emaCli: user.email,
       }
     }
 
-    if (args) {
-
-      return new Promise(resolve => {
-        this.func.soap(args).then(result => {
-          var dataSource: any = []
-          if (result) {
-            this.isLoading = false
-            dataSource = result
-            if (dataSource.result) {
-
-              if (dataSource.result.resultado == "OK") {
-                this.titulos = dataSource.result.titulosAbertos
-                this.titulos.forEach(titulo => {
-                  var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
-                  titulo.emaCli = args.parameters.emaCli
-                  titulo.vlrTit = vlr
-                })
-
-                this.dataSource = new MatTableDataSource(this.titulos)
-                dataSource.sort = this.sort
-                resolve(dataSource)
-
-                dataSource.paginator = this.paginator
-                this.showTable = true
-              } else{
-                this.showTable = false
-                resolve(false)
-                this.isLoading = false
-                this.hasSuccess = null
-                this.hasError = `Nenhum título vinculado ao seu email (${this.user.email}) foi encontrato. Entre em contato com nosso financeiro.`
-              }
-            }
-          } else{
-            this.isLoading = false
-          }
-        })
+    new Promise(resolve => {
+      this.func.soap(args).then(result => {
+        resolve(result)
       })
-    } else {
-      this.isLoading = false
-    }
+    }).then(result => {
+
+      var dataSource: any = []
+      if (result) {
+        this.isLoading = false
+        dataSource = result
+        if (dataSource.result) {
+
+          if (dataSource.result.resultado == "OK") {
+            this.titulos = dataSource.result.titulosAbertos
+            this.titulos.forEach(titulo => {
+              var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
+              titulo.emaCli = args.parameters.emaCli
+              titulo.vlrTit = vlr
+            })
+
+            this.dataSource = new MatTableDataSource(this.titulos)
+            dataSource.sort = this.sort
+            dataSource.paginator = this.paginator
+            this.showTable = true
+          } else {
+            this.showTable = false
+            this.isLoading = false
+            this.hasSuccess = null
+            this.hasError = `Nenhum título vinculado ao seu email (${user.email}) foi encontrato. Entre em contato com nosso financeiro.`
+          }
+        }
+      } else {
+        this.isLoading = false
+      }
+    })
   }
 
 
@@ -155,7 +150,7 @@ export class BillingComponent implements OnInit {
     this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child('billing').once('value', services => {
 
       if (services.exists()) {
-        
+
         this.apiServices = services.val()
         if (this.apiServices.sitSrv == true) {
           this.fnGetTitulos(this.apiServices)

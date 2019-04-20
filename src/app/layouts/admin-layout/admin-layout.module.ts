@@ -22,8 +22,7 @@ import {
   MatToolbarModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatDialogModule,
-  
+  MatDialogModule,  
 } from '@angular/material';
 
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
@@ -38,7 +37,6 @@ import { IconsComponent }         from '../../icons/icons.component';
 import { MapsComponent }          from '../../maps/maps.component';
 import { NotificationsComponent } from '../../notifications/notifications.component';
 import { UpgradeComponent }       from '../../upgrade/upgrade.component';
-// import { LoginComponent }         from './../../login/login.component'
 import { LicenseComponent }       from 'app/license/license.component'
 import { TrackpointComponent }    from 'app/trackpoint/trackpoint.component'
 import { CustomersComponent }     from 'app/customers/customers.component';
@@ -48,9 +46,6 @@ import { SocialComponent }        from 'app/social/social.component';
 import { GedComponent }           from 'app/ged/ged.component';
 import { GedSettingsComponent }   from 'app/ged/ged-settings/ged-settings.component';
 import { RegistersComponent } from 'app/registers/registers.component';
-
-// import { TrackpointMeComponent } from 'app/trackpoint-me/trackpoint-me.component';
-//import { ServicesComponent } from 'app/services/services.component';
 
 @NgModule({
   imports: [
@@ -76,8 +71,6 @@ import { RegistersComponent } from 'app/registers/registers.component';
     MatMomentDateModule,
     ReactiveFormsModule,
     MatDialogModule,
-    // MatTable,
-    // MatSort
   ],
   declarations: [
     HomeComponent,
@@ -89,7 +82,6 @@ import { RegistersComponent } from 'app/registers/registers.component';
     MapsComponent,
     NotificationsComponent,
     UpgradeComponent,
-    // LoginComponent,
     LicenseComponent,
     TrackpointComponent,
     CustomersComponent,
