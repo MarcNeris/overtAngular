@@ -22,10 +22,12 @@ import {
   MatToolbarModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatDialogModule,  
+  MatDialogModule,
+  MatAutocompleteModule,
+  MatExpansionModule
 } from '@angular/material';
 
-import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { MatMomentDateModule }    from "@angular/material-moment-adapter";
 
 //Incluir Páginas
 import { HomeComponent }          from '../../home/home.component';
@@ -45,7 +47,7 @@ import { MoodsComponent }         from 'app/moods/moods.component';
 import { SocialComponent }        from 'app/social/social.component';
 import { GedComponent }           from 'app/ged/ged.component';
 import { GedSettingsComponent }   from 'app/ged/ged-settings/ged-settings.component';
-import { RegistersComponent } from 'app/registers/registers.component';
+import { RegistersComponent }     from 'app/registers/registers.component';
 
 @NgModule({
   imports: [
@@ -71,6 +73,8 @@ import { RegistersComponent } from 'app/registers/registers.component';
     MatMomentDateModule,
     ReactiveFormsModule,
     MatDialogModule,
+    MatAutocompleteModule,
+    MatExpansionModule
   ],
   declarations: [
     HomeComponent,

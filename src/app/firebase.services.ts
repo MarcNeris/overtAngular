@@ -54,6 +54,7 @@ export class FBServices {
     constructor(
         public route: Router
     ) {
+
         firebase.auth().onAuthStateChanged(user => {
 
             if (user) {
@@ -68,6 +69,7 @@ export class FBServices {
                     emailVerified: user.emailVerified,
                     _token: user.refreshToken
                 }
+                
                 this.DB.LS.user = JSON.stringify(_user).encrypt()
                 this.DB.LS._uid = user.uid
             } else {

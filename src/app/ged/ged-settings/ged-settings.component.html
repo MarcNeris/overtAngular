@@ -9,65 +9,101 @@
           </div>
           <div class="card-body">
 
+            <div [formGroup]="categoriaDocumentoForm">
+              <mat-form-field>
+                <mat-label>Categoria do Documento</mat-label>
+                <mat-select formControlName="categoria_documento" [(ngModel)]="categoria_documento" required>
+                  <mat-option *ngFor="let categoria_documento of categorias_documento"
+                    id="categoria_documento.descricao" [value]="categoria_documento.id">
+                    {{categoria_documento.nome}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.categoria_documento?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+              </mat-form-field>
 
-            <mat-form-field>
-              <mat-label>Categoria do Documento</mat-label>
-              <mat-select [formControl]="categoriaControl" [(ngModel)]="categoria_documento" required>
-                <mat-option *ngFor="let categoria_documento of categorias_documento" id="categoria_documento.descricao" [value]="categoria_documento.id">
-                  {{categoria_documento.nome}}
-                </mat-option>
-              </mat-select>
-              <mat-error *ngIf="categoriaControl.hasError('required')">Selecione a categoria do documento</mat-error>
-              <mat-hint>{{categoriaControl}}</mat-hint>
-            </mat-form-field>
+              <mat-form-field>
+                <mat-label>Departamentos do Documento</mat-label>
+                <mat-select formControlName="departamentos_documento" [(ngModel)]="departamentos_documento" multiple
+                  required>
+                  <mat-option *ngFor="let departamentos_documento of lista_departamentos_documento"
+                    [value]="departamentos_documento.id">{{departamentos_documento.nome}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.departamentos_documento?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+              </mat-form-field>
 
-            <mat-form-field>
-              <mat-label>Peridiocidade</mat-label>
-              <mat-select [formControl]="peridiocidadeControl" [(ngModel)]="peridiocidade_documento" required>
-                <mat-option *ngFor="let peridiocidade_documento of peridiocidades_documento"
-                  [value]="peridiocidade_documento.id">
-                  {{peridiocidade_documento.nome}}
-                </mat-option>
-              </mat-select>
-              <mat-error *ngIf="peridiocidadeControl.hasError('required')">Selecione a peridiocidade do documento
-              </mat-error>
-              <mat-hint>{{peridiocidadeControl.descricao}}</mat-hint>
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Departamentos do Documento</mat-label>
-              <mat-select [(ngModel)]="departamentos_documento" [formControl]="departamentosControl" multiple required>
-                <mat-option *ngFor="let departamentos_documento of lista_departamentos_documento"
-                  [value]="departamentos_documento">{{departamentos_documento}}</mat-option>
-              </mat-select>
-              <mat-error *ngIf="peridiocidadeControl.hasError('required')">Selecione os departamentos do documento
-              </mat-error>
-            </mat-form-field>
-
-
-            <mat-form-field class="example-full-width">
-              <input [(ngModel)]="unidades_documento" matInput type="text" placeholder="Unidades">
-            </mat-form-field>
-
-
-            <div class="togglebutton">
-              <label>
-                <input type="checkbox" [(ngModel)]="situacao_categoria" checked="situacao_categoria">
-                <span class="toggle"></span>
-                Categoria está ativa?
-              </label>
-            </div>
+              <mat-form-field>
+                <mat-label>Peridiocidade</mat-label>
+                <mat-select formControlName="peridiocidade_documento" [(ngModel)]="peridiocidade_documento" required>
+                  <mat-option *ngFor="let peridiocidade_documento of peridiocidades_documento"
+                    [value]="peridiocidade_documento.id">
+                    {{peridiocidade_documento.nome}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.peridiocidade_documento?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+              </mat-form-field>
 
 
-            <div class="row">
-              <div class="col-md-12">
-                <mat-form-field class="example-full-width">
-                  <textarea [(ngModel)]="descricao_documento" matInput placeholder="Descrição do Documento"></textarea>
-                </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <input formControlName="unidades_documento" [(ngModel)]="unidades_documento" matInput type="text"
+                  placeholder="Unidades">
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.unidades_documento?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+              </mat-form-field>
+
+              <div class="togglebutton">
+                <label>
+                  <input formControlName="situacao_categoria" type="checkbox" [(ngModel)]="situacao_categoria"
+                    checked="situacao_categoria">
+                  <span class="toggle"></span>
+                  Categoria está ativa?
+                </label>
               </div>
+
+
+              <div class="row">
+                <div class="col-md-12">
+                  <mat-form-field class="example-full-width">
+                    <textarea formControlName="descricao_categoria" [(ngModel)]="descricao_categoria" matInput
+                      placeholder="Descrição da Categoria"></textarea>
+                    <mat-error *ngIf="categoriaDocumentoForm?.controls?.descricao_categoria?.hasError('required')">
+                      Essa informação é <strong>requerida</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- <mat-form-field class="example-full-width" *ngIf="false">
+                <input matInput formControlName="apiKey" type="text" placeholder="apiKey" [(ngModel)]="apiKey"
+                  [errorStateMatcher]="matcher">
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.apiKey?.hasError('required')">
+                  ApiKey <strong>obrigatória</strong>
+                </mat-error>
+              </mat-form-field> -->
+
+
             </div>
 
-            <button (click)="criarCategoria()" class="btn btn-default" (ng-disabled)="false">Criar</button>
+            <button (click)="criarCategoria()" mat-raised-button color="primary"
+              [disabled]="!categoriaDocumentoForm.valid">Criar</button>
+
+            <!-- <form class="example-form">
+              <mat-form-field class="example-full-width">
+                <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="myControl"
+                  [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of options" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </form> -->
 
           </div>
         </div>
@@ -79,9 +115,47 @@
             <h4 class="card-title"><b>Convites</b></h4>
           </div>
           <div class="card-body">
+
             <mat-form-field class="example-full-width">
               <input matInput type="text" placeholder="email">
             </mat-form-field>
+
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Personal data
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    Type your name and age
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <mat-form-field>
+                  <input matInput placeholder="First name">
+                </mat-form-field>
+
+                <mat-form-field>
+                  <input matInput placeholder="Age">
+                </mat-form-field>
+              </mat-expansion-panel>
+              <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Self aware panel
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    Currently I am {{panelOpenState ? 'open' : 'closed'}}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p>I'm visible because I am open</p>
+              </mat-expansion-panel>
+            </mat-accordion>
+
+
+
+
+
             <button class="btn btn-default">Enviar</button>
           </div>
         </div>
