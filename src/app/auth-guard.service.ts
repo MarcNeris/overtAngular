@@ -148,7 +148,7 @@ export class AuthGuardService implements CanActivate {
     /**
      * Retorna Usuário Logado
      */
-    public getUser() {
+    public getUser(): any {
         if (this.fbServices.DB.LS.user != undefined) {
             try {
                 let user: any = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.user))

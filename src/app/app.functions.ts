@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core'
 import { FBServices } from './firebase.services'
 import { HttpClient } from '@angular/common/http'
-import { resolve } from 'url';
+
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
 const AES = CryptoJS.AES
@@ -18,12 +18,13 @@ export class APPFunctions {
 
     }
 
-    public async soap(args) {
-        var params = this.encrypt(JSON.stringify(args))
-        var wsdl = `https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`
-        return await new Promise(resolve => {
+    public soap(args) {
+        return new Promise(resolve => {
+            let params = this.encrypt(JSON.stringify(args))
+            let wsdl = `https://overt-hcm.appspot.com/services/erp/params=${params},uid=${this.fbServices.DB.LS._uid}`
             this.httpClient.get(wsdl).subscribe((res) => {
-                resolve(res)
+                var result: any = res
+                return resolve(result)
             })
         })
     }

@@ -10,12 +10,14 @@
   </div>
 
 </nav>
+
 <div class="main-content">
   <div class="container-fluid">
 
     <div class="spinner">
       <mat-spinner *ngIf="isLoading" mode="indeterminate"></mat-spinner>
     </div>
+    <br>
 
     <div class="row">
       <div class="col-md-6">
@@ -30,7 +32,7 @@
     <div class="row">
 
       <div class="col-sm-12">
-
+        
         <div *ngIf="showTable" class="table-responsive table-full-width">
 
           <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">

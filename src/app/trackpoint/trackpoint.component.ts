@@ -118,18 +118,19 @@ export class TrackpointComponent implements OnInit {
               this.position = rep.data().webPosition
             }
 
-            var serverHora = moment.unix(rep.data().serverTimestamp.seconds).format('HH:mm:ss')
+
 
             if (this.position) {
-
-              var posTraLatLng = Map.latLng(-19.926158, -43.9879306)
+              var posTraLatLng = [this.position.latitude, this.position.longitude]
+              if (rep.data().postoTrabalho) {
+                posTraLatLng = [rep.data().postoTrabalho.latLng.lat, rep.data().postoTrabalho.latLng.lng]
+              }
               var pointer = Map.latLng(this.position.latitude, this.position.longitude)
               let distance = this.map.distance(pointer, posTraLatLng)
-              var hasSucces = 'text-success'
-              if (distance > 80) {
-                hasSucces = 'text-danger'
+              var isInWorkPost: boolean = false
+              if (distance < 80) {
+                isInWorkPost = true
               }
-
               var myIcon = Map.icon({
                 iconUrl: 'assets/my-icon.png',
                 iconSize: [38, 95],
@@ -141,7 +142,7 @@ export class TrackpointComponent implements OnInit {
               })
 
               this.pointer = [this.position.latitude, this.position.longitude]
-              this.message = `Hora: ${rep.data().time}\n<span class="${hasSucces}"> (${serverHora})\n ${parseInt(distance)}m</span>`
+              this.message = `Hora: ${rep.data().hora}<br><span class="${isInWorkPost ? 'text-success' : 'text-danger'}"> ${parseInt(distance)}m</span>`
               this.repMarker.push(Map.marker(this.pointer).bindPopup(this.message))
 
             } else {
@@ -187,11 +188,10 @@ export class TrackpointComponent implements OnInit {
     } else if (point.webPosition) {
       position = point.webPosition
     }
-    var serverHora = moment.unix(point.serverTimestamp.seconds).format('HH:mm:ss')
     if (position) {
       var pointer = Map.latLng(position.latitude, position.longitude)
       var repMarker: any = []
-      var message = `Hora: ${point.time} (${serverHora})`
+      var message = `Hora: ${point.hora}`
       repMarker.push(Map.marker(pointer).bindPopup(message))
       return this.fnStartMap(repMarker)
     } else {

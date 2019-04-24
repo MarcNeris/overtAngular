@@ -8,6 +8,7 @@ import {
   MatSort
 } from '@angular/material';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class RegistersComponent implements OnInit {
   email_usuario: string
   hasSucces: any = null
   hasError: any = null
-  isLoading:boolean = false
+  isLoading: boolean = false
   clientDataSource: any
   showTableClient: boolean = false
 
@@ -35,7 +36,8 @@ export class RegistersComponent implements OnInit {
   constructor(
     public auth: AuthGuardService,
     public func: APPFunctions,
-    public fbServices: FBServices
+    public fbServices: FBServices,
+    public router: Router
   ) { }
   /**
    * 
@@ -72,19 +74,22 @@ export class RegistersComponent implements OnInit {
   importarCliente() {
     if (this.cnpj_cliente) {
       var user = this.auth.getUser()
-      this.func.importarCliente(this.func.toCnpjId(this.cnpj_cliente), user.empresa_ativa.settings.apiKey).then(result => {
+
+      this.func.importarCliente(this.func.toCnpjId(this.cnpj_cliente), user.empresa_ativa._apiKey.apiKey).then(result => {
         var res: any = result
+        console.log(res)
         if (res.status == 'OK') {
           this.hasError = null
           this.hasSucces = `${res.cnpj} | ${res.fantasia} ${res.nome}`
+          this.cnpj_cliente = res.cnpj
         } else {
           if (res.message) {
             this.hasSucces = null
             this.hasError = res.message
           }
         }
-      }).then(()=>{
-        this.listarClientes()
+      }).then(() => {
+        // this.listarClientes()
       })
     } else {
       this.hasError = 'Informe o Cnpj'
@@ -94,15 +99,18 @@ export class RegistersComponent implements OnInit {
    * Importa Usuários pelo Email
    */
   convidarUsuarios() {
+
     if (this.email_usuario) {
+
       if (this.func.isEmail(this.email_usuario)) {
+
         var user = this.auth.getUser()
+        
+        if (user.empresa_ativa._apiKey.apiKey) {
 
-        if (user.empresa_ativa.settings.apiKey) {
-
-          this.fbServices.DB.FB.ref('system').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa.settings.apiKey).update({
+          this.fbServices.DB.FB.ref('system').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa._apiKey.apiKey).update({
             email_enviado: false,
-
+            email:this.email_usuario,
             permissions: {
               ged: {
                 HAS_USER: false,
@@ -123,6 +131,7 @@ export class RegistersComponent implements OnInit {
             cnpj: this.func.toCnpjId(user.empresa_ativa.cnpj),
             nome: user.empresa_ativa.nome
           })
+
           this.hasError = null
           this.hasSucces = `${this.email_usuario} foi convidado!`
         } else {
@@ -145,9 +154,13 @@ export class RegistersComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listarClientes()
-    var user = this.auth.getUser()
+    var user: any = this.auth.getUser()
     console.log(user)
+    if (user.isKeyUser) {
+      // this.listarClientes()
+    } else {
+      this.router.navigate(['/dashboard'])
+    }
   }
 
 }

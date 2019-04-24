@@ -1,3 +1,4 @@
+import { DataSource } from '@angular/cdk/table';
 import { FormBuilder } from '@angular/forms';
 import { APPFunctions } from './../../app.functions';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,7 +25,7 @@ export class BillingComponent implements OnInit {
     email: '',
   }
 
-  showTable: boolean = false
+  showTable: boolean = true
   titulos: any
 
   displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
@@ -36,7 +37,7 @@ export class BillingComponent implements OnInit {
   apiServices: any
   hasSuccess: string = ''
   hasError: string = ''
-  dataSource: any
+  dataSource: any = new MatTableDataSource()
   isLoading: boolean = false
 
   constructor(
@@ -70,7 +71,7 @@ export class BillingComponent implements OnInit {
       }
     }
     this.func.soap(args).then(result => {
-      console.log(result)
+      
     })
   }
 
@@ -90,54 +91,51 @@ export class BillingComponent implements OnInit {
   }
 
   fnGetTitulos(param: any) {
-    var user: any = this.auth.getUser()
-    this.isLoading = true
-    var args: any = {
-      wsdl: param.wsdl,
-      porta: param.porta,
-      user: param.user,
-      password: param.password,
-      encryption: '0',
-      parameters: {
-        tipPro: '1',
-        emaCli: user.email,
-      }
-    }
-
-    new Promise(resolve => {
-      this.func.soap(args).then(result => {
-        resolve(result)
-      })
-    }).then(result => {
-
-      var dataSource: any = []
-      if (result) {
-        this.isLoading = false
-        dataSource = result
-        if (dataSource.result) {
-
-          if (dataSource.result.resultado == "OK") {
-            this.titulos = dataSource.result.titulosAbertos
-            this.titulos.forEach(titulo => {
-              var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
-              titulo.emaCli = args.parameters.emaCli
-              titulo.vlrTit = vlr
-            })
-
-            this.dataSource = new MatTableDataSource(this.titulos)
-            dataSource.sort = this.sort
-            dataSource.paginator = this.paginator
-            this.showTable = true
-          } else {
-            this.showTable = false
-            this.isLoading = false
-            this.hasSuccess = null
-            this.hasError = `Nenhum título vinculado ao seu email (${user.email}) foi encontrato. Entre em contato com nosso financeiro.`
-          }
+    return new Promise(resolve => {
+      this.user = this.auth.getUser()
+      this.isLoading = true
+      var args: any = {
+        wsdl: param.wsdl,
+        porta: param.porta,
+        user: param.user,
+        password: param.password,
+        encryption: '0',
+        parameters: {
+          tipPro: '1',
+          emaCli: this.user.email,
         }
-      } else {
-        this.isLoading = false
       }
+      this.func.soap(args).then(res => {
+        resolve(res)
+        this.isLoading = false
+        var result: any = res
+        if (result) {
+          if (result.result) {
+            if (result.result.resultado == "OK") {
+
+              var titulos = result.result.titulosAbertos
+
+              titulos.forEach(titulo => {
+                var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
+                titulo.emaCli = args.parameters.emaCli
+                titulo.vlrTit = vlr
+              })
+              this.displayedColumns = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
+              this.dataSource = new MatTableDataSource(titulos)
+              this.dataSource.paginator = this.paginator
+              this.dataSource.sort = this.sort
+              this.showTable = true
+            } else {
+              this.showTable = false
+              this.isLoading = false
+              this.hasSuccess = null
+              this.hasError = `Nenhum título vinculado ao seu email (${this.user.email}) foi encontrato. Entre em contato com nosso financeiro.`
+            }
+          }
+        } else {
+          this.isLoading = false
+        }
+      })
     })
   }
 
@@ -145,8 +143,8 @@ export class BillingComponent implements OnInit {
 
   fnBilling() {
 
-    var user: any = this.auth.getUser()
-    this.user = user
+    this.user = this.auth.getUser()
+
     this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child('billing').once('value', services => {
 
       if (services.exists()) {
