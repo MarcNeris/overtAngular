@@ -33,12 +33,14 @@ export class CustomersComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase()
   }
 
-  fnAtivarEmpresa(empresa_logada: any): void {
-    this.fbServices.DB.FB.ref('_apiKey').child(this.func.toCnpjId(empresa_logada.cnpj)).once('value', _apiKey => {
+  fnAtivarEmpresa(empresa_ativa: any): void {
+    this.fbServices.DB.FB.ref('_apiKey').child(this.func.toCnpjId(empresa_ativa.cnpj)).once('value', _apiKey => {
       if (_apiKey.exists()) {
-        empresa_logada._apiKey = _apiKey.val()
-        this.fbServices.DB.FB.ref('users').child(this.auth.getUid()).child('http/empresa_ativa').set(empresa_logada).then(()=>
-        this.fbServices.DB.LS.empresa_logada = JSON.stringify(empresa_logada).encrypt()
+        empresa_ativa._apiKey = _apiKey.val()
+        document.querySelector('.empresaAtiva').innerHTML = `${empresa_ativa.cnpj} | ${empresa_ativa.nome}`
+        this.empresaAtiva = empresa_ativa
+        this.fbServices.DB.FB.ref('users').child(this.auth.getUid()).child('http/empresa_ativa').set(this.empresaAtiva).then(() =>
+          this.fbServices.DB.LS.empresa_ativa = JSON.stringify(this.empresaAtiva).encrypt()
         )
       }
     })

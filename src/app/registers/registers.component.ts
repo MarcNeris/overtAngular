@@ -2,13 +2,14 @@ import { FBServices } from './../firebase.services';
 import { APPFunctions } from './../app.functions';
 import { AuthGuardService } from './../auth-guard.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
 import {
   MatTableDataSource,
   MatPaginator,
   MatSort
 } from '@angular/material';
 import * as moment from 'moment';
-import { Router } from '@angular/router';
+import { Router, ChildActivationEnd } from '@angular/router';
 
 
 @Component({
@@ -26,8 +27,29 @@ export class RegistersComponent implements OnInit {
   isLoading: boolean = false
   clientDataSource: any
   showTableClient: boolean = false
+  inviteDocumentoForm: FormGroup
 
   displayedColumnsClient: string[] = ['cnpj', 'nome']
+
+  permissoes_ged: any
+  lista_permissoes_ged: any[] = [
+    { id: 'LER_DOCUMENTO', nome: 'Ler Documento' },
+    { id: 'MOVER_DOCUMENTO', nome: 'Mover Documento' },
+    { id: 'EXCLUIR_DOCUMENTO', nome: 'Excluir Documento' },
+    { id: 'ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
+  ];
+
+
+  permissoes_documento: any
+  lista_permissoes_documento: any[] = [
+    { id: 'LER_DOCUMENTO', nome: 'Ler Documento' },
+    { id: 'MOVER_DOCUMENTO', nome: 'Mover Documento' },
+    { id: 'EXCLUIR_DOCUMENTO', nome: 'Excluir Documento' },
+    { id: 'ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
+  ];
+
+
+
 
   @ViewChild(MatSort) clientSort: MatSort
   @ViewChild(MatPaginator) clientPaginator: MatPaginator
@@ -43,15 +65,19 @@ export class RegistersComponent implements OnInit {
    * 
    */
   listarClientes() {
-    this.isLoading = true
     var user = this.auth.getUser()
+    this.isLoading = true
     new Promise(resolve => {
-      this.fbServices.DB.FB.ref('clients').child(user.empresa_ativa.settings.apiKey).once('value', clients => {
-        if (clients.exists()) {
-          this.showTableClient = true
-          resolve(Object.values(clients.val()))
+      if (user.empresa_ativa) {
+        if (user.empresa_ativa._apiKey) {
+          this.fbServices.DB.FB.ref('clients').child(user.empresa_ativa._apiKey.apiKey).once('value', clients => {
+            if (clients.exists()) {
+              this.showTableClient = true
+              resolve(Object.values(clients.val()))
+            }
+          })
         }
-      })
+      }
     }).then(result => {
       this.isLoading = false
       var dataSource: any = result
@@ -65,16 +91,12 @@ export class RegistersComponent implements OnInit {
   applyFilter(filterValue: string) {
     this.clientDataSource.filter = filterValue.trim().toLowerCase();
   }
-
-
-
   /**
    * Importa Clientes Pelo CNPJ
    */
   importarCliente() {
     if (this.cnpj_cliente) {
       var user = this.auth.getUser()
-
       this.func.importarCliente(this.func.toCnpjId(this.cnpj_cliente), user.empresa_ativa._apiKey.apiKey).then(result => {
         var res: any = result
         console.log(res)
@@ -89,49 +111,38 @@ export class RegistersComponent implements OnInit {
           }
         }
       }).then(() => {
-        // this.listarClientes()
+        this.listarClientes()
       })
     } else {
       this.hasError = 'Informe o Cnpj'
     }
   }
   /**
-   * Importa Usuários pelo Email
+   * Convida Usuários pelo email
    */
-  convidarUsuarios() {
-
+  permissoesGed() {
     if (this.email_usuario) {
-
       if (this.func.isEmail(this.email_usuario)) {
-
         var user = this.auth.getUser()
-        
         if (user.empresa_ativa._apiKey.apiKey) {
-
-          this.fbServices.DB.FB.ref('system').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa._apiKey.apiKey).update({
-            email_enviado: false,
-            email:this.email_usuario,
-            permissions: {
-              ged: {
-                HAS_USER: false,
-                LER_DOCUMENTOS: false,
-                EDITAR_DOCUMENTOS: false,
-                ENVIAR_DOCUMENTOS: false,
-                REMOVER_DOCUMENTOS: false,
-              }
-            },
-            log: {
-              [moment().format('YYYYMMDDHHmmss')]: {
-                KeyUser: user.uid,
-                name: user.displayName,
-                email: user.email,
-                datLog: moment().format('DD/MM/YYYY HH:mm:ss')
-              }
-            },
-            cnpj: this.func.toCnpjId(user.empresa_ativa.cnpj),
-            nome: user.empresa_ativa.nome
+          var invite = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa._apiKey.apiKey)
+          invite.child('email').set({
+            enviado: false,
+            email: this.email_usuario,
           })
-
+          invite.child('permissions').child('ged').remove()
+          this.permissoes_ged.forEach(element => {
+            invite.child('permissions').child('ged').child(element).set(true)
+          })
+          invite.child('log').child('ged').child(moment().format('YYYYMMDDHHmmss')).set({
+            KeyUser: user.uid,
+            name: user.displayName,
+            email: user.email,
+            datLog: moment().format('DD/MM/YYYY HH:mm:ss'),
+            permissions: this.permissoes_ged
+          })
+          invite.child('cnpj').set(this.func.toCnpjId(user.empresa_ativa.cnpj))
+          invite.child('nome').set(user.empresa_ativa.nome)
           this.hasError = null
           this.hasSucces = `${this.email_usuario} foi convidado!`
         } else {
@@ -142,11 +153,6 @@ export class RegistersComponent implements OnInit {
         this.hasError = `${this.email_usuario} não foi considerado um email válido.`
         this.hasSucces = null
       }
-
-      // var user = this.auth.getUser()
-      // this.fbServices.DB.FB.ref('invitations').child(this.email_usuario).child(user.empresa_ativa.settings.apiKey).set('ok')
-      // console.log(this.email_usuario)
-
     } else {
       this.hasSucces = null
       this.hasError = 'Informe o email'
@@ -154,13 +160,20 @@ export class RegistersComponent implements OnInit {
   }
 
   ngOnInit() {
+
     var user: any = this.auth.getUser()
-    console.log(user)
     if (user.isKeyUser) {
-      // this.listarClientes()
+      this.listarClientes()
     } else {
       this.router.navigate(['/dashboard'])
     }
+
+    this.inviteDocumentoForm = new FormGroup({
+      email_usuario: new FormControl('', [Validators.required, Validators.email]),
+      permissoes_ged: new FormControl('', [Validators.required]),
+    })
+
+
   }
 
 }

@@ -23,30 +23,30 @@ type categoria = {
 
 export class GedSettingsComponent implements OnInit {
 
-  // myControl = new FormControl();
-  // options: string[] = ['One', 'Two', 'Three'];
+  categoriaDocumentoForm = new FormGroup({
+    categoria_documento: new FormControl('', [Validators.required]),
+    departamentos_documento: new FormControl('', [Validators.required]),
+    peridiocidade_documento: new FormControl('', [Validators.required]),
+    unidades_documento: new FormControl('', [Validators.required]),
+    situacao_categoria: new FormControl('', [Validators.required]),
+    descricao_categoria: new FormControl('', [Validators.required]),
+  })
 
-  apiKey: any
-  categoriaControl = new FormControl('', [Validators.required]);
+  apiKey: string
+
   categoria_documento: any
   categorias_documento: any = [
     { id: 'documentos_pessoais', nome: 'Documentos Pessoais', descricao: "Documentos Sensíveis", sensibilidade: 'alta' },
     { id: 'documentos_profissionais', nome: 'Documentos Profissionais', descricao: "Documentos Sensíveis", sensibilidade: 'media' },
   ]
 
-  peridiocidadeControl = new FormControl('', [Validators.required]);
-
   peridiocidade_documento: string
-
   peridiocidades_documento: any = [
-    { id: 'anual', nome: 'Anual', descricao: "Documentos emitidos anualmente" },
-    { id: 'mensal', nome: 'Mensal', descricao: "Documentos emitidos mensalmente" },
-    { id: 'diario', nome: 'Diário', descricao: "Documentos emitidos diariamente" }
+    { id: 'YYYY', nome: 'Anual', descricao: "Documentos emitidos anualmente" },
+    { id: 'MM', nome: 'Mensal', descricao: "Documentos emitidos mensalmente" },
+    { id: 'DD', nome: 'Diário', descricao: "Documentos emitidos diariamente" }
   ]
 
-  categoriaDocumentoForm: FormGroup
-
-  departamentosControl = new FormControl('', [Validators.required])
   departamentos_documento: any
   lista_departamentos_documento: any[] = [
     { id: 'contabil', nome: 'Contábil' },
@@ -57,7 +57,9 @@ export class GedSettingsComponent implements OnInit {
     { id: 'pessoal', nome: 'Pessoal' }
   ];
 
-  unidades_documento_Control = new FormControl('', [Validators.required])
+  unidades_documento: any
+  lista_unidades_documento: any
+
 
   situacao_categoria: boolean = false
   descricao_categoria: string
@@ -65,19 +67,12 @@ export class GedSettingsComponent implements OnInit {
   btnIsDisabled: boolean = false
   cnpj: string = ''
 
-  // public hasError = (controlName: string, errorName: string) => {
-  //   return this.categoriaDocumentoForm.controls[controlName].hasError(errorName);
-  // }
-
-
 
   constructor(
     private fbServices: FBServices,
     private auth: AuthGuardService,
     private func: APPFunctions
   ) { }
-
-
 
   criarCategoria() {
     var categoria: any = {
@@ -88,9 +83,6 @@ export class GedSettingsComponent implements OnInit {
       descricao_categoria: this.descricao_categoria,
       documentos: false
     }
-
-    console.log(this.apiKey)
-
     this.fbServices.DB.FB.ref('ged').child('customers').child(this.apiKey).child(this.categoria_documento).update(categoria).catch(error => {
       console.warn(error)
     }).then(() => {
@@ -112,10 +104,16 @@ export class GedSettingsComponent implements OnInit {
   ngOnInit() {
 
     var user: any = this.auth.getUser()
-    console.log(user)
+
+    console.log(user.empresa_ativa._apiKey.apiKey)
+
     if (user.empresa_ativa) {
-      if (user.empresa_ativa.settings.apiKey) {
-        this.apiKey = user.empresa_ativa.settings.apiKey
+      if (user.empresa_ativa._apiKey) {
+        if (user.empresa_ativa._apiKey.apiKey) {
+          this.apiKey = user.empresa_ativa._apiKey.apiKey
+        } else {
+          this.apiKey = user.uid
+        }
       } else {
         this.apiKey = user.uid
       }
@@ -123,15 +121,18 @@ export class GedSettingsComponent implements OnInit {
       this.apiKey = user.uid
     }
 
-    this.categoriaDocumentoForm = new FormGroup({
-      categoria_documento: new FormControl('', [Validators.required]),
-      departamentos_documento: new FormControl('', [Validators.required]),
-      peridiocidade_documento: new FormControl('', [Validators.required]),
-      unidades_documento: new FormControl('', [Validators.required]),
-      situacao_categoria: new FormControl('', [Validators.required]),
-      descricao_categoria: new FormControl('', [Validators.required]),
-      // apiKey: new FormControl('', [Validators.required]),
+    this.fbServices.DB.FB.ref('clients').child(this.apiKey).once('value', clients => {
+      if (clients.exists()) {
+        this.lista_unidades_documento = []
+        Object.values(clients.val()).forEach(client => {
+          this.lista_unidades_documento.push({
+            nome: client.nome,
+            cnpj: this.func.toCnpjId(client.cnpj) 
+          })
+        })
+      }
     })
+
   }
 
 }

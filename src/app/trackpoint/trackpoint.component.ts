@@ -33,6 +33,7 @@ export class TrackpointComponent implements OnInit {
   public reps: any = null
   public hasError: string = ''
   public apiServices: any
+
   //public marker = leaflet.marker()
   //public circle = leaflet.circle()
   //public cities = leaflet.layerGroup()
@@ -98,17 +99,16 @@ export class TrackpointComponent implements OnInit {
     if (this.unsubscribe) {
       this.unsubscribe()
     }
-
+    document.querySelector('.leaflet-bottom.leaflet-right').innerHTML = `<span class="text-danger">${employee.nomFun} ${moment(this.YYYYMMDD, 'YYYYMMDD').format("DD/MM/YYYY")}</span>`
     let numCpf: any = this.func.toCpfId(employee.numCpf)
     var unsubscribe = this.fbServices.DB.FS.collection(`users/${employee.uid}/rep/${employee.cnpjContratoTrabalho}/${numCpf}/${employee.id}/${this.YYYYMMDD}`).onSnapshot(reps => {
       this.unsubscribe = unsubscribe
       this.repMarker = []
 
       return new Promise(resolve => {
+
         this.pointDataSource = []
         reps.forEach(rep => {
-
-          var hasError: any = []
 
           if (rep.exists) {
 
@@ -117,8 +117,6 @@ export class TrackpointComponent implements OnInit {
             } else if (rep.data().webPosition) {
               this.position = rep.data().webPosition
             }
-
-
 
             if (this.position) {
               var posTraLatLng = [this.position.latitude, this.position.longitude]
@@ -231,9 +229,6 @@ export class TrackpointComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    // this.fnIntegrarPonto('ponto')
-
     this.fbServices.fnGetEmployees(this.auth.getUser()).then(employees => {
       if (employees) {
         var data: any = employees

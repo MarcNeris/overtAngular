@@ -1,11 +1,7 @@
 import { FBServices } from './../../firebase.services';
-import { APPFunctions } from './../../app.functions';
-
-import { Component, OnInit, ElementRef } from '@angular/core';
-// import { ROUTES } from '../sidebar/sidebar.component';
-import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { Router } from '@angular/router';
-import { resolve } from 'url';
 import { AuthGuardService } from 'app/auth-guard.service';
 
 @Component({
@@ -15,7 +11,7 @@ import { AuthGuardService } from 'app/auth-guard.service';
 })
 
 export class NavbarComponent implements OnInit {
-    private listTitles: any[];
+    
     location: Location;
     mobile_menu_visible: any = 0;
 
@@ -30,35 +26,34 @@ export class NavbarComponent implements OnInit {
         email: ''
     }
 
-    private toggleButton: any;
     private sidebarVisible: boolean;
-
 
     constructor(
         location: Location,
         private auth: AuthGuardService,
-        private element: ElementRef,
         private fbServices: FBServices,
         private router: Router) {
-
         this.location = location;
         this.sidebarVisible = false;
-
     }
+
 
     fnGetEmpresaAtiva(): void {
-        this.auth.onEmpresaAtiva(empresa_ativa => {
-            if (empresa_ativa.exists()) {
-                this.empresaAtiva = empresa_ativa.val()
+        var user = this.auth.getUser()
+        if (user) {
+            if (user.empresa_ativa) {
+                this.empresaAtiva = user.empresa_ativa
             }
-        })
+        }
     }
 
-    fnLogout() {
+    fnLogout(): void {
         this.fbServices.logout()
     }
-
-    onUser() {
+    /**
+     * Monitora o usuário Logado
+     */
+    onUser(): void {
         var user = this.auth.getUser()
         if (user) {
             this.user = this.auth.getUser()
@@ -66,36 +61,20 @@ export class NavbarComponent implements OnInit {
         this.router.events.subscribe(() => {
             var user = this.auth.getUser()
             if (user) {
-                this.user = this.auth.getUser()
+                if (user.empresa_ativa) {
+                    this.empresaAtiva = user.empresa_ativa
+                }
             }
         })
     }
 
 
     ngOnInit() {
-        this.onUser()
-
-
-
-
-
-
-
-
-        // if (this.router.url.includes("login")) {
-        //     document.getElementsByClassName('sidebar')[0].remove()
-        // }
-
-
-        // this.fbServices.getCurrentUser().then(user => {
-        //     if (user) {
-        //         console.log(user)
-        //     }
-        // })
-        // this.listTitles = ROUTES.filter(listTitle => listTitle);
+        this.onUser()      
 
 
         this.fnGetEmpresaAtiva()
+
         this.router.events.subscribe((event) => {
             this.sidebarClose();
             var $layer: any = document.getElementsByClassName('close-layer')[0];
@@ -117,7 +96,7 @@ export class NavbarComponent implements OnInit {
         this.sidebarVisible = false;
         body.classList.remove('nav-open');
     }
-    
+
     sidebarToggle() {
         // const toggleButton = this.toggleButton;
         // const body = document.getElementsByTagName('body')[0];

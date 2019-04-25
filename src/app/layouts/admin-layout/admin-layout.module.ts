@@ -24,7 +24,8 @@ import {
   MatNativeDateModule,
   MatDialogModule,
   MatAutocompleteModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatCheckboxModule
 } from '@angular/material';
 
 import { MatMomentDateModule }    from "@angular/material-moment-adapter";
@@ -74,7 +75,8 @@ import { RegistersComponent }     from 'app/registers/registers.component';
     ReactiveFormsModule,
     MatDialogModule,
     MatAutocompleteModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatCheckboxModule
   ],
   declarations: [
     HomeComponent,

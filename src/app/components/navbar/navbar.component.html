@@ -1,12 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
     <div class="container-fluid">
 
-        <div  class="navbar-wrapper">
-            <h6 [hidden]="!user.isKeyUser" class="text-danger">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
-            <h5 [hidden]="user.isKeyUser" class="text-rose"><b>{{user.displayName}}</b><small class="text-muted"> {{user.email}}</small></h5>
+        <div class="navbar-wrapper">
+            <h6 [hidden]="!user.isKeyUser" class="text-danger empresaAtiva">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
+            <h5 [hidden]="user.isKeyUser" class="text-rose"><b>{{user.displayName}}</b><small class="text-muted">
+                    {{user.email}}</small></h5>
         </div>
 
-       
         <button id="navbar-toggler" mat-raised-button class="navbar-toggler pull-right" type="button"
             (click)="sidebarToggle()">
             <span class="sr-only">Toggle navigation</span>

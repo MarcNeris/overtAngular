@@ -1,5 +1,5 @@
 <div class="main-content">
-  <div class="container-fluid">
+  
     <div class="row">
 
       <div class="col-md-6 col-sm-12">
@@ -48,14 +48,27 @@
                 </mat-error>
               </mat-form-field>
 
+              <mat-form-field>
+                <mat-label>Unidades do Documento</mat-label>
+                <mat-select formControlName="unidades_documento" [(ngModel)]="unidades_documento" required>
+                  <mat-option *ngFor="let unidades_documento of lista_unidades_documento"
+                    [value]="unidades_documento.cnpj">
+                    {{unidades_documento.nome}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.unidades_documento?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+              </mat-form-field>
 
-              <mat-form-field class="example-full-width">
+
+              <!-- <mat-form-field class="example-full-width">
                 <input formControlName="unidades_documento" [(ngModel)]="unidades_documento" matInput type="text"
                   placeholder="Unidades">
                 <mat-error *ngIf="categoriaDocumentoForm?.controls?.unidades_documento?.hasError('required')">
                   Essa informação é <strong>requerida</strong>
                 </mat-error>
-              </mat-form-field>
+              </mat-form-field> -->
 
               <div class="togglebutton">
                 <label>
@@ -69,6 +82,7 @@
 
               <div class="row">
                 <div class="col-md-12">
+
                   <mat-form-field class="example-full-width">
                     <textarea formControlName="descricao_categoria" [(ngModel)]="descricao_categoria" matInput
                       placeholder="Descrição da Categoria"></textarea>
@@ -76,6 +90,7 @@
                       Essa informação é <strong>requerida</strong>
                     </mat-error>
                   </mat-form-field>
+                 
                 </div>
               </div>
 
@@ -162,5 +177,5 @@
       </div>
 
     </div>
-  </div>
+  
 </div>

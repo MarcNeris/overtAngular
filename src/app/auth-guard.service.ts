@@ -179,12 +179,4 @@ export class AuthGuardService implements CanActivate {
             return null
         }
     }
-
-    public onEmpresaAtiva(obj: any) {
-        return this.fbServices.auth().onAuthStateChanged(user => {
-            if (user) {
-                this.fbServices.DB.FB.ref('users').child(user.uid).child('http').child('empresa_ativa').on('value', obj)
-            }
-        })
-    }
 }
