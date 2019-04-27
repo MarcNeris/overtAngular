@@ -37,7 +37,7 @@ import {
   MatDialogModule,
   MatPaginatorIntl,
   MatAutocompleteModule
-  
+
 } from '@angular/material';
 
 import { NgxSoapModule } from 'ngx-soap';
@@ -46,23 +46,23 @@ import { LoginComponent } from './login/login.component';
 import { GedClientComponent } from './ged/ged-client/ged-client.component';
 import { BillingComponent } from './services/billing/billing.component';
 
-
 export class MatPaginatorIntlBrl extends MatPaginatorIntl {
-  itemsPerPageLabel = '';
-  nextPageLabel     = 'Próxima';
-  previousPageLabel = 'Anterior';
+  itemsPerPageLabel = ''
+  nextPageLabel = 'Próxima'
+  previousPageLabel = 'Anterior'
+  firstPageLabel = 'Primeira página'
+  lastPageLabel = 'Última página'
 
-  getRangeLabel = function (page, pageSize, length) {
+  getRangeLabel = (page, pageSize, length) => {
     if (length === 0 || pageSize === 0) {
-      return '0 de ' + length;
+      return '0 de ' + length
     }
-    length = Math.max(length, 0);
-    const startIndex = page * pageSize;
-    // If the start index exceeds the list length, do not try and fix the end index to the end.
+    length = Math.max(length, 0)
+    const startIndex = page * pageSize
     const endIndex = startIndex < length ?
       Math.min(startIndex + pageSize, length) :
-      startIndex + pageSize;
-    return startIndex + 1 + ' - ' + endIndex + ' de ' + length;
+      startIndex + pageSize
+    return `${startIndex + 1} à ${endIndex} de ${length}`//startIndex + 1 + ' à ' + endIndex + ' de ' + length;
   };
 
 }
@@ -105,14 +105,14 @@ export class MatPaginatorIntlBrl extends MatPaginatorIntl {
     AlertDialog,
     LoginComponent,
     GedClientComponent,
-    BillingComponent
+    BillingComponent,
   ],
   providers: [
     FBServices,
     APPFunctions,
     AuthGuardService,
-    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlBrl}
+    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlBrl }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

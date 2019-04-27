@@ -1,10 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
-    <div class="container-fluid">
+    <div class="container-fluid short-string">
 
-        <div class="navbar-wrapper">
-            <h6 [hidden]="!user.isKeyUser" class="text-danger empresaAtiva">{{empresaAtiva.cnpj}} | {{empresaAtiva.nome}}</h6>
-            <h5 [hidden]="user.isKeyUser" class="text-rose"><b>{{user.displayName}}</b><small class="text-muted">
-                    {{user.email}}</small></h5>
+        <div class="navbar-wrapper short-string">
+            <div class="short-string">
+                <h6 [hidden]="!user.isKeyUser" class="text-danger empresaAtiva">{{empresaAtiva.cnpj}} |
+                    {{empresaAtiva.nome}}</h6>
+                <h5 [hidden]="user.isKeyUser" class="text-rose"><b>{{user.displayName}}</b><small class="text-muted">
+                        {{user.email}}</small></h5>
+            </div>
         </div>
 
         <button id="navbar-toggler" mat-raised-button class="navbar-toggler pull-right" type="button"
@@ -30,6 +33,16 @@
 
             <ul class="navbar-nav">
 
+                <li *ngIf="invitations" class="nav-item" >
+                    <a class="nav-link" routerLink="/invitations">
+                        <i class="material-icons">verified_user</i>
+                        <span class="notification">{{invitations}}</span>
+                        <p>
+                            <span class="d-lg-none d-md-block">Convites</span>
+                        </p>
+                    </a>
+                </li>
+
                 <li [hidden]="!user.isKeyUser" class="nav-item">
                     <a class="nav-link btn-link" routerLink="/customers">
                         <i class="material-icons">trip_origin</i>Empresas
@@ -38,23 +51,6 @@
                         </p>
                     </a>
                 </li>
-
-                <!-- <li class="nav-item dropdown">
-                    <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="material-icons">notifications</i>
-                        Empresas
-                        <span class="notification">5</span>
-                        <p>
-                            <span class="d-lg-none d-md-block">Ações</span>
-                        </p>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Enviar Documentos</a>
-                        <a class="dropdown-item" href="#">Enviar Email</a>
-                        <a class="dropdown-item" href="#">Enviar Email</a>
-                    </div>
-                </li> -->
 
                 <li id="btn-power-off" class="nav-item">
                     <a class="nav-link btn-link" (click)="fnLogout()">

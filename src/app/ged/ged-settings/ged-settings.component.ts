@@ -27,7 +27,7 @@ export class GedSettingsComponent implements OnInit {
     categoria_documento: new FormControl('', [Validators.required]),
     departamentos_documento: new FormControl('', [Validators.required]),
     peridiocidade_documento: new FormControl('', [Validators.required]),
-    unidades_documento: new FormControl('', [Validators.required]),
+    clientes_documento: new FormControl('', [Validators.required]),
     situacao_categoria: new FormControl('', [Validators.required]),
     descricao_categoria: new FormControl('', [Validators.required]),
   })
@@ -57,9 +57,8 @@ export class GedSettingsComponent implements OnInit {
     { id: 'pessoal', nome: 'Pessoal' }
   ];
 
-  unidades_documento: any
-  lista_unidades_documento: any
-
+  clientes_documento: any
+  lista_clientes_documento: any
 
   situacao_categoria: boolean = false
   descricao_categoria: string
@@ -74,20 +73,24 @@ export class GedSettingsComponent implements OnInit {
     private func: APPFunctions
   ) { }
 
-  criarCategoria() {
+  fnCriarDocumento() {
     var categoria: any = {
       categoria_documento: this.categoria_documento,
       peridiocidade_documento: this.peridiocidade_documento,
       departamentos_documento: this.departamentos_documento,
       situacao_categoria: this.situacao_categoria,
+      clientes_documento: this.clientes_documento,
       descricao_categoria: this.descricao_categoria,
       documentos: false
     }
-    this.fbServices.DB.FB.ref('ged').child('customers').child(this.apiKey).child(this.categoria_documento).update(categoria).catch(error => {
-      console.warn(error)
-    }).then(() => {
-      console.log('ok')
-    })
+
+    console.log(categoria)
+
+    // this.fbServices.DB.FB.ref('ged').child('customers').child(this.apiKey).child(this.categoria_documento).update(categoria).catch(error => {
+    //   console.warn(error)
+    // }).then(() => {
+    //   console.log('ok')
+    // })
 
   }
 
@@ -105,6 +108,7 @@ export class GedSettingsComponent implements OnInit {
 
     var user: any = this.auth.getUser()
 
+    console.log(user)
     console.log(user.empresa_ativa._apiKey.apiKey)
 
     if (user.empresa_ativa) {
@@ -120,12 +124,14 @@ export class GedSettingsComponent implements OnInit {
     } else {
       this.apiKey = user.uid
     }
-
+    /**
+     *  
+     */
     this.fbServices.DB.FB.ref('clients').child(this.apiKey).once('value', clients => {
       if (clients.exists()) {
-        this.lista_unidades_documento = []
+        this.lista_clientes_documento = []
         Object.values(clients.val()).forEach(client => {
-          this.lista_unidades_documento.push({
+          this.lista_clientes_documento.push({
             nome: client.nome,
             cnpj: this.func.toCnpjId(client.cnpj) 
           })

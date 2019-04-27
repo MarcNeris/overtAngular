@@ -29,6 +29,7 @@ import {
 } from '@angular/material';
 
 import { MatMomentDateModule }    from "@angular/material-moment-adapter";
+import { NgxMaskModule }          from 'ngx-mask'
 
 //Incluir Páginas
 import { HomeComponent }          from '../../home/home.component';
@@ -49,6 +50,8 @@ import { SocialComponent }        from 'app/social/social.component';
 import { GedComponent }           from 'app/ged/ged.component';
 import { GedSettingsComponent }   from 'app/ged/ged-settings/ged-settings.component';
 import { RegistersComponent }     from 'app/registers/registers.component';
+import { InvitationsComponent }   from 'app/invitations/invitations.component';
+
 
 @NgModule({
   imports: [
@@ -76,7 +79,8 @@ import { RegistersComponent }     from 'app/registers/registers.component';
     MatDialogModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    NgxMaskModule.forRoot()
   ],
   declarations: [
     HomeComponent,
@@ -96,7 +100,8 @@ import { RegistersComponent }     from 'app/registers/registers.component';
     SocialComponent,
     GedComponent,
     GedSettingsComponent,
-    RegistersComponent
+    RegistersComponent,
+    InvitationsComponent
   ]
 })
 

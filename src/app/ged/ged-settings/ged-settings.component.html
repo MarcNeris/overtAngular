@@ -5,7 +5,7 @@
       <div class="col-md-6 col-sm-12">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title"><b>Categoria de documentos</b></h4>
+            <h4 class="card-title"><b>Novo Documento</b></h4>
           </div>
           <div class="card-body">
 
@@ -49,23 +49,23 @@
               </mat-form-field>
 
               <mat-form-field>
-                <mat-label>Unidades do Documento</mat-label>
-                <mat-select formControlName="unidades_documento" [(ngModel)]="unidades_documento" required>
-                  <mat-option *ngFor="let unidades_documento of lista_unidades_documento"
-                    [value]="unidades_documento.cnpj">
-                    {{unidades_documento.nome}}
+                <mat-label>Clientes do Documento</mat-label>
+                <mat-select formControlName="clientes_documento" [(ngModel)]="clientes_documento" multiple required>
+                  <mat-option *ngFor="let clientes_documento of lista_clientes_documento"
+                    [value]="clientes_documento.cnpj">
+                    {{clientes_documento.nome}}
                   </mat-option>
                 </mat-select>
-                <mat-error *ngIf="categoriaDocumentoForm?.controls?.unidades_documento?.hasError('required')">
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.clientes_documento?.hasError('required')">
                   Essa informação é <strong>requerida</strong>
                 </mat-error>
               </mat-form-field>
 
 
               <!-- <mat-form-field class="example-full-width">
-                <input formControlName="unidades_documento" [(ngModel)]="unidades_documento" matInput type="text"
+                <input formControlName="clientes_documento" [(ngModel)]="clientes_documento" matInput type="text"
                   placeholder="Unidades">
-                <mat-error *ngIf="categoriaDocumentoForm?.controls?.unidades_documento?.hasError('required')">
+                <mat-error *ngIf="categoriaDocumentoForm?.controls?.clientes_documento?.hasError('required')">
                   Essa informação é <strong>requerida</strong>
                 </mat-error>
               </mat-form-field> -->
@@ -75,7 +75,7 @@
                   <input formControlName="situacao_categoria" type="checkbox" [(ngModel)]="situacao_categoria"
                     checked="situacao_categoria">
                   <span class="toggle"></span>
-                  Categoria está ativa?
+                  Documento está ativa?
                 </label>
               </div>
 
@@ -105,7 +105,7 @@
 
             </div>
 
-            <button (click)="criarCategoria()" mat-raised-button color="primary"
+            <button (click)="fnCriarDocumento()" mat-raised-button color="primary"
               [disabled]="!categoriaDocumentoForm.valid">Criar</button>
 
             <!-- <form class="example-form">

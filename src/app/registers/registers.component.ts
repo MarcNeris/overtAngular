@@ -62,7 +62,7 @@ export class RegistersComponent implements OnInit {
     public router: Router
   ) { }
   /**
-   * 
+   * Lista Clientes
    */
   listarClientes() {
     var user = this.auth.getUser()
@@ -126,23 +126,26 @@ export class RegistersComponent implements OnInit {
         var user = this.auth.getUser()
         if (user.empresa_ativa._apiKey.apiKey) {
           var invite = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa._apiKey.apiKey)
-          invite.child('email').set({
-            enviado: false,
+          invite.child('invite').set({
+            client: user.empresa_ativa.nome,
+            cnpj: user.empresa_ativa.cnpj,
+            keyUserName: user.displayName,
+            hasSend: false,
+            userSaw: false,
+            userAccepted: false,
             email: this.email_usuario,
           })
-          invite.child('permissions').child('ged').remove()
+          invite.child('invite').child('permissions').child('ged').remove()
           this.permissoes_ged.forEach(element => {
-            invite.child('permissions').child('ged').child(element).set(true)
+            invite.child('invite').child('permissions').child('ged').child(element).set(true)
           })
           invite.child('log').child('ged').child(moment().format('YYYYMMDDHHmmss')).set({
-            KeyUser: user.uid,
-            name: user.displayName,
+            KeyUserUid: user.uid,
+            keyUserName: user.displayName,
             email: user.email,
             datLog: moment().format('DD/MM/YYYY HH:mm:ss'),
             permissions: this.permissoes_ged
           })
-          invite.child('cnpj').set(this.func.toCnpjId(user.empresa_ativa.cnpj))
-          invite.child('nome').set(user.empresa_ativa.nome)
           this.hasError = null
           this.hasSucces = `${this.email_usuario} foi convidado!`
         } else {

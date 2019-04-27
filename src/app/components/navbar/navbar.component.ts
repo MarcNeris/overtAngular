@@ -1,3 +1,4 @@
+import { APPFunctions } from './../../app.functions';
 import { FBServices } from './../../firebase.services';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
@@ -11,8 +12,9 @@ import { AuthGuardService } from 'app/auth-guard.service';
 })
 
 export class NavbarComponent implements OnInit {
-    
+
     location: Location;
+    invitations: any = null
     mobile_menu_visible: any = 0;
 
     empresaAtiva: any = {
@@ -31,6 +33,7 @@ export class NavbarComponent implements OnInit {
     constructor(
         location: Location,
         private auth: AuthGuardService,
+        private func: APPFunctions,
         private fbServices: FBServices,
         private router: Router) {
         this.location = location;
@@ -56,7 +59,25 @@ export class NavbarComponent implements OnInit {
     onUser(): void {
         var user = this.auth.getUser()
         if (user) {
-            this.user = this.auth.getUser()
+            this.user = user
+            /**
+             * Invitations to Access something
+             */
+            this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email)).on('value', invitations => {
+
+                if (invitations.exists()) {
+                    this.invitations = 0
+                    Object.values(invitations.val()).forEach(client => {
+                        if (client.invite) {
+                            if (client.invite.userSaw == false) {
+                                this.invitations++
+                            }
+                        }
+                    })
+                } else {
+                    this.invitations = null
+                }
+            })
         }
         this.router.events.subscribe(() => {
             var user = this.auth.getUser()
@@ -67,10 +88,12 @@ export class NavbarComponent implements OnInit {
             }
         })
     }
-
-
+    /**
+     *
+     */
     ngOnInit() {
-        this.onUser()      
+
+        this.onUser()
 
 
         this.fnGetEmpresaAtiva()
