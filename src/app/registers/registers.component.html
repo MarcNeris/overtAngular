@@ -1,5 +1,9 @@
 <div class="main-content">
 
+  <div class="spinner">
+    <mat-spinner *ngIf="isLoading" mode="indeterminate"></mat-spinner>
+  </div>
+
   <div class="row">
 
     <div class="col-md-8">
@@ -9,9 +13,7 @@
         </div>
         <div class="card-body">
 
-          <div class="spinner">
-            <mat-spinner *ngIf="isLoading" mode="indeterminate"></mat-spinner>
-          </div>
+
 
           <div class="row">
             <div class="col-md-4">
@@ -38,7 +40,7 @@
 
               <div class="table-responsive table-full-width">
 
-                <table mat-table [dataSource]="clientDataSource" matSort class="mat-elevation-z8">
+                <table mat-table [dataSource]="clientDataSource" matSort>
 
                   <ng-container matColumnDef="cnpj">
                     <th mat-header-cell *matHeaderCellDef> Cnpj </th>
@@ -98,23 +100,7 @@
       </div>
     </div><!-- Permissões do GED -->
 
-
-
-
-
-
-
-
-
-
-
   </div><!-- row -->
-
-
-
-
-
-
 
   <div *ngIf="hasError||hasSucces" class="info-overt">
     <span *ngIf="hasSucces" class="text-success">{{hasSucces}}</span>

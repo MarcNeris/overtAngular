@@ -22,8 +22,13 @@ export class InvitationsComponent implements OnInit {
   user: any = null
   invitations: any = null
   invite: any = null
-  invitationsDisplayedColumns: string[] = ['cnpj', 'client', 'email', 'actions']
+
+  invitationsDisplayedColumns: string[] = ['cnpj', 'client', 'from_email', 'actions']
+
+  permissionsDisplayedColumns: string[] = ['permission', 'unsubscribe', 'subscribe']
+
   invitationsDataSource: MatTableDataSource<invitationsData>
+  permissionsDataSource: any
 
   constructor(
     private auth: AuthGuardService,
@@ -33,12 +38,22 @@ export class InvitationsComponent implements OnInit {
 
   }
 
-  fnUnsetInvite(){
+
+  fnUnsetInvite() {
     this.invite = null
+  }
+
+  fnSubscribePermission(permission) {
+    console.log(permission)
+  }
+
+  fnUnSubscribePermission(permission) {
+    console.log(permission)
   }
 
   fnSetInvite(invite) {
     this.invite = invite
+    this.permissionsDataSource = new MatTableDataSource(Object.keys(invite.permissions))
   }
 
 
@@ -63,8 +78,6 @@ export class InvitationsComponent implements OnInit {
               this.invitations.push(client.invite)
             })
             this.invitationsDataSource = new MatTableDataSource(this.invitations)
-            this.invitationsDataSource.sort = this.invitationsSort
-            this.invitationsDataSource.paginator = this.invitationsPaginator
             resolve(invitations.val())
           } else {
             this.invitations = null
@@ -74,8 +87,12 @@ export class InvitationsComponent implements OnInit {
     })
   }
 
+
   ngOnInit() {
-    this.getInvitations().then()
+    this.getInvitations().then(() => {
+      this.invitationsDataSource.sort = this.invitationsSort
+      this.invitationsDataSource.paginator = this.invitationsPaginator
+    })
   }
 
 }

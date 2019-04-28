@@ -33,19 +33,19 @@ export class RegistersComponent implements OnInit {
 
   permissoes_ged: any
   lista_permissoes_ged: any[] = [
-    { id: 'LER_DOCUMENTO', nome: 'Ler Documento' },
-    { id: 'MOVER_DOCUMENTO', nome: 'Mover Documento' },
-    { id: 'EXCLUIR_DOCUMENTO', nome: 'Excluir Documento' },
-    { id: 'ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
+    { id: 'GED_LER_DOCUMENTO', nome: 'Ler Documento' },
+    { id: 'GED_MOVER_DOCUMENTO', nome: 'Mover Documento' },
+    { id: 'GED_EXCLUIR_DOCUMENTO', nome: 'Excluir Documento' },
+    { id: 'GED_ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
   ];
 
 
   permissoes_documento: any
   lista_permissoes_documento: any[] = [
-    { id: 'LER_DOCUMENTO', nome: 'Ler Documento' },
-    { id: 'MOVER_DOCUMENTO', nome: 'Mover Documento' },
-    { id: 'EXCLUIR_DOCUMENTO', nome: 'Excluir Documento' },
-    { id: 'ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
+    { id: 'GED_LER_DOCUMENTO', nome: 'Ler Documento' },
+    { id: 'GED_MOVER_DOCUMENTO', nome: 'Mover Documento' },
+    { id: 'GED_EXCLUIR_DOCUMENTO', nome: 'Excluir Documento' },
+    { id: 'GED_ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
   ];
 
 
@@ -122,6 +122,7 @@ export class RegistersComponent implements OnInit {
    */
   permissoesGed() {
     if (this.email_usuario) {
+      this.email_usuario = this.email_usuario.toLowerCase()
       if (this.func.isEmail(this.email_usuario)) {
         var user = this.auth.getUser()
         if (user.empresa_ativa._apiKey.apiKey) {
@@ -133,12 +134,16 @@ export class RegistersComponent implements OnInit {
             hasSend: false,
             userSaw: false,
             userAccepted: false,
-            email: this.email_usuario,
+            to_email: this.email_usuario,
+            from_email: user.email,
           })
-          invite.child('invite').child('permissions').child('ged').remove()
-          this.permissoes_ged.forEach(element => {
-            invite.child('invite').child('permissions').child('ged').child(element).set(true)
+          invite.child('invite').child('permissions').remove()
+
+          // invite.child('invite').child('permissions').set(this.permissoes_ged)
+          this.permissoes_ged.forEach((element) => {
+            invite.child('invite').child('permissions').child(element).set(true)
           })
+
           invite.child('log').child('ged').child(moment().format('YYYYMMDDHHmmss')).set({
             KeyUserUid: user.uid,
             keyUserName: user.displayName,

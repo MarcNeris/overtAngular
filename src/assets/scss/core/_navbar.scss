@@ -232,6 +232,23 @@
 body{
   background-color: white !important;
 }
+th{
+  font-size: 15px !important;
+  color: #3f51b5 !important;
+} 
+
+table{
+  margin-top: 10px;
+  width: 100%;
+}
+
+.spinner{
+  width: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .short-string {
   white-space: nowrap;
