@@ -1,8 +1,5 @@
-import { DataSource } from '@angular/cdk/table';
-import { FormBuilder } from '@angular/forms';
 import { APPFunctions } from './../../app.functions';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { AuthGuardService } from './../../auth-guard.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FBServices } from 'app/firebase.services';
@@ -25,20 +22,15 @@ export class BillingComponent implements OnInit {
     email: '',
   }
 
-  showTable: boolean = true
-  titulos: any
-
-  displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
-
   @ViewChild(MatSort) sort: MatSort
   @ViewChild(MatPaginator) paginator: MatPaginator
 
-  apiParams: any
-  apiServices: any
-  hasSuccess: string = ''
-  hasError: string = ''
-  dataSource: any = new MatTableDataSource()
-  isLoading: boolean = false
+  isLoading: boolean = true
+  hasSuccess: any = null
+  hasError: any = null
+  displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
+  dataSource: any = null
+  apiKey: any
 
   constructor(
     private fbServices: FBServices,
@@ -50,7 +42,21 @@ export class BillingComponent implements OnInit {
   }
 
   fnReceberBoleto(titulo) {
-    var param: any = this.apiServices
+    this.isLoading = true
+    var apiKey: any = this.apiKey
+
+    if (apiKey.webservices) {
+      if (apiKey.webservices.billing) {
+        if (apiKey.webservices.billing.sitSrv == true) {
+          var param = apiKey.webservices.billing
+
+        } else {
+          return this.hasError = 'Serviço está inativo.'
+        }
+
+      }
+    }
+
     var args = {
       wsdl: param.wsdl,
       porta: param.porta,
@@ -70,8 +76,14 @@ export class BillingComponent implements OnInit {
         }]
       }
     }
-    this.func.soap(args).then(result => {
-      
+    this.func.soap(args).then(res => {
+      var result: any = res
+      this.isLoading = false
+      if (result.result.resultado == "OK") {
+        this.hasSuccess = 'Email enviado com sucesso.'
+      } else {
+        this.hasError = result.result.resultado
+      }
     })
   }
 
@@ -81,96 +93,102 @@ export class BillingComponent implements OnInit {
   }
 
 
-  async fnGetParams() {
-    var apiParam = await this.route.params.forEach(apiParams => this.apiParams = apiParams)
-    return apiParam
-  }
-
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  fnGetTitulos(param: any) {
-    return new Promise(resolve => {
-      this.user = this.auth.getUser()
-      this.isLoading = true
-      var args: any = {
-        wsdl: param.wsdl,
-        porta: param.porta,
-        user: param.user,
-        password: param.password,
-        encryption: '0',
-        parameters: {
-          tipPro: '1',
-          emaCli: this.user.email,
+
+  fnGetTitulos(apiKey: any) {
+
+    if (apiKey.webservices) {
+      if (apiKey.webservices.billing) {
+        if (apiKey.webservices.billing.sitSrv == true) {
+          var param = apiKey.webservices.billing
+
+        } else {
+          return this.hasError = 'Serviço está inativo.'
         }
+
       }
-      this.func.soap(args).then(res => {
-        resolve(res)
-        this.isLoading = false
-        var result: any = res
-        if (result) {
-          if (result.result) {
-            if (result.result.resultado == "OK") {
+    }
 
-              var titulos = result.result.titulosAbertos
+    var args: any = {
+      wsdl: param.wsdl,
+      porta: param.porta,
+      user: param.user,
+      password: param.password,
+      encryption: '0',
+      parameters: {
+        tipPro: '1',
+        emaCli: this.user.email,
+      }
+    }
 
-              titulos.forEach(titulo => {
-                var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
-                titulo.emaCli = args.parameters.emaCli
-                titulo.vlrTit = vlr
-              })
-              this.displayedColumns = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
-              this.dataSource = new MatTableDataSource(titulos)
-              this.dataSource.paginator = this.paginator
-              this.dataSource.sort = this.sort
-              this.showTable = true
-            } else {
-              this.showTable = false
-              this.isLoading = false
-              this.hasSuccess = null
-              this.hasError = `Nenhum título vinculado ao seu email (${this.user.email}) foi encontrato. Entre em contato com nosso financeiro.`
+    const soapGetTitulos = () => {
+      this.user = this.auth.getUser()
+      Promise.resolve(
+        this.func.soap(args).then(res => {
+          var result: any = res
+          if (result) {
+
+            if (result.result) {
+              if (result.result.resultado == "OK") {
+                var titulos = result.result.titulosAbertos
+                titulos.forEach(titulo => {
+                  var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
+                  titulo.emaCli = args.parameters.emaCli
+                  titulo.vlrTit = vlr
+                })
+              } else {
+                this.hasError = result.result.resultado
+              }
             }
           }
-        } else {
           this.isLoading = false
-        }
+          console.warn()
+          this.dataSource = new MatTableDataSource(titulos)
+        })
+      ).then(() => {
+
+        this.dataSource.sort = this.sort
+        this.dataSource.paginator = this.paginator
       })
-    })
+    }
+
+    soapGetTitulos()
+
   }
 
 
-
-  fnBilling() {
-
+  fnApiKey() {
+    var params: any
+    this.route.params.forEach(apiParams => params = apiParams)
     this.user = this.auth.getUser()
-
-    this.fbServices.DB.FB.ref('services').child(this.apiParams.apiKey).child('billing').once('value', services => {
-
-      if (services.exists()) {
-
-        this.apiServices = services.val()
-        if (this.apiServices.sitSrv == true) {
-          this.fnGetTitulos(this.apiServices)
-        } else {
-          this.isLoading = false
-          this.hasError = 'Erro ao processar este contrato.'
-        }
+    this.fbServices.DB.FB.ref('_apiKey').child(params.apiKey).once('value', cnpj => {
+      if (cnpj.exists()) {
+        this.fbServices.DB.FB.ref('_apiKey').child(cnpj.val()).once('value', apiKey => {
+          if (apiKey.exists()) {
+            this.apiKey = apiKey.val()
+          } else {
+            this.hasError = 'Cliente não está parametrizado.'
+          }
+        }).then(() => {
+          this.fnGetTitulos(this.apiKey)
+        })
       } else {
-        this.isLoading = false
-        this.hasError = 'Cliente não está parametrizado.'
+        this.hasError = 'ApiKey inválida'
       }
     })
   }
 
-  ngAfterViewInit() {
-    this.fnBilling()
-  }
 
+  ngAfterViewInit() {
+    this.fnApiKey()
+  }
 
 
   ngOnInit() {
-    this.fnGetParams()
+
   }
 
 }

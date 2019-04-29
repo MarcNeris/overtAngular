@@ -5,7 +5,7 @@ import { FBServices } from 'app/firebase.services';
 import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 
 export interface invitationsData {
-  cnpj: string;
+  cnpj: string
   client: string;
   email: string;
 }
@@ -19,6 +19,8 @@ export interface invitationsData {
 export class InvitationsComponent implements OnInit {
   @ViewChild(MatPaginator) invitationsPaginator: MatPaginator
   @ViewChild(MatSort) invitationsSort: MatSort
+  @ViewChild(MatPaginator) permissionsPaginator: MatPaginator
+  @ViewChild(MatSort) permissionsSort: MatSort
   user: any = null
   invitations: any = null
   invite: any = null
@@ -54,6 +56,8 @@ export class InvitationsComponent implements OnInit {
   fnSetInvite(invite) {
     this.invite = invite
     this.permissionsDataSource = new MatTableDataSource(Object.keys(invite.permissions))
+    this.permissionsDataSource.sort = this.permissionsSort
+    this.permissionsDataSource.paginator = this.permissionsPaginator
   }
 
 
@@ -66,33 +70,30 @@ export class InvitationsComponent implements OnInit {
   }
 
 
-  getInvitations() {
-    return new Promise(resolve => {
-      var user = this.auth.getUser()
-      if (user) {
-        this.user = user
-        this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email)).on('value', invitations => {
-          if (invitations.exists()) {
-            this.invitations = []
-            Object.values(invitations.val()).forEach(client => {
-              this.invitations.push(client.invite)
-            })
-            this.invitationsDataSource = new MatTableDataSource(this.invitations)
-            resolve(invitations.val())
-          } else {
-            this.invitations = null
-          }
+  getInvitations(user) {
+    this.auth.getInvitations(user)
+    this.auth.invitations.subscribe(invitations => {
+      if (invitations) {
+        
+        this.invitations = []
+
+        Object.values(invitations).forEach(client => {
+          this.invitations.push(client.invite)
         })
+
+        this.invitationsDataSource = new MatTableDataSource(this.invitations)
+        this.invitationsDataSource.sort = this.invitationsSort
+        this.invitationsDataSource.paginator = this.invitationsPaginator
+
       }
     })
   }
 
 
   ngOnInit() {
-    this.getInvitations().then(() => {
-      this.invitationsDataSource.sort = this.invitationsSort
-      this.invitationsDataSource.paginator = this.invitationsPaginator
-    })
+    var user = this.auth.getUser()
+    this.getInvitations(user)
+
   }
 
 }

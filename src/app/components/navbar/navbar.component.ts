@@ -56,33 +56,25 @@ export class NavbarComponent implements OnInit {
     /**
      * Monitora o usuário Logado
      */
-    onUser(): void {
-        var user = this.auth.getUser()
-        if (user) {
-            this.user = user
-            /**
-             * Invitations to Access something
-             */
-            this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email)).on('value', invitations => {
+    onUser(user): void {
 
-                if (invitations.exists()) {
-                    this.invitations = 0
-                    Object.values(invitations.val()).forEach(client => {
-                        if (client.invite) {
-                            if (client.invite.userSaw == false) {
-                                this.invitations++
-                            }
+        this.auth.invitations.subscribe(invitations => {
+            this.invitations = 0
+            if (invitations) {
+                Object.values(invitations).forEach(client => {
+                    if (client.invite) {
+                        if (client.invite.userSaw == false) {
+                            this.invitations++
                         }
-                    })
-                } else {
-                    this.invitations = null
-                }
-            })
-        }
+                    }
+                })
+            }
+        })
+
         this.router.events.subscribe(() => {
-            var user = this.auth.getUser()
             if (user) {
                 if (user.empresa_ativa) {
+
                     this.empresaAtiva = user.empresa_ativa
                 }
             }
@@ -93,8 +85,13 @@ export class NavbarComponent implements OnInit {
      */
     ngOnInit() {
 
-        this.onUser()
+        var user = this.auth.getUser()
+        
+        this.user = user
 
+        this.auth.getInvitations(user)
+
+        this.onUser(user)
 
         this.fnGetEmpresaAtiva()
 

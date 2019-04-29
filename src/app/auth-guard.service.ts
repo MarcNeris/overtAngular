@@ -1,7 +1,8 @@
 import { APPFunctions } from './app.functions';
 import { FBServices } from './firebase.services';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { resolve } from 'url';
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
 const AES = CryptoJS.AES
@@ -23,7 +24,8 @@ declare global {
 })
 export class AuthGuardService implements CanActivate {
 
-    route: string = ''
+    public route: string = ''
+    @Output() invitations = new EventEmitter()
     constructor(
         public fbServices: FBServices,
         public router: Router,
@@ -53,6 +55,7 @@ export class AuthGuardService implements CanActivate {
     canLoad(route: string) {
         return new Promise(resolve => {
             this.fbServices.auth().onAuthStateChanged(user => {
+
 
                 if (user) {
 
@@ -179,4 +182,24 @@ export class AuthGuardService implements CanActivate {
             return null
         }
     }
+
+    public getInvitations(user) {
+
+        if (user) {
+            return new Promise(resolve => {
+                this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email)).on('value', invitations => {
+                    if (invitations.exists()) {
+                        resolve(invitations.val())
+                    } else {
+                        this.invitations = null
+                        resolve(this.invitations)
+                    }
+                })
+            }).then(invitations => {
+                this.invitations.emit(invitations)
+            })
+
+        }
+    }
+
 }
