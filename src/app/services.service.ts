@@ -161,6 +161,10 @@ export class Services {
     window.location.reload()
   }
 
+  public fnBillingGetTitulos(){
+    return 'ok'
+  }
+
   fnBilling() {
     this.fbServices.getCurrentUser().then(user => {
       if (user) {

@@ -1,35 +1,50 @@
 import { APPFunctions } from './../../app.functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthGuardService } from './../../auth-guard.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, ChangeDetectionStrategy, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FBServices } from 'app/firebase.services';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  MatSort
-} from '@angular/material';
-
+import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import numeral from 'numeral'
+
+// export interface data_titulos {
+//   cgcCpf: string
+//   nomCli: string
+//   datEmi: string
+//   datVct: string
+//   numTit: string
+//   vlrTit: string
+//   codCrt: string
+// }
+
+// var ELEMENT_DATA: data_titulos[] = []
 
 @Component({
   selector: 'app-billing',
   templateUrl: './billing.component.html',
-  styleUrls: ['./billing.component.scss']
+  styleUrls: ['./billing.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
+
 export class BillingComponent implements OnInit {
-  user: any = {
+
+  public user: any = {
     displayName: '',
     email: '',
   }
 
-  @ViewChild(MatSort) sort: MatSort
-  @ViewChild(MatPaginator) paginator: MatPaginator
+  public displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
+  
+  public dataSource: any = null
+
+  @Output() titulos = new EventEmitter()
+
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('paginator') paginator: MatPaginator
 
   isLoading: boolean = true
   hasSuccess: any = null
   hasError: any = null
-  displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
-  dataSource: any = null
   apiKey: any
 
   constructor(
@@ -37,9 +52,12 @@ export class BillingComponent implements OnInit {
     private auth: AuthGuardService,
     private route: ActivatedRoute,
     private func: APPFunctions,
+    private changeDetectorRefs: ChangeDetectorRef
   ) {
 
   }
+
+
 
   fnReceberBoleto(titulo) {
     this.isLoading = true
@@ -51,6 +69,7 @@ export class BillingComponent implements OnInit {
           var param = apiKey.webservices.billing
 
         } else {
+
           return this.hasError = 'Serviço está inativo.'
         }
 
@@ -76,14 +95,16 @@ export class BillingComponent implements OnInit {
         }]
       }
     }
+
     this.func.soap(args).then(res => {
-      var result: any = res
       this.isLoading = false
+      var result: any = res
       if (result.result.resultado == "OK") {
         this.hasSuccess = 'Email enviado com sucesso.'
       } else {
         this.hasError = result.result.resultado
       }
+      this.changeDetectorRefs.detectChanges()
     })
   }
 
@@ -92,11 +113,9 @@ export class BillingComponent implements OnInit {
     this.fbServices.logout()
   }
 
-
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-
 
   fnGetTitulos(apiKey: any) {
 
@@ -104,11 +123,9 @@ export class BillingComponent implements OnInit {
       if (apiKey.webservices.billing) {
         if (apiKey.webservices.billing.sitSrv == true) {
           var param = apiKey.webservices.billing
-
         } else {
           return this.hasError = 'Serviço está inativo.'
         }
-
       }
     }
 
@@ -125,38 +142,49 @@ export class BillingComponent implements OnInit {
     }
 
     const soapGetTitulos = () => {
-      this.user = this.auth.getUser()
-      Promise.resolve(
-        this.func.soap(args).then(res => {
-          var result: any = res
-          if (result) {
 
-            if (result.result) {
-              if (result.result.resultado == "OK") {
-                var titulos = result.result.titulosAbertos
-                titulos.forEach(titulo => {
-                  var vlr: String = numeral(titulo.vlrTit).format('$0,0.00')
-                  titulo.emaCli = args.parameters.emaCli
-                  titulo.vlrTit = vlr
-                })
-              } else {
-                this.hasError = result.result.resultado
+      return new Promise(resolve => {
+        this.func.soap(args).then(res => {
+          return new Promise(resolve => {
+            var result: any = res
+            if (result) {
+              if (result.result) {
+                if (result.result.resultado == "OK") {
+
+                  var titulos = result.result.titulosAbertos
+
+                  titulos.forEach(titulo => {
+                    titulo.emaCli = args.parameters.emaCli
+                    titulo.vlrTit2 = titulo.vlrTit
+                    titulo.vlrTit =  numeral( parseFloat(titulo.vlrTit) ).format('$0,0.00')
+                  })
+                  resolve(titulos)
+                } else {
+                  resolve(null)
+                  this.hasError = result.result.resultado
+                }
               }
             }
-          }
-          this.isLoading = false
-          console.warn()
-          this.dataSource = new MatTableDataSource(titulos)
+          }).then(res => {
+            resolve(res)
+          })
         })
-      ).then(() => {
-
-        this.dataSource.sort = this.sort
-        this.dataSource.paginator = this.paginator
       })
     }
 
-    soapGetTitulos()
-
+    soapGetTitulos().then(res => {
+      this.isLoading = false
+      if (res) {
+        var titulos: any = res
+        this.dataSource = new MatTableDataSource(titulos)
+      }
+    }).then(() => {
+      if(this.dataSource){
+        this.dataSource.sort = this.sort
+        this.dataSource.paginator = this.paginator
+      }
+      this.changeDetectorRefs.detectChanges()
+    })
   }
 
 
@@ -183,12 +211,14 @@ export class BillingComponent implements OnInit {
 
 
   ngAfterViewInit() {
-    this.fnApiKey()
+
   }
 
 
   ngOnInit() {
-
+    this.fnApiKey()
   }
 
+
 }
+
