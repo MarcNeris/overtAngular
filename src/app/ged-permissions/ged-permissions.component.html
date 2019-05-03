@@ -1,0 +1,200 @@
+<div class="main-content">
+
+  <div class="spinner">
+    <mat-spinner *ngIf="isLoading" mode="indeterminate"></mat-spinner>
+  </div>
+
+  <div *ngIf="client">
+
+    <div class="row">
+      <mat-toolbar>
+        <mat-toolbar-row>
+          <div class="col-md-10 short-string">
+            <span>GED | Permissões - {{client.cnpj}} | {{client.nome}}</span>
+          </div>
+          <div class="col-md-2 text-right">
+            <button mat-icon-button color="primary" (click)="fnUnsetClient()">
+              <i ngClass="material-icons big-icon">keyboard_arrow_left</i>
+            </button>
+          </div>
+        </mat-toolbar-row>
+      </mat-toolbar>
+    </div>
+
+    <div class="row">
+      <div class="card-body">
+
+        <div class="row">
+
+          <div class="col-lg-12">
+
+
+
+            <mat-accordion>
+
+              <mat-expansion-panel *ngFor="let permission of permissionsDataSource.data; let i = index"
+                (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{permission.to_email}}
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    @ {{permission.cnpj_client}} {{permission.nome_client}}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p>{{permission.from_email}}</p>
+              </mat-expansion-panel>
+
+
+            </mat-accordion>
+
+
+
+
+            <!-- <div class="table-responsive table-full-width">
+              <table mat-table [dataSource]="permissionsDataSource" matSort>
+
+                <ng-container matColumnDef="cnpj">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cnpj </th>
+                  <td mat-cell *matCellDef="let element"> {{element.cnpj}} </td>
+                </ng-container>
+                <ng-container matColumnDef="nome">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
+                    <td mat-cell *matCellDef="let element"> {{element.nome}} </td>
+                  </ng-container>
+  
+                  <ng-container matColumnDef="permission">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Permissão </th>
+                    <td mat-cell *matCellDef="let element"> {{element.permission}} </td>
+                  </ng-container>
+
+                
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsPermissions"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsPermissions;"></tr>
+
+              </table>
+            </div> -->
+
+
+
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+
+            <div [formGroup]="inviteDocumentoForm">
+              <mat-form-field class="example-full-width">
+                <input formControlName="email_usuario" [(ngModel)]="email_usuario" matInput type="email"
+                  placeholder="Email">
+                <mat-error *ngIf="inviteDocumentoForm?.controls?.email_usuario?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+                <mat-error *ngIf="inviteDocumentoForm?.controls?.email_usuario?.hasError('email')">
+                  Esse registro não foi considerado um email válido
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Permissões</mat-label>
+                <mat-select formControlName="permissoes_ged" [(ngModel)]="permissoes_ged" multiple required>
+                  <mat-option *ngFor="let permissoes_ged of lista_permissoes_ged" [value]="permissoes_ged.id">
+                    {{permissoes_ged.nome}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="inviteDocumentoForm?.controls?.permissoes_ged?.hasError('required')">
+                  Essa informação é <strong>requerida</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <button (click)="permissoesGed()" class="btn btn-default"
+              [disabled]="!inviteDocumentoForm.valid">Convidar</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- Permissões do GED -->
+  </div><!-- row -->
+
+
+
+  <div *ngIf="!client">
+
+    <div class="row">
+      <mat-toolbar>
+        <mat-toolbar-row>
+          <div class="col-md-10 short-string">
+            <span>GED | Permissões de Acesso</span>
+          </div>
+        </mat-toolbar-row>
+      </mat-toolbar>
+    </div>
+
+
+    <div class="row">
+
+
+
+      <div class="card-body">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="input-group no-border">
+              <mat-form-field>
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Cliente">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-12">
+
+            <div class="table-responsive table-full-width">
+
+              <table mat-table [dataSource]="clientDataSource" matSort>
+
+                <ng-container matColumnDef="cnpj">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cnpj </th>
+                  <td mat-cell *matCellDef="let element"> {{element.cnpj}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="nome">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
+                  <td mat-cell *matCellDef="let element"> {{element.nome}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="fantasia">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Fantasia </th>
+                  <td mat-cell *matCellDef="let element"> {{element.fantasia}} </td>
+                </ng-container>
+
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef> </th>
+                  <td mat-cell *matCellDef="let element" class="text-right">
+                    <button mat-icon-button color="primary" (click)="fnSetClient(element)"> <i
+                        ngClass="material-icons big-icon">keyboard_arrow_right</i> </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsClient"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsClient;"></tr>
+              </table>
+              <mat-paginator showFirstLastButtons [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<div *ngIf="hasError||hasSucces" class="info-overt">
+  <span *ngIf="hasSucces" class="text-success">{{hasSucces}}</span>
+  <span *ngIf="hasError" class="text-danger">{{hasError}}</span>
+</div>

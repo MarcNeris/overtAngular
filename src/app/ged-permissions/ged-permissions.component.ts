@@ -1,7 +1,7 @@
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FBServices } from './../firebase.services';
 import { APPFunctions } from './../app.functions';
 import { AuthGuardService } from './../auth-guard.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import {
   MatTableDataSource,
@@ -11,25 +11,27 @@ import {
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 
-
 @Component({
-  selector: 'app-registers',
-  templateUrl: './registers.component.html',
-  styleUrls: ['./registers.component.scss']
+  selector: 'app-ged-permissions',
+  templateUrl: './ged-permissions.component.html',
+  styleUrls: ['./ged-permissions.component.scss']
 })
 
-
-export class RegistersComponent implements OnInit {
+export class GedPermissionsComponent implements OnInit {
   cnpj_cliente: string
+  client: any = null
   email_usuario: string
   hasSucces: any = null
   hasError: any = null
   isLoading: boolean = false
-  clientDataSource: any
   showTableClient: boolean = false
   inviteDocumentoForm: FormGroup
 
-  displayedColumnsClient: string[] = ['cnpj', 'nome']
+  clientDataSource: any
+  displayedColumnsClient: string[] = ['cnpj', 'nome', 'fantasia', 'actions']
+
+  permissionsDataSource: any
+  displayedColumnsPermissions: string[] = ['cnpj', 'nome', 'permission']
 
   permissoes_ged: any
   lista_permissoes_ged: any[] = [
@@ -39,7 +41,6 @@ export class RegistersComponent implements OnInit {
     { id: 'GED_ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
   ];
 
-
   permissoes_documento: any
   lista_permissoes_documento: any[] = [
     { id: 'GED_LER_DOCUMENTO', nome: 'Ler Documento' },
@@ -48,9 +49,6 @@ export class RegistersComponent implements OnInit {
     { id: 'GED_ENVIAR_DOCUMENTO', nome: 'Enviar Documento' }
   ];
 
-
-
-
   @ViewChild(MatSort) clientSort: MatSort
   @ViewChild(MatPaginator) clientPaginator: MatPaginator
   @ViewChild(MatPaginator) usersPaginator: MatPaginator
@@ -58,6 +56,7 @@ export class RegistersComponent implements OnInit {
   constructor(
     public auth: AuthGuardService,
     public func: APPFunctions,
+    public changeDetectorRefs: ChangeDetectorRef,
     public fbServices: FBServices,
     public router: Router
   ) { }
@@ -85,7 +84,20 @@ export class RegistersComponent implements OnInit {
       this.clientDataSource.sort = this.clientSort
       this.clientDataSource.paginator = this.clientPaginator
     })
+  }
 
+  fnUnsetClient() {
+    this.client = null
+  }
+
+  fnSetClient(client: object) {
+    this.client = client
+    console.log(client)
+  }
+
+
+  fnSubscribePermission(client) {
+    console.log(client)
   }
 
   applyFilter(filterValue: string) {
@@ -126,29 +138,34 @@ export class RegistersComponent implements OnInit {
       if (this.func.isEmail(this.email_usuario)) {
         var user = this.auth.getUser()
         if (user.empresa_ativa._apiKey.apiKey) {
+
           var invite = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa._apiKey.apiKey)
-          invite.child('invite').set({
-            client: user.empresa_ativa.nome,
+
+          var Moment = moment()
+          invite.child(this.func.toCnpjId(this.client.cnpj)).child('ged').set({
+            modulo: 'ged',
+            nome: user.empresa_ativa.nome,
             cnpj: user.empresa_ativa.cnpj,
+            nome_client: this.client.nome,
+            cnpj_client: this.func.toCnpjId(this.client.cnpj),
             apiKey: user.empresa_ativa._apiKey.apiKey,
             keyUserName: user.displayName,
+            KeyUserUid: user.uid,
+            datLog: Moment.format('DD/MM/YYYY HH:mm:ss'),
             hasSend: false,
             userSaw: false,
             userAccepted: false,
             to_email: this.email_usuario,
             from_email: user.email,
+          }).then(() => {
+            invite.child(this.func.toCnpjId(this.client.cnpj)).child('ged').child('permissions').remove()
+            this.permissoes_ged.forEach((element) => {
+              invite.child(this.func.toCnpjId(this.client.cnpj)).child('ged').child('permissions').child(element).set(true)
+            })
           })
-          invite.child('invite').child('permissions').remove()
-
-          // invite.child('invite').child('permissions').set(this.permissoes_ged)
-          this.permissoes_ged.forEach((element) => {
-            invite.child('invite').child('permissions').child(element).set(true)
-          })
-
-          invite.child('log').child('ged').child(moment().format('YYYYMMDDHHmmss')).set({
+          invite.child('log').child(Moment.format('YYYYMMDDHHmmss')).set({
             KeyUserUid: user.uid,
             keyUserName: user.displayName,
-            email: user.email,
             datLog: moment().format('DD/MM/YYYY HH:mm:ss'),
             permissions: this.permissoes_ged
           })
@@ -170,8 +187,37 @@ export class RegistersComponent implements OnInit {
 
   ngOnInit() {
 
+    /**
+     * Alterar para Permissions
+     */
+    this.auth.invitations.subscribe(res => {
+      if(res){
+        var invitations: any = []
+        Object.values(res).forEach(cnpj => {
+          Object.values(cnpj).forEach(modulo => {
+            Object.values(modulo).forEach(invite => {
+              if (invite.userSaw == false)
+                invitations.push(invite)
+            })
+          })
+        })
+        // console.log(invitations)
+  
+        // console.log(res)
+        this.permissionsDataSource = new MatTableDataSource(invitations)
+  
+        this.changeDetectorRefs.detectChanges()
+      }
+    })
+
+
+
+
+
+
+
     var user: any = this.auth.getUser()
-    if (user.isKeyUser) {
+    if (user.isKeyUser == true) {
       this.listarClientes()
     } else {
       this.router.navigate(['/dashboard'])
@@ -181,8 +227,7 @@ export class RegistersComponent implements OnInit {
       email_usuario: new FormControl('', [Validators.required, Validators.email]),
       permissoes_ged: new FormControl('', [Validators.required]),
     })
-
-
   }
+
 
 }

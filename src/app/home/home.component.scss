@@ -1,0 +1,52 @@
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
+.text-thin{
+    font-weight: 100;
+    line-height: 1em;
+    color: #555;
+}
+.card-header{
+    background: rgba(255, 255, 255, 0.9);
+}
+p{
+    color: #aeaeae; 
+}
+
+mat-toolbar.head{
+    color: #555;
+    background: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    z-index: 2;
+}
+
+.card-title{
+    font-size: 2em;
+    font-weight: 100;
+    line-height: 1em;
+    color: #555;
+}
+
+.white{
+    background: rgba(255, 255, 255, 0.9); 
+}
+.transparent{
+    background: transparent;
+}
+
+.overt-content{
+    // background-image: url("/assets/img/DigitalTransformation.jpg") !important;
+    background-size: cover;
+    padding-top: 60px;
+    padding-bottom: 10px;
+    min-height: 100px !important;
+    // background-image: url("/assets/img/MobileEverything.jpg") !important;
+    // background-color: white;
+    // background-size: cover;
+    min-height: 100% !important;
+}
+
+#logoHome{
+    width: 40px;
+    margin-right: 20px;
+}

@@ -1,8 +1,7 @@
 import { APPFunctions } from './app.functions';
 import { FBServices } from './firebase.services';
-import { Injectable, EventEmitter, Output } from '@angular/core';
+import { Injectable, EventEmitter, Output, Input } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { resolve } from 'url';
 declare function require(name: string)
 const CryptoJS = require('crypto-js')
 const AES = CryptoJS.AES
@@ -25,11 +24,11 @@ declare global {
 export class AuthGuardService implements CanActivate {
 
     public route: string = ''
-    @Output() invitations = new EventEmitter()
+    @Input() invitations = new EventEmitter()
     constructor(
         public fbServices: FBServices,
         public router: Router,
-        public func: APPFunctions
+        public func: APPFunctions,
     ) {
 
     }
@@ -40,6 +39,9 @@ export class AuthGuardService implements CanActivate {
         var isAuthenticated: boolean
         await this.canLoad(state.url).then(result => {
             isAuthenticated = (result == true)
+            if (state.url == "/") {
+                isAuthenticated = true
+            }
         })
         if (isAuthenticated != true) {
             this.router.navigate(['/login'], {
@@ -161,6 +163,7 @@ export class AuthGuardService implements CanActivate {
                 user.empresa_ativa = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.empresa_ativa))
                 user.permissions = JSON.parse(this.func.decrypt(this.fbServices.DB.LS.permissions))
                 this.fbServices.DB.FB.ref('users').child(user.uid).child('http').update(user)
+                this.getInvitations(user)
                 return user
             } catch (error) {
                 return null
@@ -183,23 +186,39 @@ export class AuthGuardService implements CanActivate {
         }
     }
 
-    public getInvitations(user) {
+
+    public getInvitations(user: any) {
 
         if (user) {
-            return new Promise(resolve => {
-                this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email)).on('value', invitations => {
-                    if (invitations.exists()) {
-                        resolve(invitations.val())
-                    } else {
-                        this.invitations = null
-                        resolve(this.invitations)
-                    }
-                })
-            }).then(invitations => {
-                this.invitations.emit(invitations)
+            var ref_invitations = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email))
+            ref_invitations.on('value', invitations => {
+                if (invitations.exists()) {
+                    this.invitations.emit(invitations.val())
+                } else {
+                    this.invitations = null
+                }
             })
-
         }
     }
+
+    // public getInvitations(user) {
+
+    //     if (user) {
+    //         return new Promise(resolve => {
+    //             this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email)).on('value', invitations => {
+    //                 if (invitations.exists()) {
+    //                     resolve(invitations.val())
+    //                 } else {
+    //                     this.invitations = null
+    //                     resolve(this.invitations)
+    //                 }
+    //             })
+    //         }).then(invitations => {
+    //             this.invitations.emit(invitations)
+    //         })
+
+    //     }
+    // }
+
 
 }

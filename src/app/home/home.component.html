@@ -1,5 +1,262 @@
-<div class="main-content">
-  <!-- <div class="container-fluid">
+<mat-toolbar class="head">
+    <mat-toolbar-row class="mat-elevation-z3">
+
+        <div class="col-lg-3 short-string">
+            <img id="logoHome" src="/assets/img/logo.png" />
+            <span class="fill-remaining-space">overt <span class="text-thin">Mobile Everything</span></span>
+        </div>
+
+        <div class="col-lg-9 text-right short-string">
+            <span *ngIf="user" class="fill-remaining-space">
+                <button mat-button routerLink="/trackpoint">Track Point</button>
+            </span>
+
+            <span *ngIf="user" class="fill-remaining-space">
+                <button mat-button [matMenuTriggerFor]="login">
+                    <mat-icon>perm_identity</mat-icon>
+                </button>
+                <mat-menu #login="matMenu">
+                    <button mat-menu-item routerLink="/profile">{{user.displayName||user.email}}</button>
+                    <button mat-menu-item (click)="fnLogout()">Sair</button>
+                </mat-menu>
+            </span>
+
+            <span *ngIf="!user" class="fill-remaining-space">
+                <button mat-button routerLink="/login">Login</button>
+            </span>
+
+
+        </div>
+
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-drawer-container class="transparent overt-content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- <div class="col-lg-1"></div> -->
+            <div class="col-lg-12">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card-header">
+                            <!-- <h3 class="card-title">Transformação Digital de Verdade!</h3> -->
+                            <h3 class="card-title">Bem-vindo!</h3>
+
+
+                            <p>
+                                A Transformação Digital é a transformação profunda das atividades, processos,
+                                competências e modelos empresariais e organizacionais para alavancar totalmente as
+                                mudanças e oportunidades de um mix de tecnologias digitais e seu impacto acelerado
+                                em
+                                toda a sociedade de maneira estratégica e priorizada, com mudanças atuais e futuras
+                                em
+                                mente.
+                                A Transformação Digital chegou, e chegou pra ficar! Não é uma questão de "quando?",
+                                mas
+                                sim de "como?". Suas habilidades de sobrevivência estão sendo colocadas à prova. A
+                                cada
+                                dia uma nova tecnologia digital surge, e isso pode mudar tudo. Sua estratégia
+                                digital
+                                para o negócio precisa ser reinventada e melhorada para resolver problemas
+                                tradicionais.
+
+                            </p>
+                            <p>
+                                Embora a transformação digital seja predominantemente usada em um contexto de
+                                negócios, ela também impacta outras organizações, como governos, agências do setor
+                                público e organizações envolvidas no enfrentamento de desafios sociais, como
+                                poluição e envelhecimento das populações, aproveitando uma ou mais dessas
+                                tecnologias existentes e emergentes.
+                            </p>
+                            <p>
+                                Em alguns países, como o Japão, a transformação digital também tem o objetivo de
+                                impactar todos os aspectos da vida com a iniciativa <a
+                                    href="https://www.i-scoop.eu/industry-4-0-society-5-0/"> <span
+                                        class="text-info">Society 5.0</span></a> do país, que
+                                vai muito além da limitada visão da Indústria 4.0 que estamos vivendo.
+                            </p>
+                            <p>
+                                No escopo desta visão geral da transformação digital, nós olhamos principalmente
+                                para a
+                                dimensão do negócio. O mencionado desenvolvimento de novas competências gira em
+                                torno
+                                das capacidades de ser mais ágil, orientado para as pessoas, inovador, centralizado
+                                no
+                                cliente, simplificado, eficiente e capaz de induzir / alavancar oportunidades de
+                                mudar o
+                                status quo e explorar novas informações e serviços receitas. Esforços e estratégias
+                                de
+                                transformação digital são freqüentemente mais urgentes e estão presentes em mercados
+                                com
+                                alto grau de comoditização.
+                            </p>
+                            <h5 class="card-category pull-right"><b>overt</b> Mobile Everything</h5>
+                            <br>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="card-header">
+                            <h4 class="card-title">Track Point</h4>
+                            <p class="card-category">Gestão de Presença</p>
+                            <p>
+                                O Track Point é a ferramenta para gestão de presença que permite o registro de
+                                presença
+                                e a localização via GPS utilizando um smartphone.
+                                Estes registros geram o arquivo no formato AFD - "Arquivo Fonte de Dados", que podem
+                                ser
+                                importados diretamente na sua folha de pagamento, ou outra finalidade qualquer.
+
+                            </p>
+                            <p>
+                                Algumas software houses fornecedoras de folha de pagamento disponibilizam Web
+                                Services
+                                que
+                                perminte o Track Point inserir estas marcações diretamente no módulo de apuração de
+                                ponto.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="card-header">
+                            <h4 class="card-title">Mind Wits</h4>
+                            <p class="card-category">Gestão de Idéias</p>
+                            <p>
+                                O gerenciamento de ideias é a capacidade de capturar
+                                feedback ou insights de partes interessadas internas e externas com o objetivo de
+                                adicionar esse feedback em futuros produtos, lançamentos de produtos ou melhoria
+                                contínua de processos.
+                                Permita sua equipe desenvolver e projetar valorizando as boas idéias através de um
+                                gerenciamento intuitivo e simples.
+
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</mat-drawer-container>
+<mat-drawer-container class="overt-content white">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-danger card-header-icon">
+                        <div class="card-icon">
+                            <button routerLink="/trackpoint" mat-button>
+                                <mat-icon>track_changes</mat-icon>
+                            </button>
+                        </div>
+                        <p class="card-category">Track Point</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons text-muted">track_changes</i>
+                            <a routerLink="/trackpoint">Gestão de Presença</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <button routerLink="/ged" mat-button>
+                                <mat-icon>data_usage</mat-icon>
+                            </button>
+                        </div>
+                        <p class="card-category">GED</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons text-muted">data_usage</i>
+                            <a routerLink="/ged">Gestão de Documentos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon">
+                            <button routerLink="/hcm" mat-button>
+                                <mat-icon>assignment_ind</mat-icon>
+                            </button>
+                        </div>
+                        <p class="card-category">HCM</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons text-muted">assignment_ind</i>
+                            <a routerLink="/hcm">Gestão de Pessoas</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <button routerLink="/moods" mat-button>
+                                <mat-icon>thumbs_up_down</mat-icon>
+                            </button>
+                        </div>
+                        <p class="card-category">Moods</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons text-muted">thumbs_up_down</i>
+                            <a routerLink="/moods">Gestão de Pesquisa</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</mat-drawer-container>
+
+
+<mat-divider></mat-divider>
+<mat-toolbar class="footer">
+    <mat-toolbar-row>
+
+        <div class="col-lg-12 text-right short-string">
+            <span class="fill-remaining-space">
+                <button mat-button routerLink="/contact">Contato</button>
+            </span>
+
+            <span class="fill-remaining-space">
+                <button mat-button routerLink="/licence">Termos</button>
+            </span>
+        </div>
+
+    </mat-toolbar-row>
+</mat-toolbar>
+
+
+
+<!-- <div class="main-content">
+</div> -->
+<!-- <div class="container-fluid">
       <div class="row">
           <div class="col-lg-3 col-md-6 col-sm-6">
               <div class="card card-stats">
@@ -411,5 +668,5 @@
               </div>
           </div>
       </div>
-  </div> -->
-</div>
+  </div> 
+</div>-->

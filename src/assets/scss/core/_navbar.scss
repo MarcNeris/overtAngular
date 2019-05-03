@@ -252,6 +252,7 @@ table{
 }
 
 .short-string {
+  text-align: left !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

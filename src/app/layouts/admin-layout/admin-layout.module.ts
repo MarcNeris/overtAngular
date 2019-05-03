@@ -32,7 +32,6 @@ import { MatMomentDateModule }    from "@angular/material-moment-adapter";
 import { NgxMaskModule }          from 'ngx-mask'
 
 //Incluir Páginas
-import { HomeComponent }          from '../../home/home.component';
 import { DashboardComponent }     from '../../dashboard/dashboard.component';
 import { UserProfileComponent }   from '../../user-profile/user-profile.component';
 import { TableListComponent }     from '../../table-list/table-list.component';
@@ -47,10 +46,11 @@ import { CustomersComponent }     from 'app/customers/customers.component';
 import { LayoffComponent }        from 'app/layoff/layoff.component';
 import { MoodsComponent }         from 'app/moods/moods.component';
 import { SocialComponent }        from 'app/social/social.component';
-import { GedComponent }           from 'app/ged/ged.component';
-import { GedSettingsComponent }   from 'app/ged/ged-settings/ged-settings.component';
-import { RegistersComponent }     from 'app/registers/registers.component';
-import { InvitationsComponent }   from 'app/invitations/invitations.component';
+import { GedComponent }             from 'app/ged/ged.component';
+import { GedSettingsComponent }     from 'app/ged/ged-settings/ged-settings.component';
+import { GedPermissionsComponent }  from 'app/ged-permissions/ged-permissions.component';
+import { RegistersComponent }       from 'app/registers/registers.component';
+import { InvitationsComponent }     from 'app/invitations/invitations.component';
 
 
 @NgModule({
@@ -83,7 +83,6 @@ import { InvitationsComponent }   from 'app/invitations/invitations.component';
     NgxMaskModule.forRoot()
   ],
   declarations: [
-    HomeComponent,
     DashboardComponent,
     UserProfileComponent,
     TableListComponent,
@@ -100,6 +99,7 @@ import { InvitationsComponent }   from 'app/invitations/invitations.component';
     SocialComponent,
     GedComponent,
     GedSettingsComponent,
+    GedPermissionsComponent,
     RegistersComponent,
     InvitationsComponent
   ]

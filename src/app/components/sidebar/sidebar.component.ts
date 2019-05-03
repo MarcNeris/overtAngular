@@ -30,6 +30,7 @@ export const GED_ROUTES: RouteInfo[] = [
   { path: '/ged', title: 'GED', icon: 'data_usage', class: '' },
   { path: '/ged-share', title: 'Compartilhamento', icon: 'share', class: '' },
   { path: '/ged-settings', title: 'Configurações', icon: 'settings', class: '' },
+  { path: '/ged-permissions', title: 'Permissões', icon: 'verified_user', class: '' },
   { path: '/login', title: 'Login', icon: 'person', class: '' },
 ];
 

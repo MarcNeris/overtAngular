@@ -1,8 +1,6 @@
+import { Routes }                           from '@angular/router';
 import { RegistersComponent }               from './../../registers/registers.component';
 import { AuthGuardService }                 from './../../auth-guard.service';
-import { Routes }                           from '@angular/router';
-// import { LoginComponent } from './../../login/login.component';
-import { HomeComponent }                    from '../../home/home.component';
 import { DashboardComponent }               from '../../dashboard/dashboard.component';
 import { UserProfileComponent }             from '../../user-profile/user-profile.component';
 import { TableListComponent }               from '../../table-list/table-list.component';
@@ -20,12 +18,11 @@ import { SocialComponent }                  from 'app/social/social.component';
 import { GedComponent }                     from 'app/ged/ged.component';
 import { GedSettingsComponent }             from 'app/ged/ged-settings/ged-settings.component';
 import { InvitationsComponent }             from 'app/invitations/invitations.component';
+import { GedPermissionsComponent }          from 'app/ged-permissions/ged-permissions.component';
 
 
 export const AdminLayoutRoutes: Routes = [
-    
-    { path: '', component: HomeComponent, canActivate: [AuthGuardService] },
-    // { path: 'login', component: LoginComponent },
+    { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
     { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
     { path: 'user-profile', component: UserProfileComponent },
     { path: 'table-list', component: TableListComponent },
@@ -42,6 +39,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'social', component: SocialComponent, canActivate: [AuthGuardService] },
     { path: 'ged', component: GedComponent, canActivate: [AuthGuardService] },
     { path: 'ged-settings', component: GedSettingsComponent, canActivate: [AuthGuardService] },
+    { path: 'ged-permissions', component: GedPermissionsComponent, canActivate: [AuthGuardService] },
     { path: 'registers', component: RegistersComponent, canActivate: [AuthGuardService] },
     { path: 'invitations', component: InvitationsComponent, canActivate: [AuthGuardService] },
     // {

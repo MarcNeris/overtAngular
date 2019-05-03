@@ -1,6 +1,7 @@
-import { NgModule } from '@angular/core'
-import { CommonModule, } from '@angular/common'
-import { BrowserModule } from '@angular/platform-browser'
+import { HomeComponent }    from './home/home.component';
+import { NgModule }         from '@angular/core'
+import { CommonModule, }    from '@angular/common'
+import { BrowserModule }    from '@angular/platform-browser'
 import { Routes, RouterModule } from '@angular/router'
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component'
 import { AuthGuardService } from './auth-guard.service';
@@ -10,9 +11,11 @@ import { GedClientComponent } from './ged/ged-client/ged-client.component';
 import { BillingComponent } from './services/billing/billing.component';
 
 const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   { path: 'services/:apiKey/services', component: Services, canActivate: [AuthGuardService] },
   { path: 'services/:apiKey/billing', component: BillingComponent, canActivate: [AuthGuardService] },
   { path: 'services/:apiKey/ged', component: GedClientComponent, canActivate: [AuthGuardService] },
+  { path: '', component: HomeComponent, canActivate: [AuthGuardService] },
   {
     path: '',
     component: AdminLayoutComponent,
@@ -21,8 +24,8 @@ const routes: Routes = [
         path: '',
         loadChildren: './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
       }]
-  },
-  { path: 'login', component: LoginComponent },
+  }
+
 ]
 
 @NgModule({

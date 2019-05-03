@@ -1,6 +1,6 @@
 import { APPFunctions } from './../../app.functions';
 import { FBServices } from './../../firebase.services';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthGuardService } from 'app/auth-guard.service';
@@ -28,27 +28,23 @@ export class NavbarComponent implements OnInit {
         email: ''
     }
 
-    private sidebarVisible: boolean;
+
+    private sidebarVisible: boolean
+
 
     constructor(
         location: Location,
         private auth: AuthGuardService,
         private func: APPFunctions,
         private fbServices: FBServices,
+        private changeDetectorRefs: ChangeDetectorRef,
         private router: Router) {
         this.location = location;
         this.sidebarVisible = false;
     }
 
 
-    fnGetEmpresaAtiva(): void {
-        var user = this.auth.getUser()
-        if (user) {
-            if (user.empresa_ativa) {
-                this.empresaAtiva = user.empresa_ativa
-            }
-        }
-    }
+
 
     fnLogout(): void {
         this.fbServices.logout()
@@ -58,18 +54,26 @@ export class NavbarComponent implements OnInit {
      */
     onUser(user): void {
 
-        this.auth.invitations.subscribe(invitations => {
-            this.invitations = 0
-            if (invitations) {
-                Object.values(invitations).forEach(client => {
-                    if (client.invite) {
-                        if (client.invite.userSaw == false) {
-                            this.invitations++
-                        }
-                    }
-                })
-            }
-        })
+        if (this.auth.invitations) {
+
+            this.auth.invitations.subscribe(res => {
+                this.invitations = 0
+                if (res) {
+                    Object.values(res).forEach(cnpj => {
+                        Object.values(cnpj).forEach(modulo => {
+                            Object.values(modulo).forEach(invite => {
+                                if (invite.userSaw == false)
+                                    this.invitations++
+                            })
+                        })
+                    })
+                }
+
+                this.changeDetectorRefs.detectChanges()
+            })
+        }
+
+
 
         this.router.events.subscribe(() => {
             if (user) {
@@ -85,19 +89,19 @@ export class NavbarComponent implements OnInit {
      */
     ngOnInit() {
 
-        var user = this.auth.getUser()
-        
-        this.user = user
+        this.user = this.auth.getUser()
 
-        this.auth.getInvitations(user)
+        if (this.user) {
+            if (this.user.empresa_ativa) {
+                this.empresaAtiva = this.user.empresa_ativa
+            }
+        }
 
-        this.onUser(user)
-
-        this.fnGetEmpresaAtiva()
+        this.onUser(this.user)
 
         this.router.events.subscribe((event) => {
             this.sidebarClose();
-            var $layer: any = document.getElementsByClassName('close-layer')[0];
+            var $layer: any = document.getElementsByClassName('close-layer')[0]
             if ($layer) {
                 $layer.remove();
                 this.mobile_menu_visible = 0;

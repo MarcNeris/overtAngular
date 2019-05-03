@@ -1,3 +1,4 @@
+import { HomeComponent } from './home/home.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { NgModule } from '@angular/core'
@@ -30,13 +31,15 @@ import {
   MatCardModule,
   MatProgressSpinnerModule,
   MatMenuModule,
+  MatSidenavModule,
   MatIconModule,
   MatToolbarModule,
   MatButtonModule,
   MatFormFieldModule,
   MatDialogModule,
   MatPaginatorIntl,
-  MatAutocompleteModule
+  MatAutocompleteModule,
+  MatListModule
 
 } from '@angular/material';
 
@@ -93,7 +96,9 @@ export class MatPaginatorIntlBrl extends MatPaginatorIntl {
     MatDialogModule,
     MatTableModule,
     MatSortModule,
+    MatSidenavModule,
     MatAutocompleteModule,
+    MatListModule,
     AgmCoreModule.forRoot({
       apiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
     })
@@ -106,6 +111,7 @@ export class MatPaginatorIntlBrl extends MatPaginatorIntl {
     LoginComponent,
     GedClientComponent,
     BillingComponent,
+    HomeComponent
   ],
   providers: [
     FBServices,
