@@ -12,9 +12,9 @@ import { BillingComponent } from './services/billing/billing.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'services/ged/client', component: GedClientComponent, canActivate: [AuthGuardService] },
   { path: 'services/:apiKey/services', component: Services, canActivate: [AuthGuardService] },
   { path: 'services/:apiKey/billing', component: BillingComponent, canActivate: [AuthGuardService] },
-  { path: 'services/:apiKey/ged', component: GedClientComponent, canActivate: [AuthGuardService] },
   { path: '', component: HomeComponent, canActivate: [AuthGuardService] },
   {
     path: '',

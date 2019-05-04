@@ -1,12 +1,12 @@
 <mat-toolbar class="head">
     <mat-toolbar-row class="mat-elevation-z3">
 
-        <div class="col-lg-3 short-string">
+        <div class="col-lg-10 short-string">
             <img id="logoHome" src="/assets/img/logo.png" />
             <span class="fill-remaining-space">overt <span class="text-thin">Mobile Everything</span></span>
         </div>
 
-        <div class="col-lg-9 text-right short-string">
+        <div class="col-lg-2 short-string text-right">
             <span *ngIf="user" class="fill-remaining-space">
                 <button mat-button routerLink="/trackpoint">Track Point</button>
             </span>
@@ -21,7 +21,7 @@
                 </mat-menu>
             </span>
 
-            <span *ngIf="!user" class="fill-remaining-space">
+            <span *ngIf="!user" class="fill-remaining-space pull-right">
                 <button mat-button routerLink="/login">Login</button>
             </span>
 

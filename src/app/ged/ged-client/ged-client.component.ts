@@ -1,6 +1,6 @@
 import { FBServices } from './../../firebase.services';
 import { AuthGuardService } from './../../auth-guard.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-ged-client',
@@ -12,7 +12,9 @@ export class GedClientComponent implements OnInit {
     displayName: '',
     email: '',
   }
+  invitations: number = 0
   constructor(
+    private changeDetectorRefs: ChangeDetectorRef,
     private auth: AuthGuardService,
     private fbServices: FBServices
   ) { }
@@ -23,6 +25,25 @@ export class GedClientComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.auth.getUser()
+
+
+    this.auth.invitations.subscribe(res => {
+      this.invitations = 0
+      if (res) {
+        Object.values(res).forEach(cnpj => {
+          Object.values(cnpj).forEach(modulo => {
+            Object.values(modulo).forEach(invite => {
+              if (invite.userSaw == false)
+                this.invitations++
+              console.log(this.invitations)
+            })
+          })
+        })
+      }
+
+      this.changeDetectorRefs.detectChanges()
+    })
+
 
     // this.fbServices.DB.FB.ref()
     console.log(this.user)

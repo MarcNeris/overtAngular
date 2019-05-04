@@ -331,9 +331,12 @@ export class FBServices {
     public fnGetCustomers(user: any) {
         return new Promise(resolve => {
             if (user) {
+                
                 this.DB.FB.ref('system').child('keyUser').child(user.uid).once('value', keyUser => {
+                    
                     if (keyUser.exists()) {
-                        let fnGetCusstomers = async (customers: object) => {
+
+                        let fnGetCustomers = async (customers: object) => {
                             var data: any = []
                             for (let customer in customers) {
                                 if (customers[customer].sitUsu == true) {
@@ -346,9 +349,8 @@ export class FBServices {
                             }
                             return data
                         }
-
-                        let customers: object = keyUser.val()
-                        return resolve(fnGetCusstomers(customers))
+                        
+                        return resolve(fnGetCustomers(keyUser.val()))
                     }
                     else {
                         return resolve(null)

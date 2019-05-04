@@ -1,4 +1,41 @@
-<nav class="nav  navbar-absolute fixed-top">
+<mat-toolbar class="head">
+  <mat-toolbar-row class="mat-elevation-z3">
+
+    <div class="col-lg-10 short-string">
+      <img id="logoHome" src="/assets/img/logo.png" />
+      <span class="fill-remaining-space">overt <span class="text-thin">Mobile Everything</span></span>
+    </div>
+
+    <div class="col-lg-2 short-string text-right">
+      
+      <span *ngIf="invitations>0" class="fill-remaining-space">
+        <button mat-button routerLink="/invitations">
+          <mat-icon matBadge="{{invitations}}" matBadgeColor="warn">verified_user</mat-icon>
+        </button>
+      </span>
+
+      <span *ngIf="user" class="fill-remaining-space">
+        <button mat-button [matMenuTriggerFor]="login">
+          <mat-icon>perm_identity</mat-icon>
+        </button>
+        <mat-menu #login="matMenu">
+          <button mat-menu-item routerLink="/profile">{{user.displayName||user.email}}</button>
+          <button mat-menu-item (click)="fnLogout()">Sair</button>
+        </mat-menu>
+      </span>
+
+      <span *ngIf="!user" class="fill-remaining-space pull-right">
+        <button mat-button routerLink="/login">Login</button>
+      </span>
+
+
+    </div>
+
+  </mat-toolbar-row>
+</mat-toolbar>
+
+
+<!-- <nav class="nav  navbar-absolute fixed-top">
 
   <div class="container-fluid">
     <div class="col-sm-12">
@@ -9,8 +46,8 @@
     </div>
   </div>
 
-</nav>
-<div class="main-content">
+</nav> -->
+<!-- <div class="main-content">
   <div class="container-fluid">
 
 
@@ -26,6 +63,6 @@
       </div>
 
 
-    </div><!-- row -->
+    </div>
   </div>
-</div>
+</div> -->

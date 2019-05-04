@@ -45,32 +45,15 @@ export class InvitationsComponent implements OnInit {
 
   }
 
-
-
   fnUpdateInvite(invite: any, value: boolean) {
-
     if (this.user) {
-
       var permissions = invite.permissions
-
-      // https://overt-hcm.firebaseio.com/invitations/users/marcneris@msn-com/CKiK1DkbtzQYQhKphnf229oYU9H3/00387093000159/ged
-
       var ref_invite = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.user.email)).child(invite.apiKey).child(this.func.toCnpjId(invite.cnpj_client)).child(invite.modulo)
-
       ref_invite.once('value', invite => {
-
-        console.log(invite.val())
-
         if (invite.exists()) {
           ref_invite.child('userSaw').set(true)
-
           ref_invite.child('userAccepted').set(value).then(() => {
-
-            var ref_permission = this.fbServices.DB.FB.ref('system').child('users').child(invite.val().apiKey).child(this.user.uid)
-
-            ref_permission.child('email').set(this.user.email)
-            ref_permission.child('uid').set(this.user.uid)
-
+            var ref_permission = this.fbServices.DB.FB.ref('system').child('users').child(this.user.uid).child(invite.val().apiKey)
             permissions.forEach(permission => {
               ref_permission.child('permissions').child(invite.val().cnpj_client).child(permission.name).set(value)
             })
@@ -116,28 +99,54 @@ export class InvitationsComponent implements OnInit {
      *
      */
     this.user = this.auth.getUser()
-
-    this.auth.invitations.subscribe(res => {
-      if (res) {
-        var invitations: any = []
-        Object.values(res).forEach(cnpj => {
-          Object.values(cnpj).forEach(modulo => {
-            Object.values(modulo).forEach(invite => {
-              if (invite.userSaw == false) {
-                var permissons = []
-                Object.keys(invite.permissions).map(key => {
-                  permissons.push({ name: key, sitPer: invite.permissions[key] })
-                })
-                invite.permissions = permissons
-                invitations.push(invite)
-              }
+    if (this.user) {
+      var ref_invitations = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.user.email))
+      ref_invitations.once('value', _invitations => {
+        if (_invitations.exists()) {
+          var invitations: any = []
+          Object.values(_invitations.val()).forEach(cnpj => {
+            Object.values(cnpj).forEach(modulo => {
+              Object.values(modulo).forEach(invite => {
+                if (invite.userSaw == false) {
+                  var permissons = []
+                  if(invite.permissions){
+                    Object.keys(invite.permissions).map(key => {
+                      permissons.push({ name: key, sitPer: invite.permissions[key] })
+                    })
+                  }
+                  invite.permissions = permissons
+                  invitations.push(invite)
+                }
+              })
             })
           })
-        })
-        this.invitationsDataSource = new MatTableDataSource(invitations)
-        setInterval(() => { this.changeDetectorRefs.detectChanges() }, 200)
-      }
-    })
+          this.invitationsDataSource = new MatTableDataSource(invitations)
+          setInterval(() => { this.changeDetectorRefs.detectChanges() }, 10)
+        }
+      })
+    }
+
+    // this.auth.invitations.subscribe(res => {
+    //   if (res) {
+    //     var invitations: any = []
+    //     Object.values(res).forEach(cnpj => {
+    //       Object.values(cnpj).forEach(modulo => {
+    //         Object.values(modulo).forEach(invite => {
+    //           if (invite.userSaw == false) {
+    //             var permissons = []
+    //             Object.keys(invite.permissions).map(key => {
+    //               permissons.push({ name: key, sitPer: invite.permissions[key] })
+    //             })
+    //             invite.permissions = permissons
+    //             invitations.push(invite)
+    //           }
+    //         })
+    //       })
+    //     })
+    //     this.invitationsDataSource = new MatTableDataSource(invitations)
+    //     setInterval(() => { this.changeDetectorRefs.detectChanges() }, 200)
+    //   }
+    // })
   }
 
 

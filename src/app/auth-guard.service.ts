@@ -39,10 +39,8 @@ export class AuthGuardService implements CanActivate {
         var isAuthenticated: boolean
         await this.canLoad(state.url).then(result => {
             isAuthenticated = (result == true)
-            if (state.url == "/") {
-                isAuthenticated = true
-            }
         })
+
         if (isAuthenticated != true) {
             this.router.navigate(['/login'], {
                 queryParams: {
@@ -56,11 +54,14 @@ export class AuthGuardService implements CanActivate {
 
     canLoad(route: string) {
         return new Promise(resolve => {
+
+            if (route === "/") {
+                resolve(true)
+            }
+
             this.fbServices.auth().onAuthStateChanged(user => {
 
-
                 if (user) {
-
                     if (!user.emailVerified) {
                         return resolve(false)
                     }
@@ -133,13 +134,12 @@ export class AuthGuardService implements CanActivate {
                                         }
                                     })
                                 } else {
-                                    this.fbServices.DB.FB.ref(route).child('sitSrv').once('value', sitSrv => {
-                                        if (sitSrv.exists()) {
-                                            return resolve(true)
-                                        } else {
-                                            return resolve(false)
-                                        }
-                                    })
+
+                                    if(route.includes("services")||route.includes("invitations")){
+                                        return resolve(true)
+                                    }else{
+                                        return resolve(false)
+                                    }
                                 }
                             }
                         })
@@ -188,14 +188,11 @@ export class AuthGuardService implements CanActivate {
 
 
     public getInvitations(user: any) {
-
         if (user) {
             var ref_invitations = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(user.email))
             ref_invitations.on('value', invitations => {
                 if (invitations.exists()) {
                     this.invitations.emit(invitations.val())
-                } else {
-                    this.invitations = null
                 }
             })
         }

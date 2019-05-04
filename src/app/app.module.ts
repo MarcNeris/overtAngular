@@ -39,7 +39,8 @@ import {
   MatDialogModule,
   MatPaginatorIntl,
   MatAutocompleteModule,
-  MatListModule
+  MatListModule,
+  MatBadgeModule
 
 } from '@angular/material';
 
@@ -99,6 +100,7 @@ export class MatPaginatorIntlBrl extends MatPaginatorIntl {
     MatSidenavModule,
     MatAutocompleteModule,
     MatListModule,
+    MatBadgeModule,
     AgmCoreModule.forRoot({
       apiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
     })

@@ -97,8 +97,8 @@
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <p>Modulo: {{invite.modulo.toUpperCase()}} Data: {{invite.datLog}} </p>
-                <p>Convite de : {{invite.from_email}} Empresa:{{invite.nome}}</p>
-                <p>Para : {{invite.to_email}} Empresa:{{invite.nome}}</p>
+                <p>Convite de : {{invite.from_email}} Empresa: {{invite.nome}}</p>
+                <p>Para : {{invite.to_email}} Empresa: {{invite.nome}}</p>
                 <p>Permissões:</p>
                 <p class="text-danger">{{invite.cnpj_client}} {{invite.nome_client}}</p>
                 <div *ngFor="let permission of  invite.permissions;">

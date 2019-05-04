@@ -1,9 +1,25 @@
-.nav{
-    padding-top:10px;
-    background-color: black !important;
+// .nav{
+//     padding-top:10px;
+//     background-color: black !important;
+// }
+// #power-off{
+//     top: -10px;
+//     right: 0px;
+//     position: absolute;
+// }
+.white{
+    background: rgba(255, 255, 255, 0.9); 
 }
-#power-off{
-    top: -10px;
-    right: 0px;
-    position: absolute;
+.transparent{
+    background: transparent;
+}
+mat-toolbar.head{
+    color: #555;
+    background: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    z-index: 2;
+}
+#logoHome{
+    width: 40px;
+    margin-right: 20px;
 }

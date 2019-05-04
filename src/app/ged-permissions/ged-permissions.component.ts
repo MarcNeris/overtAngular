@@ -18,6 +18,10 @@ import { Router } from '@angular/router';
 })
 
 export class GedPermissionsComponent implements OnInit {
+  user: any = {
+    email: '',
+    displayName: ''
+  }
   cnpj_cliente: string
   client: any = null
   email_usuario: string
@@ -30,7 +34,7 @@ export class GedPermissionsComponent implements OnInit {
   clientDataSource: any
   displayedColumnsClient: string[] = ['cnpj', 'nome', 'fantasia', 'actions']
 
-  permissionsDataSource: any
+  permissionsDataSource: any = new MatTableDataSource()
   displayedColumnsPermissions: string[] = ['cnpj', 'nome', 'permission']
 
   permissoes_ged: any
@@ -87,6 +91,7 @@ export class GedPermissionsComponent implements OnInit {
   }
 
   fnUnsetClient() {
+    this.listarClientes()
     this.client = null
   }
 
@@ -111,7 +116,6 @@ export class GedPermissionsComponent implements OnInit {
       var user = this.auth.getUser()
       this.func.importarCliente(this.func.toCnpjId(this.cnpj_cliente), user.empresa_ativa._apiKey.apiKey).then(result => {
         var res: any = result
-        console.log(res)
         if (res.status == 'OK') {
           this.hasError = null
           this.hasSucces = `${res.cnpj} | ${res.fantasia} ${res.nome}`
@@ -138,9 +142,7 @@ export class GedPermissionsComponent implements OnInit {
       if (this.func.isEmail(this.email_usuario)) {
         var user = this.auth.getUser()
         if (user.empresa_ativa._apiKey.apiKey) {
-
           var invite = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.email_usuario)).child(user.empresa_ativa._apiKey.apiKey)
-
           var Moment = moment()
           invite.child(this.func.toCnpjId(this.client.cnpj)).child('ged').set({
             modulo: 'ged',
@@ -186,42 +188,40 @@ export class GedPermissionsComponent implements OnInit {
   }
 
   ngOnInit() {
-
     /**
-     * Alterar para Permissions
+     * 
      */
-    this.auth.invitations.subscribe(res => {
-      if(res){
-        var invitations: any = []
-        Object.values(res).forEach(cnpj => {
-          Object.values(cnpj).forEach(modulo => {
-            Object.values(modulo).forEach(invite => {
-              if (invite.userSaw == false)
-                invitations.push(invite)
-            })
-          })
-        })
-        // console.log(invitations)
+    this.user = this.auth.getUser()
   
-        // console.log(res)
-        this.permissionsDataSource = new MatTableDataSource(invitations)
-  
-        this.changeDetectorRefs.detectChanges()
-      }
-    })
-
-
-
-
-
-
-
-    var user: any = this.auth.getUser()
-    if (user.isKeyUser == true) {
+    if (this.user.isKeyUser == true) {
       this.listarClientes()
     } else {
       this.router.navigate(['/dashboard'])
     }
+
+    if (this.user) {
+      var ref_invitations = this.fbServices.DB.FB.ref('invitations').child('users').child(this.func.toEmailId(this.user.email))
+      ref_invitations.on('value', _invitations => {
+        if (_invitations.exists()) {
+          var invitations: any = []
+          Object.values(_invitations.val()).forEach(cnpj => {
+            Object.values(cnpj).forEach(modulo => {
+              Object.values(modulo).forEach(invite => {
+                if (invite.userSaw == false)
+                  invitations.push(invite)
+              })
+            })
+          })
+          this.permissionsDataSource = new MatTableDataSource(invitations)
+          setInterval(() => { this.changeDetectorRefs.detectChanges() }, 200)
+        }
+      })
+    }
+
+
+
+
+
 
     this.inviteDocumentoForm = new FormGroup({
       email_usuario: new FormControl('', [Validators.required, Validators.email]),
