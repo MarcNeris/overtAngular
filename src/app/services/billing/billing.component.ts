@@ -34,7 +34,7 @@ export class BillingComponent implements OnInit {
   }
 
   public displayedColumns: string[] = ['cgcCpf', 'nomCli', 'datEmi', 'datVct', 'numTit', 'vlrTit', 'codCrt']
-  
+
   public dataSource: any = null
 
   @Output() titulos = new EventEmitter()
@@ -104,7 +104,9 @@ export class BillingComponent implements OnInit {
       } else {
         this.hasError = result.result.resultado
       }
-      this.changeDetectorRefs.detectChanges()
+      setInterval(() => {
+        this.changeDetectorRefs.detectChanges()
+      }, 100)
     })
   }
 
@@ -156,7 +158,7 @@ export class BillingComponent implements OnInit {
                   titulos.forEach(titulo => {
                     titulo.emaCli = args.parameters.emaCli
                     titulo.vlrTit2 = titulo.vlrTit
-                    titulo.vlrTit =  numeral( parseFloat(titulo.vlrTit) ).format('$0,0.00')
+                    titulo.vlrTit = numeral(parseFloat(titulo.vlrTit)).format('$0,0.00')
                   })
                   resolve(titulos)
                 } else {
@@ -179,11 +181,13 @@ export class BillingComponent implements OnInit {
         this.dataSource = new MatTableDataSource(titulos)
       }
     }).then(() => {
-      if(this.dataSource){
+      if (this.dataSource) {
         this.dataSource.sort = this.sort
         this.dataSource.paginator = this.paginator
       }
-      this.changeDetectorRefs.detectChanges()
+      setInterval(() => {
+        this.changeDetectorRefs.detectChanges()
+      }, 100)
     })
   }
 

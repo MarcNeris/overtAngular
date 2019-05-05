@@ -242,6 +242,16 @@ table{
   width: 100%;
 }
 
+// @media (min-width: 768px) {
+//   .col-sm-3 {
+//     height: 33.33vh;
+//   }
+// }
+
+.mat-button{
+  margin-right: 20px !important;
+}
+
 .spinner{
   width: 20px;
   position: absolute;

@@ -1,14 +1,15 @@
 <mat-toolbar class="head">
     <mat-toolbar-row class="mat-elevation-z3">
+        <!-- <mat-toolbar-row> -->
 
         <div class="col-lg-10 short-string">
             <img id="logoHome" src="/assets/img/logo.png" />
-            <span class="fill-remaining-space">overt <span class="text-thin">Mobile Everything</span></span>
+            <span class="fill-remaining-space">overt <span class="text-thin">| Mobile Everything</span></span>
         </div>
 
         <div class="col-lg-2 short-string text-right">
             <span *ngIf="user" class="fill-remaining-space">
-                <button mat-button routerLink="/trackpoint">Track Point</button>
+                <button mat-button routerLink="/dashboard">Dashboard</button>
             </span>
 
             <span *ngIf="user" class="fill-remaining-space">
@@ -34,16 +35,41 @@
 <mat-drawer-container class="transparent overt-content">
     <div class="container-fluid">
         <div class="row">
-            <!-- <div class="col-lg-1"></div> -->
             <div class="col-lg-12">
-
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-5">
+
+                        <div class="card card-background justify-content-md-center"
+                            style="min-height: 600px; background-size: cover; background-image: url('https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=750&q=80&ixid=dW5zcGxhc2guY29tOzs7Ozs%3D')">
+                            <div class="card-body">
+                                <h6 class="card-category text-info">Mobile Everything</h6>
+                                <a href="#">
+                                    <h3 class="card-title text-white">Apps Corporativos</h3>
+                                </a>
+
+                                <!-- <a href="#" class="btn btn-white btn-link">
+                                    <i class="material-icons">subject</i> Read Article
+                                </a>
+                                <a href="#" class="btn btn-white btn-link">
+                                    <i class="material-icons">watch_later</i> Watch Later
+                                </a> -->
+                            </div>
+                            <div class="div-footer">
+                                <h6 class="card-description text-white">
+                                    Criamos aplicativos para auxiliar sua empresa na jornada da transformação
+                                    digital.
+                                </h6>
+                                <button mat-raised-button [swal]="{ title: 'Informe seu email', input: 'email' }"
+                                    (confirm)="saveEmail($event)" (cancel)="handleRefusalToSetEmail($event)">
+                                    Inscrever
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-7">
                         <div class="card-header">
-                            <!-- <h3 class="card-title">Transformação Digital de Verdade!</h3> -->
-                            <h3 class="card-title">Bem-vindo!</h3>
-
-
+                            <h4 class="card-title">Transformação Digital</h4>
                             <p>
                                 A Transformação Digital é a transformação profunda das atividades, processos,
                                 competências e modelos empresariais e organizacionais para alavancar totalmente as
@@ -60,7 +86,6 @@
                                 digital
                                 para o negócio precisa ser reinventada e melhorada para resolver problemas
                                 tradicionais.
-
                             </p>
                             <p>
                                 Embora a transformação digital seja predominantemente usada em um contexto de
@@ -91,40 +116,39 @@
                                 com
                                 alto grau de comoditização.
                             </p>
-                            <h5 class="card-category pull-right"><b>overt</b> Mobile Everything</h5>
+                            <h5 class="card-category pull-right"><b>overt</b> | Mobile Everything</h5>
                             <br>
                         </div>
 
                     </div>
                 </div>
 
-                <div class="row">
-
-                    <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="row justify-content-md-center">
+                    <div class="col col-lg-4">
                         <div class="card-header">
                             <h4 class="card-title">Track Point</h4>
                             <p class="card-category">Gestão de Presença</p>
                             <p>
                                 O Track Point é a ferramenta para gestão de presença que permite o registro de
-                                presença
-                                e a localização via GPS utilizando um smartphone.
+                                presençae a localização via GPS utilizando um smartphone.
                                 Estes registros geram o arquivo no formato AFD - "Arquivo Fonte de Dados", que podem
-                                ser
-                                importados diretamente na sua folha de pagamento, ou outra finalidade qualquer.
+                                ser importados diretamente na gestão de Ponto integrando à sua folha de pagamento, ou
+                                outra finalidade qualquer.
 
                             </p>
-                            <p>
+                            <!-- <p>
                                 Algumas software houses fornecedoras de folha de pagamento disponibilizam Web
                                 Services
                                 que
                                 perminte o Track Point inserir estas marcações diretamente no módulo de apuração de
                                 ponto.
-                            </p>
+                            </p> -->
                         </div>
                     </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12">
+
+                    <div class="col col-lg-4">
                         <div class="card-header">
-                            <h4 class="card-title">Mind Wits</h4>
+                            <h4 class="card-title">Think Up</h4>
                             <p class="card-category">Gestão de Idéias</p>
                             <p>
                                 O gerenciamento de ideias é a capacidade de capturar
@@ -138,18 +162,85 @@
                         </div>
                     </div>
 
-
+                    <div class="col col-lg-4">
+                        <div class="card-header">
+                            <h4 class="card-title">Moods</h4>
+                            <p class="card-category">Gestão de Pesquisas</p>
+                            <p>
+                                Nos dias de hoje, saber em tempo real como está o clima da sua organização é essencial.
+                                A
+                                pesquisa de clima organizacional é uma das melhores maneiras de promover uma série de
+                                mudanças para melhor dentro de uma empresa. Afinal de contas, todos vão dar opiniões
+                                para que tenha a finalidade de melhorar o local onde trabalham.
+                            </p>
+                        </div>
+                    </div>
                 </div>
+                <div class="row justify-content-md-center">
 
+                    <div class="col-lg-2">
+                        <div class="card card-profile">
+                            <div class="card-header card-header-image">
+                                <a href="">
+                                    <img class="img" src="/assets/img/sidebar-3.jpg">
+                                </a>
+                            </div>
+
+                            <div class="card-body ">
+                                <h4 class="card-title">Social Up</h4>
+                            </div>
+                            <div class="card-footer justify-content-center">
+                                <a href="#overt" class="btn btn-just-icon btn-twitter btn-round">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                                <a href="#overt" class="btn btn-just-icon btn-facebook btn-round">
+                                    <i class="fa fa-facebook-square"></i>
+                                </a>
+                                <a href="#overt" class="btn btn-just-icon btn-google btn-round">
+                                    <i class="fa fa-google"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col col-lg-3">
+                        <div class="card-header">
+                            <h4 class="card-title">Social Up</h4>
+                            <p class="card-category">Gestão de Pesquisas</p>
+                            <p>
+                                Promover um ambiente digital que tenha algumas características das redes sociais, como
+                                espaço para chats e fóruns, impacta positivamente nos negócios. Além disso, o espaço
+                                pode estimular a comunicação entre os setores da empresa, criando uma cultura de
+                                compartilhamento de informações.
+                                Os colaboradores são altamente ativos em outras redes sociais, então as empresas têm que
+                                aprender com o colaborador e dar um espaço em que ele possa compartilhar conhecimentos
+                                com colegas e lideranças da empresa.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- <div class="col-lg-1"> -->
+                        <!-- <div class="card card-background"
+                            style="min-height: 600px; background-size: cover; background-image: url('/assets/img/DigitalTransformation.jpg')">
+                            <div class="card-body">
+                                <h6 class="card-category text-info">Mobile Everything</h6>
+                                <a href="#">
+                                    <h3 class="card-title text-white">Apps Corporativos</h3>
+                                </a>
+                            </div>
+                        </div> -->
+                    <!-- </div> -->
+                </div>
             </div>
         </div>
     </div>
 </mat-drawer-container>
-<mat-drawer-container class="overt-content white">
+
+<mat-drawer-container *ngIf="false" class="overt-content white">
 
     <div class="container-fluid">
 
         <div class="row">
+
 
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="card card-stats">
@@ -239,7 +330,7 @@
 <mat-toolbar class="footer">
     <mat-toolbar-row>
 
-        <div class="col-lg-12 text-right short-string">
+        <div class="col-lg-12 text-right">
             <span class="fill-remaining-space">
                 <button mat-button routerLink="/contact">Contato</button>
             </span>

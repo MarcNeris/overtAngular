@@ -12,7 +12,7 @@ type categoria = {
   peridiocidade_documento: string
   departamentos_documento: any
   situacao_categoria: boolean
-  descricao_categoria: string
+  descricao_documento: string
 }
 
 @Component({
@@ -29,7 +29,7 @@ export class GedSettingsComponent implements OnInit {
     peridiocidade_documento: new FormControl('', [Validators.required]),
     clientes_documento: new FormControl('', [Validators.required]),
     situacao_categoria: new FormControl('', [Validators.required]),
-    descricao_categoria: new FormControl('', [Validators.required]),
+    descricao_documento: new FormControl('', [Validators.required]),
   })
 
   apiKey: string
@@ -61,7 +61,7 @@ export class GedSettingsComponent implements OnInit {
   lista_clientes_documento: any
 
   situacao_categoria: boolean = false
-  descricao_categoria: string
+  descricao_documento: string
 
   btnIsDisabled: boolean = false
   cnpj: string = ''
@@ -80,7 +80,7 @@ export class GedSettingsComponent implements OnInit {
       departamentos_documento: this.departamentos_documento,
       situacao_categoria: this.situacao_categoria,
       clientes_documento: this.clientes_documento,
-      descricao_categoria: this.descricao_categoria,
+      descricao_documento: this.descricao_documento,
       documentos: false
     }
 

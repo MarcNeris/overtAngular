@@ -75,7 +75,7 @@
                   <input formControlName="situacao_categoria" type="checkbox" [(ngModel)]="situacao_categoria"
                     checked="situacao_categoria">
                   <span class="toggle"></span>
-                  Documento está ativa?
+                  Documento está ativo?
                 </label>
               </div>
 
@@ -84,9 +84,9 @@
                 <div class="col-md-12">
 
                   <mat-form-field class="example-full-width">
-                    <textarea formControlName="descricao_categoria" [(ngModel)]="descricao_categoria" matInput
-                      placeholder="Descrição da Categoria"></textarea>
-                    <mat-error *ngIf="categoriaDocumentoForm?.controls?.descricao_categoria?.hasError('required')">
+                    <textarea formControlName="descricao_documento" [(ngModel)]="descricao_documento" matInput
+                      placeholder="Descrição do Documento"></textarea>
+                    <mat-error *ngIf="categoriaDocumentoForm?.controls?.descricao_documento?.hasError('required')">
                       Essa informação é <strong>requerida</strong>
                     </mat-error>
                   </mat-form-field>
@@ -124,7 +124,7 @@
         </div>
       </div>
 
-      <div class="col-md-6 col-sm-12">
+      <!-- <div class="col-md-6 col-sm-12">
         <div class="card">
           <div class="card-header">
             <h4 class="card-title"><b>Convites</b></h4>
@@ -135,37 +135,7 @@
               <input matInput type="text" placeholder="email">
             </mat-form-field>
 
-            <mat-accordion>
-              <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    Personal data
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    Type your name and age
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-
-                <mat-form-field>
-                  <input matInput placeholder="First name">
-                </mat-form-field>
-
-                <mat-form-field>
-                  <input matInput placeholder="Age">
-                </mat-form-field>
-              </mat-expansion-panel>
-              <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    Self aware panel
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    Currently I am {{panelOpenState ? 'open' : 'closed'}}
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-                <p>I'm visible because I am open</p>
-              </mat-expansion-panel>
-            </mat-accordion>
+          
 
 
 
@@ -174,7 +144,7 @@
             <button class="btn btn-default">Enviar</button>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </div>
   

@@ -12,21 +12,22 @@
 p{
     color: #aeaeae; 
 }
-
 mat-toolbar.head{
     color: #555;
     background: rgba(255, 255, 255, 0.9);
     position: fixed;
     z-index: 2;
 }
-
 .card-title{
+    margin-top: 10px;
     font-size: 2em;
     font-weight: 100;
     line-height: 1em;
     color: #555;
 }
-
+.card-profile{
+    margin-top: 50px;
+}
 .white{
     background: rgba(255, 255, 255, 0.9); 
 }
@@ -34,10 +35,16 @@ mat-toolbar.head{
     background: transparent;
 }
 
+.div-footer{
+    position: absolute;
+    text-align: center;
+    bottom: 20px;
+}
+
 .overt-content{
     // background-image: url("/assets/img/DigitalTransformation.jpg") !important;
     background-size: cover;
-    padding-top: 60px;
+    padding-top: 100px;
     padding-bottom: 10px;
     min-height: 100px !important;
     // background-image: url("/assets/img/MobileEverything.jpg") !important;

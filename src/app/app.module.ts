@@ -23,6 +23,8 @@ import { CdkTableModule } from '@angular/cdk/table';
 
 import { HttpClientModule } from '@angular/common/http';
 
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+
 import {
   MatPaginatorModule,
   MatSortModule,
@@ -101,6 +103,12 @@ export class MatPaginatorIntlBrl extends MatPaginatorIntl {
     MatAutocompleteModule,
     MatListModule,
     MatBadgeModule,
+    SweetAlert2Module.forRoot({
+      buttonsStyling: false,
+      customClass: 'modal-content',
+      confirmButtonClass: 'mat-raised-button',
+      cancelButtonClass: 'btn'
+    }),
     AgmCoreModule.forRoot({
       apiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
     })

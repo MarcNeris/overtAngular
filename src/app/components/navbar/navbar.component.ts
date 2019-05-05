@@ -62,7 +62,7 @@ export class NavbarComponent implements OnInit {
                     Object.values(res).forEach(cnpj => {
                         Object.values(cnpj).forEach(modulo => {
                             Object.values(modulo).forEach(invite => {
-                                if (invite.userSaw == false)
+                                if (invite.convite_visualizado == false)
                                     this.invitations++
                             })
                         })

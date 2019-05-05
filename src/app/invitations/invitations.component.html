@@ -68,7 +68,7 @@
       <mat-toolbar>
         <mat-toolbar-row>
           <div class="col-md-10 short-string">
-            <span>GED Permissões | Convites</span>
+            <span>Convites e Autorizações</span>
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
@@ -77,7 +77,8 @@
 
     <div class="row">
       <div class="card-body">
-        <div class="row">
+
+        <!-- <div class="row">
           <div class="col-lg-12">
             <div class="input-group no-border">
               <mat-form-field>
@@ -85,32 +86,52 @@
               </mat-form-field>
             </div>
           </div>
-        </div>
+        </div> -->
+
         <div class="row">
           <div class="col-lg-12">
             <mat-accordion>
-              <mat-expansion-panel *ngFor="let invite of invitationsDataSource.data;" (opened)="isLicenced = false"
+              <mat-expansion-panel *ngFor="let invite of invitations;" (opened)="isLicenced = false"
                 (closed)="isLicenced = false">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    {{invite.nome}}
+                    {{invite.customer_nome}}
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <p>Modulo: {{invite.modulo.toUpperCase()}} Data: {{invite.datLog}} </p>
-                <p>Convite de : {{invite.from_email}} Empresa: {{invite.nome}}</p>
-                <p>Para : {{invite.to_email}} Empresa: {{invite.nome}}</p>
+                <hr>
+                <p>Modulo: {{invite.modulo.toUpperCase()}} Data: {{invite.data_convite}} </p>
+                <p>Convite de : {{invite.keyUser}} Empresa: {{invite.customer_nome}}</p>
+                <p>Para : {{invite.user}} Empresa: {{invite.client_nome}}</p>
+                <hr>
+                <p class="text-danger">{{invite.client_cnpj}} {{invite.client_nome}}</p>
+
                 <p>Permissões:</p>
-                <p class="text-danger">{{invite.cnpj_client}} {{invite.nome_client}}</p>
                 <div *ngFor="let permission of  invite.permissions;">
-                  {{permission.name}}
+                  {{permission.name.split('_')[1]+' '+permission.name.split('_')[2]}}
                 </div>
-                <mat-checkbox color="primary" [(ngModel)]="isLicenced">Estou de Acordo com os Termos</mat-checkbox>
-                <button mat-button (click)="fnSubscribePermission(invite)" class="btn btn-default"
-                  [disabled]="!isLicenced">Aceitar</button>
+
+                <div class="row">
+                  <div class="col-lg-12">
+                    <mat-checkbox color="primary" [(ngModel)]="isLicenced">Aceite dos Termos de Uso</mat-checkbox>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-12">
+                    <hr>
+                    <button mat-button (click)="fnSubscribePermission(invite)" mat-raised-button color="primary"
+                      [disabled]="!isLicenced">Aceitar</button>
+
+                    <button mat-button (click)="fnUnSubscribePermission(invite)" mat-raised-button color="warn"
+                      [disabled]="isLicenced">Regeitar</button>
+                  </div>
+                </div>
+
               </mat-expansion-panel>
             </mat-accordion>
           </div>
         </div>
+
       </div>
     </div>
   </div><!-- invite -->

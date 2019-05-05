@@ -1,6 +1,6 @@
 import { AuthGuardService } from './../auth-guard.service';
 import { FBServices } from './../firebase.services';
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import * as Chartist from 'chartist';
 
@@ -12,13 +12,16 @@ import * as Chartist from 'chartist';
 
 export class HomeComponent implements OnInit {
 
-  user: User
+  user: User = null
 
   constructor(
     public auth: AuthGuardService,
     public fbServices: FBServices,
     public router: Router,
-  ) { }
+    private changeDetectorRefs: ChangeDetectorRef,
+  ) {
+
+  }
 
   fnLogout() {
     this.fbServices.logout()
@@ -26,7 +29,11 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit() {
-    this.user = this.auth.getUser()
+    if(!this.user)
+    setInterval(() => {
+      this.user = this.auth.getUser()
+    }, 1000)
+    setInterval(() => { this.changeDetectorRefs.detectChanges() }, 100)
   }
 
 }
